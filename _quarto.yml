@@ -1,0 +1,23 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Python for Data Analysis in Finance"
+  author: "Pritam Dalal"
+  chapters:
+    - index.qmd
+    - chapters/01_jumpstart/jumpstart.ipynb
+    - chapters/02_dataframe_basics/summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+
+

@@ -1,0 +1,170 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Python for Data Analysis in Finance",
+    "section": "",
+    "text": "Preface\nThis is a Quarto book.\nTo learn more about Quarto books visit https://quarto.org/docs/books."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/intro.html",
+    "href": "chapters/01_jumpstart/intro.html",
+    "title": "1  Introduction",
+    "section": "",
+    "text": "This is a book created from markdown and executable code.\nSee Knuth (1984) for additional discussion of literate programming.\n\n\n\n\nKnuth, Donald E. 1984. “Literate Programming.” Comput. J. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97."
+  },
+  {
+    "objectID": "chapters/02_dataframe_basics/summary.html",
+    "href": "chapters/02_dataframe_basics/summary.html",
+    "title": "2  Summary",
+    "section": "",
+    "text": "In summary, this book has no content whatsoever."
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#further-reading",
+    "href": "chapters/01_jumpstart/jumpstart.html#further-reading",
+    "title": "1  Python Jumpstart",
+    "section": "1.19 Further Reading",
+    "text": "1.19 Further Reading\nPython Data Science Handbook - Jake VanderPlas\nPython for Finance 2e - Yves Hilpisch\nPython for Data Analysis 3e - Wes McKinney"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#what-is-a-notebook",
+    "href": "chapters/01_jumpstart/jumpstart.html#what-is-a-notebook",
+    "title": "1  Python Jumpstart",
+    "section": "1.1 What is a Notebook?",
+    "text": "1.1 What is a Notebook?\nThis file - the one you are currently interacting with - is a Jupyter notebook.\nThe notebook format conveniently allows you to combine sentences, code, code outputs (including plots), and mathematical notation. Notebooks have proven to be a convenient and productive programming environment for data analysis.\nBehind the scenes of a Jupyter notebook is a kernel that is responsible for executing computations. The kernel can live locally on your machine or on a remote server."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#code-cells",
+    "href": "chapters/01_jumpstart/jumpstart.html#code-cells",
+    "title": "1  Python Jumpstart",
+    "section": "1.3 Code Cells",
+    "text": "1.3 Code Cells\nA notebook is structured as a sequence of cells. There are three kinds of cells: 1) code cells that contain code; 2) markdown cells that contain markdown or latex; and 3) raw cells that contain raw text. We will work mainly with code cells and markdown cells.\nThe cell below is a code cell - try typing the code and then press shift + enter.\n\nfrom IPython.display import Image\nImage(\"not_ethical.png\")"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#edit-mode-vs-command-mode",
+    "href": "chapters/01_jumpstart/jumpstart.html#edit-mode-vs-command-mode",
+    "title": "1  Python Jumpstart",
+    "section": "1.4 Edit Mode vs Command Mode",
+    "text": "1.4 Edit Mode vs Command Mode\nThere are two modes in a notebook: 1) edit mode; 2) command mode.\nIn edit mode you are inside a cell and you can edit the contents of the cell.\nIn command mode, you are outside the cells and you can navigate between them."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#keyboard-shortcuts",
+    "href": "chapters/01_jumpstart/jumpstart.html#keyboard-shortcuts",
+    "title": "1  Python Jumpstart",
+    "section": "1.5 Keyboard Shortcuts",
+    "text": "1.5 Keyboard Shortcuts\nHere are some of my favorite keyboard shortcuts:\nedit mode: enter\ncommand mode: esc\nnavigate up: k\nnavigate down: j\ninsert cell above: a\ninsert cell below: b\ndelete cell: d, d (press d twice)\nswitch to code cell: y\nswitch to markup cell: m\nexecute and stay on current cell: ctrl + enter\nexecute and move down a cell: shift + enter"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#drop-down-menus",
+    "href": "chapters/01_jumpstart/jumpstart.html#drop-down-menus",
+    "title": "1  Python Jumpstart",
+    "section": "1.6 Drop Down Menus",
+    "text": "1.6 Drop Down Menus\nHere are a few of the drop down menu functions in JupyterLab that I use frequently:\nKernel &gt; Restart Kernel and Clear All Outputs\nKernel &gt; Restart Kearnel and Run All Cells\nRun &gt; Run All Above Selected Cell"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#importing-packages",
+    "href": "chapters/01_jumpstart/jumpstart.html#importing-packages",
+    "title": "1  Python Jumpstart",
+    "section": "1.7 Importing Packages",
+    "text": "1.7 Importing Packages\nThe power and convenience of Python as a data analysis languages comes from the ecosystem of freely available third party packages.\nHere are the packages that we will be using in this tutorial:\nnumpy - efficient vector and matrix computations\npandas - working with DataFrames\nyfinance - reading in data from Yahoo finance\npandas_datareader - also for reading data from Yahoo Finance\nThe following code imports these packages and assigns them each an alias.\n\nimport numpy as np\nimport pandas as pd\nimport yfinance as yf\nyf.pdr_override()\nfrom pandas_datareader import data as pdr"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#reading-in-stock-data-into-a-dataframe",
+    "href": "chapters/01_jumpstart/jumpstart.html#reading-in-stock-data-into-a-dataframe",
+    "title": "1  Python Jumpstart",
+    "section": "1.8 Reading-In Stock Data into a DataFrame",
+    "text": "1.8 Reading-In Stock Data into a DataFrame\nLet’s begin by reading in 5 years of SPY price data from Yahoo Finance.\nSPY is an ETF that tracks the performace of the SP500 stock index.\n\ndf_spy = pdr.get_data_yahoo('SPY', start='2014-01-01', end='2019-01-01')\ndf_spy = df_spy.round(2)\ndf_spy.head()\n\n[*********************100%***********************]  1 of 1 completed\n\n\n\n\n\n\n\n\n\nOpen\nHigh\nLow\nClose\nAdj Close\nVolume\n\n\nDate\n\n\n\n\n\n\n\n\n\n\n2014-01-02\n183.98\n184.07\n182.48\n182.92\n153.83\n119636900\n\n\n2014-01-03\n183.23\n183.60\n182.63\n182.89\n153.80\n81390600\n\n\n2014-01-06\n183.49\n183.56\n182.08\n182.36\n153.36\n108028200\n\n\n2014-01-07\n183.09\n183.79\n182.95\n183.48\n154.30\n86144200\n\n\n2014-01-08\n183.45\n183.83\n182.89\n183.52\n154.33\n96582300\n\n\n\n\n\n\n\nOur stock data now lives in the variable called df_spy, which is a pandas data structure known as a DataFrame. We can see this by using the following code:\n\ntype(df_spy)\n\npandas.core.frame.DataFrame"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#dataframe-index",
+    "href": "chapters/01_jumpstart/jumpstart.html#dataframe-index",
+    "title": "1  Python Jumpstart",
+    "section": "1.9 DataFrame Index",
+    "text": "1.9 DataFrame Index\nIn pandas, a DataFrame always has an index. For df_spy the Dates form the index.\n\ndf_spy.index\n\nDatetimeIndex(['2014-01-02', '2014-01-03', '2014-01-06', '2014-01-07',\n               '2014-01-08', '2014-01-09', '2014-01-10', '2014-01-13',\n               '2014-01-14', '2014-01-15',\n               ...\n               '2018-12-17', '2018-12-18', '2018-12-19', '2018-12-20',\n               '2018-12-21', '2018-12-24', '2018-12-26', '2018-12-27',\n               '2018-12-28', '2018-12-31'],\n              dtype='datetime64[ns]', name='Date', length=1258, freq=None)\n\n\nI don’t use indices very much, so let’s make the Date index just a regular column. Notice that we can modify DataFrames inplace.\n\ndf_spy.reset_index(inplace=True)\ndf_spy\n\n\n\n\n\n\n\n\nDate\nOpen\nHigh\nLow\nClose\nAdj Close\nVolume\n\n\n\n\n0\n2014-01-02\n183.98\n184.07\n182.48\n182.92\n153.83\n119636900\n\n\n1\n2014-01-03\n183.23\n183.60\n182.63\n182.89\n153.80\n81390600\n\n\n2\n2014-01-06\n183.49\n183.56\n182.08\n182.36\n153.36\n108028200\n\n\n3\n2014-01-07\n183.09\n183.79\n182.95\n183.48\n154.30\n86144200\n\n\n4\n2014-01-08\n183.45\n183.83\n182.89\n183.52\n154.33\n96582300\n\n\n...\n...\n...\n...\n...\n...\n...\n...\n\n\n1253\n2018-12-24\n239.04\n240.84\n234.27\n234.34\n217.60\n147311600\n\n\n1254\n2018-12-26\n235.97\n246.18\n233.76\n246.18\n228.59\n218485400\n\n\n1255\n2018-12-27\n242.57\n248.29\n238.96\n248.07\n230.35\n186267300\n\n\n1256\n2018-12-28\n249.58\n251.40\n246.45\n247.75\n230.05\n153100200\n\n\n1257\n2018-12-31\n249.56\n250.19\n247.47\n249.92\n232.07\n144299400\n\n\n\n\n1258 rows × 7 columns\n\n\n\nNotice that even though we ran the .reset_index() method of df_spy it still has an index; now its index just a sequence of integers.\n\ndf_spy.index\n\nRangeIndex(start=0, stop=1258, step=1)"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#a-bit-of-cleaning",
+    "href": "chapters/01_jumpstart/jumpstart.html#a-bit-of-cleaning",
+    "title": "1  Python Jumpstart",
+    "section": "1.10 A Bit of Cleaning",
+    "text": "1.10 A Bit of Cleaning\nAs a matter of preference, I like my column names in snake case.\n\ndf_spy.columns = df_spy.columns.str.lower().str.replace(' ','_')\ndf_spy.head()\n\n\n\n\n\n\n\n\ndate\nopen\nhigh\nlow\nclose\nadj_close\nvolume\n\n\n\n\n0\n2014-01-02\n183.98\n184.07\n182.48\n182.92\n153.83\n119636900\n\n\n1\n2014-01-03\n183.23\n183.60\n182.63\n182.89\n153.80\n81390600\n\n\n2\n2014-01-06\n183.49\n183.56\n182.08\n182.36\n153.36\n108028200\n\n\n3\n2014-01-07\n183.09\n183.79\n182.95\n183.48\n154.30\n86144200\n\n\n4\n2014-01-08\n183.45\n183.83\n182.89\n183.52\n154.33\n96582300\n\n\n\n\n\n\n\nLet’s also remove the columns that we won’t need. We first create a list of the column names that we want to get rid of and then we use the DataFrame.drop() method.\n\nlst_cols = ['high', 'low', 'open', 'close', 'volume',]\ndf_spy.drop(columns=lst_cols, inplace=True)\ndf_spy.head()\n\n\n\n\n\n\n\n\ndate\nadj_close\n\n\n\n\n0\n2014-01-02\n153.83\n\n\n1\n2014-01-03\n153.80\n\n\n2\n2014-01-06\n153.36\n\n\n3\n2014-01-07\n154.30\n\n\n4\n2014-01-08\n154.33\n\n\n\n\n\n\n\nNotice that trailing commas are not an issue in Python."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#series",
+    "href": "chapters/01_jumpstart/jumpstart.html#series",
+    "title": "1  Python Jumpstart",
+    "section": "1.11 Series",
+    "text": "1.11 Series\nYou can isolate the columns of a DataFrame with square brackets as follows:\n\ndf_spy['adj_close']\n\n0       153.83\n1       153.80\n2       153.36\n3       154.30\n4       154.33\n         ...  \n1253    217.60\n1254    228.59\n1255    230.35\n1256    230.05\n1257    232.07\nName: adj_close, Length: 1258, dtype: float64\n\n\nThe columns of a DataFrame are a pandas data structure called a Series.\n\ntype(df_spy['adj_close'])\n\npandas.core.series.Series"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#numpy-and-ndarrays",
+    "href": "chapters/01_jumpstart/jumpstart.html#numpy-and-ndarrays",
+    "title": "1  Python Jumpstart",
+    "section": "1.12 numpy and ndarrays",
+    "text": "1.12 numpy and ndarrays\nPython is a general purpose programming language and was not created for scientific computing in particular. One of the foundational packages that makes Python well suited to scientific computing is numpy, which has a variety of features including a data type called ndarrays. One of the benefits of ndarrays is that they allow for efficient vector and matrix computation.\nThe values of a Series object is a numpy.ndarray. This is one sense in which pandas is built on top of numpy.\n\ndf_spy['adj_close'].values\n\narray([153.83, 153.8 , 153.36, ..., 230.35, 230.05, 232.07])\n\n\n\ntype(df_spy['adj_close'].values)\n\nnumpy.ndarray"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#series-built-in-methods",
+    "href": "chapters/01_jumpstart/jumpstart.html#series-built-in-methods",
+    "title": "1  Python Jumpstart",
+    "section": "1.13 Series Built-In Methods",
+    "text": "1.13 Series Built-In Methods\nSeries have a variety of built-in methods that provide convenient summarization and modification functionality. For example, you can .sum() all the elements of the Series.\n\ndf_spy['adj_close'].sum()\n\n251297.16\n\n\nNext, we calculate the standard deviation of all the elements of the Series using the .std() method.\n\ndf_spy['adj_close'].std()\n\n33.16746781625381\n\n\nThe .shift() built-in method will be useful for calculating returns in the next section - it has the effect of pushing down the values in a Series.\n\ndf_spy['adj_close'].shift()\n\n0          NaN\n1       153.83\n2       153.80\n3       153.36\n4       154.30\n         ...  \n1253    223.51\n1254    217.60\n1255    228.59\n1256    230.35\n1257    230.05\nName: adj_close, Length: 1258, dtype: float64"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#calculating-daily-returns",
+    "href": "chapters/01_jumpstart/jumpstart.html#calculating-daily-returns",
+    "title": "1  Python Jumpstart",
+    "section": "1.14 Calculating Daily Returns",
+    "text": "1.14 Calculating Daily Returns\nOur analysis analysis of the leverage effect will involve daily returns for all the days in df_spy. Let’s calculate those now.\nRecall that the end-of-day day \\(t\\) return of a stock is defined as: \\(r_{t} = \\frac{S_{t}}{S_{t-1}} - 1\\), where \\(S_{t}\\) is the stock price at end-of-day \\(t\\).\nHere is a vectorized approach to calculating all the daily returns in a single line of code.\n\ndf_spy['ret'] = df_spy['adj_close'] / df_spy['adj_close'].shift(1) - 1\ndf_spy.head()\n\n\n\n\n\n\n\n\ndate\nadj_close\nret\n\n\n\n\n0\n2014-01-02\n153.83\nNaN\n\n\n1\n2014-01-03\n153.80\n-0.000195\n\n\n2\n2014-01-06\n153.36\n-0.002861\n\n\n3\n2014-01-07\n154.30\n0.006129\n\n\n4\n2014-01-08\n154.33\n0.000194\n\n\n\n\n\n\n\nNotice that we can create a new column of a DataFrame by using variable assignment syntax."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#visualizing-adjusted-close-prices",
+    "href": "chapters/01_jumpstart/jumpstart.html#visualizing-adjusted-close-prices",
+    "title": "1  Python Jumpstart",
+    "section": "1.15 Visualizing Adjusted Close Prices",
+    "text": "1.15 Visualizing Adjusted Close Prices\nPython has a variety of packages that can be used for visualization. For this tutorial, we will focus on built-in plotting capabilities of pandas. These capabilities are built on top of the matplotlib package, which is the foundation of much of Python’s visualization ecosystem.\nDataFrames have a built-in .plot() method that makes creating simple line graphs quite easy.\n\ndf_spy.plot(x='date', y='adj_close');\n\n\n\n\nIf we wanted to make this graph more presentable we could do something like:\n\nax = df_spy.\\\n        plot(\n            x = 'date',\n            y = 'adj_close',\n            title = 'SPY: 2014-2018',\n            grid = True,\n            style = 'k',\n            alpha = 0.75,\n            figsize = (9, 4),\n        );\nax.set_xlabel('Trade Date');\nax.set_ylabel('Close Price');\n\n\n\n\nNotice that the ax variable created above is a matplotlib object.\n\ntype(ax)\n\nmatplotlib.axes._axes.Axes"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#visualizing-returns",
+    "href": "chapters/01_jumpstart/jumpstart.html#visualizing-returns",
+    "title": "1  Python Jumpstart",
+    "section": "1.16 Visualizing Returns",
+    "text": "1.16 Visualizing Returns\npandas also gives us the ability to simultaneously plot two different columns of a DataFrame in separate subplots of a single graph. Here is what that code looks like:\n\ndf_spy.plot(x='date', y=['adj_close', 'ret',], subplots=True, style='k', alpha=0.75, figsize=(9, 8), grid=True);\n\n\n\n\nThe returns graph above is a bit of a hack, it doesn’t really makes sense to create a line graph of consecutive returns. However, because there are so many days jammed into the x-axis, it creates a desirable effect and it used all the time in finance to demonstrate properties of volatility.\nNotice that whenever there is a sharp drop in the adj_close price graph, that the magnitude of the nearby returns becomes large. In contrast, during periods of steady growth (e.g. all of 2017) the magnitude of the returns is small. This is precisely the leverage effect."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#calculating-realized-volatility",
+    "href": "chapters/01_jumpstart/jumpstart.html#calculating-realized-volatility",
+    "title": "1  Python Jumpstart",
+    "section": "1.17 Calculating Realized Volatility",
+    "text": "1.17 Calculating Realized Volatility\nRealized volatility is defined as the standard deviation of the daily returns; it indicates how much variability in the stock price there has been. It is a matter of convention to annualize this quantity, so we multiply it by \\(\\sqrt{252}\\).\nThe following vectorized code calculates a rolling 2-month volatility for our SPY price data.\n\ndf_spy['ret'].rolling(42).std() * np.sqrt(252)\n\n0            NaN\n1            NaN\n2            NaN\n3            NaN\n4            NaN\n          ...   \n1253    0.226735\n1254    0.252813\n1255    0.249195\n1256    0.246019\n1257    0.247027\nName: ret, Length: 1258, dtype: float64\n\n\nLet’s add these realized volatility calculations todf_spy this with the following code:\n\ndf_spy['realized_vol'] = df_spy['ret'].rolling(42).std() * np.sqrt(252)\ndf_spy\n\n\n\n\n\n\n\n\ndate\nadj_close\nret\nrealized_vol\n\n\n\n\n0\n2014-01-02\n153.83\nNaN\nNaN\n\n\n1\n2014-01-03\n153.80\n-0.000195\nNaN\n\n\n2\n2014-01-06\n153.36\n-0.002861\nNaN\n\n\n3\n2014-01-07\n154.30\n0.006129\nNaN\n\n\n4\n2014-01-08\n154.33\n0.000194\nNaN\n\n\n...\n...\n...\n...\n...\n\n\n1253\n2018-12-24\n217.60\n-0.026442\n0.226735\n\n\n1254\n2018-12-26\n228.59\n0.050506\n0.252813\n\n\n1255\n2018-12-27\n230.35\n0.007699\n0.249195\n\n\n1256\n2018-12-28\n230.05\n-0.001302\n0.246019\n\n\n1257\n2018-12-31\n232.07\n0.008781\n0.247027\n\n\n\n\n1258 rows × 4 columns"
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#visualizing-realized-volatility",
+    "href": "chapters/01_jumpstart/jumpstart.html#visualizing-realized-volatility",
+    "title": "1  Python Jumpstart",
+    "section": "1.18 Visualizing Realized Volatility",
+    "text": "1.18 Visualizing Realized Volatility\nWe can easily add realized_vol to our graph with the following code:\n\ndf_spy.plot(x = 'date', \n            y = ['adj_close','ret','realized_vol',], \n            subplots=True, style='k', alpha=0.75, \n            figsize=(9, 12), \n            grid=True);\n\n\n\n\nThis graph is an excellent illustration of the leverage effect. When SPY suffers losses, there is a spike in realized volatility, which is to say that the magnitude of the nearby returns increases."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#ides-for-jupter-notebooks",
+    "href": "chapters/01_jumpstart/jumpstart.html#ides-for-jupter-notebooks",
+    "title": "1  Python Jumpstart",
+    "section": "1.2 IDEs for Jupter Notebooks",
+    "text": "1.2 IDEs for Jupter Notebooks\nYou will need another piece of software called an integrated development environment (IDE) to actually work with Jupyter notebooks; here are three popular and free IDEs for working with them:\n\nJupyterLab - my personal favorite, created by the Jupyter project, which also creates the Jupyter notebook format.\nJupyter Notebook Classic - this was the predecessor to JupyterLab, also created by the Jupyter project.\nVSCode - an general purpose IDE created my Microsoft."
+  },
+  {
+    "objectID": "chapters/01_jumpstart/jumpstart.html#ides-for-jupyter-notebooks",
+    "href": "chapters/01_jumpstart/jumpstart.html#ides-for-jupyter-notebooks",
+    "title": "1  Python Jumpstart",
+    "section": "1.2 IDEs for Jupyter Notebooks",
+    "text": "1.2 IDEs for Jupyter Notebooks\nYou will need another piece of software called an integrated development environment (IDE) to actually work with Jupyter notebooks; here are three popular and free IDEs for working with them:\n\nJupyterLab - my personal favorite, created by the Jupyter project, which also creates the Jupyter notebook format.\nJupyter Notebook Classic - this was the predecessor to JupyterLab, also created by the Jupyter project.\nVSCode - an general purpose IDE created my Microsoft."
+  }
+]
