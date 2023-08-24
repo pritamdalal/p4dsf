@@ -20,6 +20,7 @@ book:
     - part: parts/02_part_visualization/part_visualization.ipynb
       chapters:
       - chapters/09_pandas_line_graphs/pandas_line_graphs.ipynb
+      - chapters/10_pandas_bar_charts/pandas_bar_charts.ipynb
     - references.qmd
 
 bibliography: references.bib

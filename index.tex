@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -4516,9 +4516,9 @@ not in \texttt{df\_etf}.
 \emph{Python Data Science Handboook} - Section 3.7 - Combining Datasets:
 Merging and Joining
 
-\hypertarget{groupby-and-.agg---part-1}{%
-\chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} - Part
-1}{.groupby() and .agg() - Part 1}}\label{groupby-and-.agg---part-1}}
+\hypertarget{groupby-and-.agg---1}{%
+\chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} -
+1}{.groupby() and .agg() - 1}}\label{groupby-and-.agg---1}}
 
 The real power of data analysis with \texttt{DataFrames} comes into
 focus when we start utilizing the \texttt{.groupby()} and
@@ -4978,9 +4978,9 @@ Aggregation and Grouping Operations
 \emph{Options, Futures, and Other Derivatives (Hull)} - Chapter 15 (pp
 325-329) The Black-Scholes-Merton Model
 
-\hypertarget{groupby-and-.agg---part-2}{%
-\chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} - Part
-2}{.groupby() and .agg() - Part 2}}\label{groupby-and-.agg---part-2}}
+\hypertarget{groupby-and-.agg---2}{%
+\chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} -
+2}{.groupby() and .agg() - 2}}\label{groupby-and-.agg---2}}
 
 The purpose of this chapter is to demonstrate how to use
 \texttt{.groupby()} and \texttt{.agg()} with user defined functions.
@@ -5757,7 +5757,7 @@ visualization tools in \textbf{pandas} which we discuss here.
 
 \hypertarget{line-graphs-with-pandas}{%
 \chapter{\texorpdfstring{Line Graphs with
-\texttt{pandas}}{Line Graphs with pandas}}\label{line-graphs-with-pandas}}
+\textbf{pandas}}{Line Graphs with pandas}}\label{line-graphs-with-pandas}}
 
 The purpose of this chapter is to demonstrate the use of line graphs in
 finance. In particular, we use line graphs to plot various
@@ -6215,6 +6215,384 @@ Magic Commands
 
 \emph{Python for Data Analysis (McKinney)} - Section 8.1 - A Brief
 \textbf{matplotlib} API Primer
+
+\emph{Python for Data Analysis (McKinney)} - Section 8.2 - Plotting
+Functions in \textbf{pandas}
+
+\hypertarget{bar-charts-with-pandas}{%
+\chapter{\texorpdfstring{Bar Charts with
+\textbf{pandas}}{Bar Charts with pandas}}\label{bar-charts-with-pandas}}
+
+The purpose of this chapter is to demonstrate how to easily generate bar
+charts with the \textbf{pandas} built-in \texttt{.plot()} function.
+
+We apply this technique to the task of visualizing monthly pnls for the
+data set in the \texttt{spy\_2018\_call\_pnl.csv} data file.
+
+\hypertarget{load-packages-1}{%
+\section{Load Packages}\label{load-packages-1}}
+
+Let's begin by loading the packages we need:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\OperatorTok{\%}\NormalTok{matplotlib inline}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Knowledge Challenge:} What is the purpose of this line of code
+in the above cell: \texttt{\%matplotlib\ inline}?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plotting graphs below code cells}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-8}{%
+\section{Reading-In Data}\label{reading-in-data-8}}
+
+Next, let's read in the data from the CSV file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}spy\_2018\_call\_pnl.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_pnl.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike & bid & ask
+& implied\_vol & delta & dly\_opt\_pnl & dly\_dh\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 266.529999 & call & 2018-01-19 & 2017-12-15 & 270 & 1.14 &
+1.16 & 0.068257 & 0.328344 & -0.02 & 0.000000 \\
+1 & SPY & 268.230011 & call & 2018-01-19 & 2017-12-18 & 270 & 1.68 &
+1.69 & 0.071450 & 0.421353 & -0.53 & 0.558189 \\
+2 & SPY & 267.250000 & call & 2018-01-19 & 2017-12-19 & 270 & 1.39 &
+1.41 & 0.074841 & 0.365808 & 0.28 & -0.412931 \\
+3 & SPY & 267.100006 & call & 2018-01-19 & 2017-12-20 & 270 & 1.10 &
+1.11 & 0.070911 & 0.327058 & 0.30 & -0.054869 \\
+4 & SPY & 267.540009 & call & 2018-01-19 & 2017-12-21 & 270 & 1.31 &
+1.32 & 0.072183 & 0.372113 & -0.21 & 0.143906 \\
+\end{longtable}
+
+This data consists of daily PNLs from 12 different SPY short call trades
+throughout 2018.
+
+\hypertarget{wrangling}{%
+\section{Wrangling}\label{wrangling}}
+
+First, we will refactor the \texttt{expiration} and \texttt{data\_date}
+columns to \texttt{datetime} using the \texttt{pd.to\_datetime()}
+method.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}expiration\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ pd.to\_datetime(df\_pnl[}\StringTok{\textquotesingle{}expiration\textquotesingle{}}\NormalTok{])}
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}data\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ pd.to\_datetime(df\_pnl[}\StringTok{\textquotesingle{}data\_date\textquotesingle{}}\NormalTok{])}
+\NormalTok{df\_pnl.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike & bid & ask
+& implied\_vol & delta & dly\_opt\_pnl & dly\_dh\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 266.529999 & call & 2018-01-19 & 2017-12-15 & 270 & 1.14 &
+1.16 & 0.068257 & 0.328344 & -0.02 & 0.000000 \\
+1 & SPY & 268.230011 & call & 2018-01-19 & 2017-12-18 & 270 & 1.68 &
+1.69 & 0.071450 & 0.421353 & -0.53 & 0.558189 \\
+2 & SPY & 267.250000 & call & 2018-01-19 & 2017-12-19 & 270 & 1.39 &
+1.41 & 0.074841 & 0.365808 & 0.28 & -0.412931 \\
+3 & SPY & 267.100006 & call & 2018-01-19 & 2017-12-20 & 270 & 1.10 &
+1.11 & 0.070911 & 0.327058 & 0.30 & -0.054869 \\
+4 & SPY & 267.540009 & call & 2018-01-19 & 2017-12-21 & 270 & 1.31 &
+1.32 & 0.072183 & 0.372113 & -0.21 & 0.143906 \\
+\end{longtable}
+
+We are interested in total pnl, which is the sum of the option pnl and
+the delta-hedge PNL. Let's add a column called \texttt{dly\_tot\_pnl}
+which captures this logic.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}dly\_tot\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_pnl[}\StringTok{\textquotesingle{}dly\_opt\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_pnl[}\StringTok{\textquotesingle{}dly\_dh\_pnl\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_pnl.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike & bid & ask
+& implied\_vol & delta & dly\_opt\_pnl & dly\_dh\_pnl & dly\_tot\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 266.529999 & call & 2018-01-19 & 2017-12-15 & 270 & 1.14 &
+1.16 & 0.068257 & 0.328344 & -0.02 & 0.000000 & -0.020000 \\
+1 & SPY & 268.230011 & call & 2018-01-19 & 2017-12-18 & 270 & 1.68 &
+1.69 & 0.071450 & 0.421353 & -0.53 & 0.558189 & 0.028189 \\
+2 & SPY & 267.250000 & call & 2018-01-19 & 2017-12-19 & 270 & 1.39 &
+1.41 & 0.074841 & 0.365808 & 0.28 & -0.412931 & -0.132931 \\
+3 & SPY & 267.100006 & call & 2018-01-19 & 2017-12-20 & 270 & 1.10 &
+1.11 & 0.070911 & 0.327058 & 0.30 & -0.054869 & 0.245131 \\
+4 & SPY & 267.540009 & call & 2018-01-19 & 2017-12-21 & 270 & 1.31 &
+1.32 & 0.072183 & 0.372113 & -0.21 & 0.143906 & -0.066094 \\
+\end{longtable}
+
+As the final step of our wrangling, let's extract the \texttt{year} and
+\texttt{month} of the \texttt{expiration}, as this is what we will use
+for grouping.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_pnl[}\StringTok{\textquotesingle{}expiration\textquotesingle{}}\NormalTok{].dt.year}
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_pnl[}\StringTok{\textquotesingle{}expiration\textquotesingle{}}\NormalTok{].dt.month}
+\NormalTok{df\_pnl.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike & bid & ask
+& implied\_vol & delta & dly\_opt\_pnl & dly\_dh\_pnl & dly\_tot\_pnl &
+year & month \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 266.529999 & call & 2018-01-19 & 2017-12-15 & 270 & 1.14 &
+1.16 & 0.068257 & 0.328344 & -0.02 & 0.000000 & -0.020000 & 2018 & 1 \\
+1 & SPY & 268.230011 & call & 2018-01-19 & 2017-12-18 & 270 & 1.68 &
+1.69 & 0.071450 & 0.421353 & -0.53 & 0.558189 & 0.028189 & 2018 & 1 \\
+2 & SPY & 267.250000 & call & 2018-01-19 & 2017-12-19 & 270 & 1.39 &
+1.41 & 0.074841 & 0.365808 & 0.28 & -0.412931 & -0.132931 & 2018 & 1 \\
+3 & SPY & 267.100006 & call & 2018-01-19 & 2017-12-20 & 270 & 1.10 &
+1.11 & 0.070911 & 0.327058 & 0.30 & -0.054869 & 0.245131 & 2018 & 1 \\
+4 & SPY & 267.540009 & call & 2018-01-19 & 2017-12-21 & 270 & 1.31 &
+1.32 & 0.072183 & 0.372113 & -0.21 & 0.143906 & -0.066094 & 2018 & 1 \\
+\end{longtable}
+
+\hypertarget{groupby-and-agg}{%
+\section{\texorpdfstring{\texttt{groupby()} and
+\texttt{agg()}}{groupby() and agg()}}\label{groupby-and-agg}}
+
+We are interested in graphing the PNLs by expiration, so let's sum up
+the \texttt{dly\_tot\_pnl} by the year and month of the expiration.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_monthly }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_pnl.groupby([}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}dly\_tot\_pnl\textquotesingle{}}\NormalTok{].agg([np.}\BuiltInTok{sum}\NormalTok{]).reset\_index()}
+\NormalTok{df\_monthly.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& year & month & sum \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2018 & 1 & 0.091963 \\
+1 & 2018 & 2 & -2.759090 \\
+2 & 2018 & 3 & -0.340270 \\
+3 & 2018 & 4 & -1.174222 \\
+4 & 2018 & 5 & 1.487206 \\
+\end{longtable}
+
+Before we proceed to graphing, let's change the name of the aggregated
+pnl column to something more meaningful.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_monthly.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}sum\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}monthly\_pnl\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{visualizing-the-data}{%
+\section{Visualizing the Data}\label{visualizing-the-data}}
+
+Creating a simple bar graph of the \texttt{monthly\_pnls} in
+\texttt{df\_monthly} can be done easily with a single line of code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_monthly.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}monthly\_pnl\textquotesingle{}}\NormalTok{, kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/10_pandas_bar_charts/pandas_bar_charts_files/figure-pdf/cell-10-output-1.png}
+
+}
+
+\end{figure}
+
+While the above graph may be fine for EDA purposes, it still leaves much
+to be desired, especially if our intention is to share it with a broader
+audience.
+
+The following code makes several of modifications to improve its
+appearance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ax }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_monthly.}\OperatorTok{\textbackslash{}}
+\NormalTok{        plot(}
+\NormalTok{            x }\OperatorTok{=} \StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{,}
+\NormalTok{            y }\OperatorTok{=} \StringTok{\textquotesingle{}monthly\_pnl\textquotesingle{}}\NormalTok{,}
+\NormalTok{            kind}\OperatorTok{=}\StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{,}
+\NormalTok{            color}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, }\CommentTok{\# color is grey}
+\NormalTok{            grid}\OperatorTok{=}\VariableTok{True}\NormalTok{ , }\CommentTok{\# adding a grid}
+\NormalTok{            alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, }\CommentTok{\# translucence}
+\NormalTok{            width}\OperatorTok{=}\FloatTok{0.8}\NormalTok{, }\CommentTok{\# increasing the width of the bars}
+\NormalTok{            title}\OperatorTok{=}\StringTok{\textquotesingle{}Monthly PNL for SPY Calls\textquotesingle{}}\NormalTok{,}
+\NormalTok{            figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{4}\NormalTok{), }\CommentTok{\# modifying the figure size}
+\NormalTok{        )}\OperatorTok{;}
+
+\NormalTok{ax.set\_xlabel(}\StringTok{"Month"}\NormalTok{)}\OperatorTok{;} \CommentTok{\# x axis label}
+\NormalTok{ax.set\_ylabel(}\StringTok{"PNL"}\NormalTok{)}\OperatorTok{;}   \CommentTok{\# y axis label}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/10_pandas_bar_charts/pandas_bar_charts_files/figure-pdf/cell-11-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Google and try to find how you create a
+\emph{horizontal} bar graph using \textbf{pandas}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ax }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_monthly.}\OperatorTok{\textbackslash{}}
+\NormalTok{        plot(}
+\NormalTok{            x }\OperatorTok{=} \StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{,}
+\NormalTok{            y }\OperatorTok{=} \StringTok{\textquotesingle{}monthly\_pnl\textquotesingle{}}\NormalTok{,}
+\NormalTok{            kind}\OperatorTok{=}\StringTok{\textquotesingle{}barh\textquotesingle{}}\NormalTok{, }\CommentTok{\# changed to barh}
+\NormalTok{            color}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, }\CommentTok{\# color is grey}
+\NormalTok{            grid}\OperatorTok{=}\VariableTok{True}\NormalTok{ , }\CommentTok{\# adding a grid}
+\NormalTok{            alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, }\CommentTok{\# translucence}
+\NormalTok{            width}\OperatorTok{=}\FloatTok{0.8}\NormalTok{, }\CommentTok{\# increasing the width of the bars}
+\NormalTok{            title}\OperatorTok{=}\StringTok{\textquotesingle{}Monthly PNL for SPY Calls\textquotesingle{}}\NormalTok{,}
+\NormalTok{            figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{4}\NormalTok{), }\CommentTok{\# modifying the figure size}
+\NormalTok{        )}\OperatorTok{;}
+
+\NormalTok{ax.set\_xlabel(}\StringTok{"Month"}\NormalTok{)}\OperatorTok{;} \CommentTok{\# x axis label}
+\NormalTok{ax.set\_ylabel(}\StringTok{"PNL"}\NormalTok{)}\OperatorTok{;} 
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/10_pandas_bar_charts/pandas_bar_charts_files/figure-pdf/cell-12-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{a-few-words-about-visualization}{%
+\section{A Few Words About
+Visualization}\label{a-few-words-about-visualization}}
+
+Visualizing data can be an effective way of communicating results to
+others, or exploring data on your own. The benefit of visualization
+comes into focus when we can convey a particular result more quickly and
+more viscerally with a graph rather than a table of numbers.
+
+This is nicely illustrated by comparing our bar graph to the original
+\texttt{DataFrame} of data. Consider the following question:
+
+\emph{What were the two worst PNL months for these SPY calls?}
+
+Do you find it easier to answer the question using the bar graph or the
+table? Explain why.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ax }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_monthly.}\OperatorTok{\textbackslash{}}
+\NormalTok{        plot(}
+\NormalTok{            x }\OperatorTok{=} \StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{,}
+\NormalTok{            y }\OperatorTok{=} \StringTok{\textquotesingle{}monthly\_pnl\textquotesingle{}}\NormalTok{,}
+\NormalTok{            kind }\OperatorTok{=} \StringTok{\textquotesingle{}bar\textquotesingle{}}\NormalTok{, }
+\NormalTok{            color}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, }\CommentTok{\# color is grey}
+\NormalTok{            grid}\OperatorTok{=}\VariableTok{True}\NormalTok{, }\CommentTok{\# adding a grid}
+\NormalTok{            alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, }\CommentTok{\# translucence}
+\NormalTok{            width}\OperatorTok{=}\FloatTok{0.8}\NormalTok{, }\CommentTok{\# increasing the width of the bars}
+\NormalTok{            title}\OperatorTok{=}\StringTok{\textquotesingle{}Monthly PNL for SPY Calls\textquotesingle{}}\NormalTok{,}
+\NormalTok{            figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{4}\NormalTok{), }\CommentTok{\# modifying the figure size}
+\NormalTok{        )}\OperatorTok{;}
+
+\NormalTok{ax.set\_xlabel(}\StringTok{"Month"}\NormalTok{)}\OperatorTok{;} \CommentTok{\# x axis label}
+\NormalTok{ax.set\_ylabel(}\StringTok{"PNL"}\NormalTok{)}\OperatorTok{;}   \CommentTok{\# y axis label}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/10_pandas_bar_charts/pandas_bar_charts_files/figure-pdf/cell-13-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_monthly}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& year & month & monthly\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2018 & 1 & 0.091963 \\
+1 & 2018 & 2 & -2.759090 \\
+2 & 2018 & 3 & -0.340270 \\
+3 & 2018 & 4 & -1.174222 \\
+4 & 2018 & 5 & 1.487206 \\
+5 & 2018 & 6 & 0.644469 \\
+6 & 2018 & 7 & 0.516556 \\
+7 & 2018 & 8 & 0.195526 \\
+8 & 2018 & 9 & 0.753701 \\
+9 & 2018 & 10 & -0.133537 \\
+10 & 2018 & 11 & -0.979537 \\
+11 & 2018 & 12 & -2.085526 \\
+\end{longtable}
+
+\hypertarget{related-reading-7}{%
+\section{Related Reading}\label{related-reading-7}}
 
 \emph{Python for Data Analysis (McKinney)} - Section 8.2 - Plotting
 Functions in \textbf{pandas}

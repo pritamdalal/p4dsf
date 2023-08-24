@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Analysis in Finance - 10&nbsp; Bar Charts with pandas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/02_part_visualization/part_visualization.html">Visualization</a></li><li class="breadcrumb-item"><a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with **pandas**</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Analysis in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/01_part_basic_data_wrangling/part_basic_data_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basic Data Wrangling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 2</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/02_part_visualization/part_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#load-packages" id="toc-load-packages" class="nav-link active" data-scroll-target="#load-packages"><span class="header-section-number">10.1</span> Load Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">10.2</span> Reading-In Data</a></li>
+  <li><a href="#wrangling" id="toc-wrangling" class="nav-link" data-scroll-target="#wrangling"><span class="header-section-number">10.3</span> Wrangling</a></li>
+  <li><a href="#groupby-and-agg" id="toc-groupby-and-agg" class="nav-link" data-scroll-target="#groupby-and-agg"><span class="header-section-number">10.4</span> <code>groupby()</code> and <code>agg()</code></a></li>
+  <li><a href="#visualizing-the-data" id="toc-visualizing-the-data" class="nav-link" data-scroll-target="#visualizing-the-data"><span class="header-section-number">10.5</span> Visualizing the Data</a></li>
+  <li><a href="#a-few-words-about-visualization" id="toc-a-few-words-about-visualization" class="nav-link" data-scroll-target="#a-few-words-about-visualization"><span class="header-section-number">10.6</span> A Few Words About Visualization</a></li>
+  <li><a href="#related-reading" id="toc-related-reading" class="nav-link" data-scroll-target="#related-reading"><span class="header-section-number">10.7</span> Related Reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>The purpose of this chapter is to demonstrate how to easily generate bar charts with the <strong>pandas</strong> built-in <code>.plot()</code> function.</p>
+<p>We apply this technique to the task of visualizing monthly pnls for the data set in the <code>spy_2018_call_pnl.csv</code> data file.</p>
+<section id="load-packages" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="load-packages"><span class="header-section-number">10.1</span> Load Packages</h2>
+<p>Let’s begin by loading the packages we need:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Knowledge Challenge:</strong> What is the purpose of this line of code in the above cell: <code>%matplotlib inline</code>?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plotting graphs below code cells</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="reading-in-data" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">10.2</span> Reading-In Data</h2>
+<p>Next, let’s read in the data from the CSV file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_pnl <span class="op">=</span> pd.read_csv(<span class="st">'spy_2018_call_pnl.csv'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">expiration</th>
+<th data-quarto-table-cell-role="th">data_date</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">bid</th>
+<th data-quarto-table-cell-role="th">ask</th>
+<th data-quarto-table-cell-role="th">implied_vol</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">dly_opt_pnl</th>
+<th data-quarto-table-cell-role="th">dly_dh_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>266.529999</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-15</td>
+<td>270</td>
+<td>1.14</td>
+<td>1.16</td>
+<td>0.068257</td>
+<td>0.328344</td>
+<td>-0.02</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>268.230011</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-18</td>
+<td>270</td>
+<td>1.68</td>
+<td>1.69</td>
+<td>0.071450</td>
+<td>0.421353</td>
+<td>-0.53</td>
+<td>0.558189</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>267.250000</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-19</td>
+<td>270</td>
+<td>1.39</td>
+<td>1.41</td>
+<td>0.074841</td>
+<td>0.365808</td>
+<td>0.28</td>
+<td>-0.412931</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>267.100006</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-20</td>
+<td>270</td>
+<td>1.10</td>
+<td>1.11</td>
+<td>0.070911</td>
+<td>0.327058</td>
+<td>0.30</td>
+<td>-0.054869</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>267.540009</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-21</td>
+<td>270</td>
+<td>1.31</td>
+<td>1.32</td>
+<td>0.072183</td>
+<td>0.372113</td>
+<td>-0.21</td>
+<td>0.143906</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>This data consists of daily PNLs from 12 different SPY short call trades throughout 2018.</p>
+</section>
+<section id="wrangling" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="wrangling"><span class="header-section-number">10.3</span> Wrangling</h2>
+<p>First, we will refactor the <code>expiration</code> and <code>data_date</code> columns to <code>datetime</code> using the <code>pd.to_datetime()</code> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'expiration'</span>] <span class="op">=</span> pd.to_datetime(df_pnl[<span class="st">'expiration'</span>])</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'data_date'</span>] <span class="op">=</span> pd.to_datetime(df_pnl[<span class="st">'data_date'</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">expiration</th>
+<th data-quarto-table-cell-role="th">data_date</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">bid</th>
+<th data-quarto-table-cell-role="th">ask</th>
+<th data-quarto-table-cell-role="th">implied_vol</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">dly_opt_pnl</th>
+<th data-quarto-table-cell-role="th">dly_dh_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>266.529999</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-15</td>
+<td>270</td>
+<td>1.14</td>
+<td>1.16</td>
+<td>0.068257</td>
+<td>0.328344</td>
+<td>-0.02</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>268.230011</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-18</td>
+<td>270</td>
+<td>1.68</td>
+<td>1.69</td>
+<td>0.071450</td>
+<td>0.421353</td>
+<td>-0.53</td>
+<td>0.558189</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>267.250000</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-19</td>
+<td>270</td>
+<td>1.39</td>
+<td>1.41</td>
+<td>0.074841</td>
+<td>0.365808</td>
+<td>0.28</td>
+<td>-0.412931</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>267.100006</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-20</td>
+<td>270</td>
+<td>1.10</td>
+<td>1.11</td>
+<td>0.070911</td>
+<td>0.327058</td>
+<td>0.30</td>
+<td>-0.054869</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>267.540009</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-21</td>
+<td>270</td>
+<td>1.31</td>
+<td>1.32</td>
+<td>0.072183</td>
+<td>0.372113</td>
+<td>-0.21</td>
+<td>0.143906</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We are interested in total pnl, which is the sum of the option pnl and the delta-hedge PNL. Let’s add a column called <code>dly_tot_pnl</code> which captures this logic.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'dly_tot_pnl'</span>] <span class="op">=</span> df_pnl[<span class="st">'dly_opt_pnl'</span>] <span class="op">+</span> df_pnl[<span class="st">'dly_dh_pnl'</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">expiration</th>
+<th data-quarto-table-cell-role="th">data_date</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">bid</th>
+<th data-quarto-table-cell-role="th">ask</th>
+<th data-quarto-table-cell-role="th">implied_vol</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">dly_opt_pnl</th>
+<th data-quarto-table-cell-role="th">dly_dh_pnl</th>
+<th data-quarto-table-cell-role="th">dly_tot_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>266.529999</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-15</td>
+<td>270</td>
+<td>1.14</td>
+<td>1.16</td>
+<td>0.068257</td>
+<td>0.328344</td>
+<td>-0.02</td>
+<td>0.000000</td>
+<td>-0.020000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>268.230011</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-18</td>
+<td>270</td>
+<td>1.68</td>
+<td>1.69</td>
+<td>0.071450</td>
+<td>0.421353</td>
+<td>-0.53</td>
+<td>0.558189</td>
+<td>0.028189</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>267.250000</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-19</td>
+<td>270</td>
+<td>1.39</td>
+<td>1.41</td>
+<td>0.074841</td>
+<td>0.365808</td>
+<td>0.28</td>
+<td>-0.412931</td>
+<td>-0.132931</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>267.100006</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-20</td>
+<td>270</td>
+<td>1.10</td>
+<td>1.11</td>
+<td>0.070911</td>
+<td>0.327058</td>
+<td>0.30</td>
+<td>-0.054869</td>
+<td>0.245131</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>267.540009</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-21</td>
+<td>270</td>
+<td>1.31</td>
+<td>1.32</td>
+<td>0.072183</td>
+<td>0.372113</td>
+<td>-0.21</td>
+<td>0.143906</td>
+<td>-0.066094</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>As the final step of our wrangling, let’s extract the <code>year</code> and <code>month</code> of the <code>expiration</code>, as this is what we will use for grouping.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'year'</span>] <span class="op">=</span> df_pnl[<span class="st">'expiration'</span>].dt.year</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'month'</span>] <span class="op">=</span> df_pnl[<span class="st">'expiration'</span>].dt.month</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">type</th>
+<th data-quarto-table-cell-role="th">expiration</th>
+<th data-quarto-table-cell-role="th">data_date</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">bid</th>
+<th data-quarto-table-cell-role="th">ask</th>
+<th data-quarto-table-cell-role="th">implied_vol</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">dly_opt_pnl</th>
+<th data-quarto-table-cell-role="th">dly_dh_pnl</th>
+<th data-quarto-table-cell-role="th">dly_tot_pnl</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>266.529999</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-15</td>
+<td>270</td>
+<td>1.14</td>
+<td>1.16</td>
+<td>0.068257</td>
+<td>0.328344</td>
+<td>-0.02</td>
+<td>0.000000</td>
+<td>-0.020000</td>
+<td>2018</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>268.230011</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-18</td>
+<td>270</td>
+<td>1.68</td>
+<td>1.69</td>
+<td>0.071450</td>
+<td>0.421353</td>
+<td>-0.53</td>
+<td>0.558189</td>
+<td>0.028189</td>
+<td>2018</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>267.250000</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-19</td>
+<td>270</td>
+<td>1.39</td>
+<td>1.41</td>
+<td>0.074841</td>
+<td>0.365808</td>
+<td>0.28</td>
+<td>-0.412931</td>
+<td>-0.132931</td>
+<td>2018</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>267.100006</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-20</td>
+<td>270</td>
+<td>1.10</td>
+<td>1.11</td>
+<td>0.070911</td>
+<td>0.327058</td>
+<td>0.30</td>
+<td>-0.054869</td>
+<td>0.245131</td>
+<td>2018</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>267.540009</td>
+<td>call</td>
+<td>2018-01-19</td>
+<td>2017-12-21</td>
+<td>270</td>
+<td>1.31</td>
+<td>1.32</td>
+<td>0.072183</td>
+<td>0.372113</td>
+<td>-0.21</td>
+<td>0.143906</td>
+<td>-0.066094</td>
+<td>2018</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="groupby-and-agg" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="groupby-and-agg"><span class="header-section-number">10.4</span> <code>groupby()</code> and <code>agg()</code></h2>
+<p>We are interested in graphing the PNLs by expiration, so let’s sum up the <code>dly_tot_pnl</code> by the year and month of the expiration.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_monthly <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    df_pnl.groupby([<span class="st">'year'</span>, <span class="st">'month'</span>])[<span class="st">'dly_tot_pnl'</span>].agg([np.<span class="bu">sum</span>]).reset_index()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_monthly.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2018</td>
+<td>1</td>
+<td>0.091963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2018</td>
+<td>2</td>
+<td>-2.759090</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2018</td>
+<td>3</td>
+<td>-0.340270</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2018</td>
+<td>4</td>
+<td>-1.174222</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2018</td>
+<td>5</td>
+<td>1.487206</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Before we proceed to graphing, let’s change the name of the aggregated pnl column to something more meaningful.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_monthly.rename(columns<span class="op">=</span>{<span class="st">'sum'</span>:<span class="st">'monthly_pnl'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualizing-the-data" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="visualizing-the-data"><span class="header-section-number">10.5</span> Visualizing the Data</h2>
+<p>Creating a simple bar graph of the <code>monthly_pnls</code> in <code>df_monthly</code> can be done easily with a single line of code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_monthly.plot(x<span class="op">=</span><span class="st">'month'</span>, y<span class="op">=</span><span class="st">'monthly_pnl'</span>, kind<span class="op">=</span><span class="st">'bar'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="pandas_bar_charts_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>While the above graph may be fine for EDA purposes, it still leaves much to be desired, especially if our intention is to share it with a broader audience.</p>
+<p>The following code makes several of modifications to improve its appearance.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    df_monthly.<span class="op">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        plot(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'month'</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'monthly_pnl'</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            kind<span class="op">=</span><span class="st">'bar'</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'k'</span>, <span class="co"># color is grey</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            grid<span class="op">=</span><span class="va">True</span> , <span class="co"># adding a grid</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>            alpha<span class="op">=</span><span class="fl">0.75</span>, <span class="co"># translucence</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            width<span class="op">=</span><span class="fl">0.8</span>, <span class="co"># increasing the width of the bars</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">'Monthly PNL for SPY Calls'</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>            figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>), <span class="co"># modifying the figure size</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Month"</span>)<span class="op">;</span> <span class="co"># x axis label</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"PNL"</span>)<span class="op">;</span>   <span class="co"># y axis label</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="pandas_bar_charts_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Google and try to find how you create a <em>horizontal</em> bar graph using <strong>pandas</strong>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    df_monthly.<span class="op">\</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        plot(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'month'</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'monthly_pnl'</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            kind<span class="op">=</span><span class="st">'barh'</span>, <span class="co"># changed to barh</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'k'</span>, <span class="co"># color is grey</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            grid<span class="op">=</span><span class="va">True</span> , <span class="co"># adding a grid</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>            alpha<span class="op">=</span><span class="fl">0.75</span>, <span class="co"># translucence</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            width<span class="op">=</span><span class="fl">0.8</span>, <span class="co"># increasing the width of the bars</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">'Monthly PNL for SPY Calls'</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>), <span class="co"># modifying the figure size</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Month"</span>)<span class="op">;</span> <span class="co"># x axis label</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"PNL"</span>)<span class="op">;</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="pandas_bar_charts_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+</section>
+<section id="a-few-words-about-visualization" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="a-few-words-about-visualization"><span class="header-section-number">10.6</span> A Few Words About Visualization</h2>
+<p>Visualizing data can be an effective way of communicating results to others, or exploring data on your own. The benefit of visualization comes into focus when we can convey a particular result more quickly and more viscerally with a graph rather than a table of numbers.</p>
+<p>This is nicely illustrated by comparing our bar graph to the original <code>DataFrame</code> of data. Consider the following question:</p>
+<p><em>What were the two worst PNL months for these SPY calls?</em></p>
+<p>Do you find it easier to answer the question using the bar graph or the table? Explain why.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df_monthly.<span class="op">\</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        plot(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'month'</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'monthly_pnl'</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            kind <span class="op">=</span> <span class="st">'bar'</span>, </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span><span class="st">'k'</span>, <span class="co"># color is grey</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            grid<span class="op">=</span><span class="va">True</span>, <span class="co"># adding a grid</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            alpha<span class="op">=</span><span class="fl">0.75</span>, <span class="co"># translucence</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            width<span class="op">=</span><span class="fl">0.8</span>, <span class="co"># increasing the width of the bars</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">'Monthly PNL for SPY Calls'</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>            figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>), <span class="co"># modifying the figure size</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Month"</span>)<span class="op">;</span> <span class="co"># x axis label</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"PNL"</span>)<span class="op">;</span>   <span class="co"># y axis label</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="pandas_bar_charts_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_monthly</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">monthly_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2018</td>
+<td>1</td>
+<td>0.091963</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2018</td>
+<td>2</td>
+<td>-2.759090</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2018</td>
+<td>3</td>
+<td>-0.340270</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2018</td>
+<td>4</td>
+<td>-1.174222</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2018</td>
+<td>5</td>
+<td>1.487206</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>2018</td>
+<td>6</td>
+<td>0.644469</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>2018</td>
+<td>7</td>
+<td>0.516556</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>2018</td>
+<td>8</td>
+<td>0.195526</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>2018</td>
+<td>9</td>
+<td>0.753701</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>2018</td>
+<td>10</td>
+<td>-0.133537</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>2018</td>
+<td>11</td>
+<td>-0.979537</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>2018</td>
+<td>12</td>
+<td>-2.085526</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="related-reading" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="related-reading"><span class="header-section-number">10.7</span> Related Reading</h2>
+<p><em>Python for Data Analysis (McKinney)</em> - Section 8.2 - Plotting Functions in <strong>pandas</strong></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
