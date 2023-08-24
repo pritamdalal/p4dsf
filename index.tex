@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, interior hidden, breakable, enhanced, frame hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -955,7 +955,7 @@ that the magnitude of the nearby returns increases.
 
 \emph{Python for Data Analysis 3e} - Wes McKinney
 
-\bookmarksetup{startatroot}
+\part{Basic Data Wrangling}
 
 \hypertarget{dataframe-basics}{%
 \chapter{\texorpdfstring{\texttt{DataFrame}
@@ -1770,8 +1770,6 @@ Arrays: Universal Functions
 \emph{Python Data Science Handbook} - Section 2.4 - Aggregations: Min,
 Max, and Everything In Between
 
-\bookmarksetup{startatroot}
-
 \hypertarget{dataframe-indexing-and-slicing}{%
 \chapter{\texorpdfstring{\texttt{DataFrame} Indexing and
 Slicing}{DataFrame Indexing and Slicing}}\label{dataframe-indexing-and-slicing}}
@@ -2518,8 +2516,6 @@ date & & \\
 
 \emph{Python Data Science Handbook} - Section 3.2 - Data Indexing and
 Selection
-
-\bookmarksetup{startatroot}
 
 \hypertarget{dataframe-querying}{%
 \chapter{\texorpdfstring{\texttt{DataFrame}
@@ -3618,8 +3614,6 @@ Selection
 \emph{Python Data Science Handbook} - Section 3.12 - High Performance
 Pandas
 
-\bookmarksetup{startatroot}
-
 \hypertarget{functions-and-the-dataframe.apply-method}{%
 \chapter{\texorpdfstring{Functions and the \texttt{DataFrame.apply()}
 Method}{Functions and the DataFrame.apply() Method}}\label{functions-and-the-dataframe.apply-method}}
@@ -4092,8 +4086,6 @@ smaller \\
 
 \emph{A Whirlwind Tour of Python} - Chapter 9 - Defining Functions
 
-\bookmarksetup{startatroot}
-
 \hypertarget{merging-dataframes}{%
 \chapter{\texorpdfstring{Merging
 \texttt{DataFrames}}{Merging DataFrames}}\label{merging-dataframes}}
@@ -4523,8 +4515,6 @@ not in \texttt{df\_etf}.
 
 \emph{Python Data Science Handboook} - Section 3.7 - Combining Datasets:
 Merging and Joining
-
-\bookmarksetup{startatroot}
 
 \hypertarget{groupby-and-.agg---part-1}{%
 \chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} - Part
@@ -4987,8 +4977,6 @@ Aggregation and Grouping Operations
 
 \emph{Options, Futures, and Other Derivatives (Hull)} - Chapter 15 (pp
 325-329) The Black-Scholes-Merton Model
-
-\bookmarksetup{startatroot}
 
 \hypertarget{groupby-and-.agg---part-2}{%
 \chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} - Part
@@ -5754,6 +5742,482 @@ Aggregation and Grouping
 
 \emph{Python for Data Analysis (McKinney)} - Chapter 9 (pp 251-274) Data
 Aggregation and Grouping Operations
+
+\part{Visualization}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+Unlike R, in which a single package (\textbf{ggplot2}) has become the de
+facto standard for visualization, in Python there are a variety of
+packages that form a visualization ecosystem. The \textbf{matplotlib}
+package is the foundation of much of this ecosystem, and many elements
+of this ecosystem can be thought of as wrappers around
+\textbf{matplotlib}. Such packages include \textbf{seaborn} and also the
+visualization tools in \textbf{pandas} which we discuss here.
+
+\hypertarget{line-graphs-with-pandas}{%
+\chapter{\texorpdfstring{Line Graphs with
+\texttt{pandas}}{Line Graphs with pandas}}\label{line-graphs-with-pandas}}
+
+The purpose of this chapter is to demonstrate the use of line graphs in
+finance. In particular, we use line graphs to plot various
+volatility-related time series. Our analysis objective is to observe the
+leverage effect: when stock markets suffer losses there is greater
+volatility. In order to do this we utilize the built-in visualization
+capabilities of \textbf{pandas}; these capabilities are built on top of
+the \textbf{matplotlib} package.
+
+The API for \textbf{matplotlib} is fairly low level, which means you
+have to specify a lot of different things even for simply graphs. In
+practice this can be cumbersome, especially for quick and dirty
+plotting. Many constituents of the Python visualization ecosystem seek
+to simplify the creation of \emph{standard} graphs, and this is true of
+the \textbf{pandas} visualization functionality.
+
+\hypertarget{load-packages}{%
+\section{Load Packages}\label{load-packages}}
+
+Let's begin by loading the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ipython-magic-commands}{%
+\section{\texorpdfstring{\texttt{IPython} Magic
+Commands}{IPython Magic Commands}}\label{ipython-magic-commands}}
+
+Now that we are (implictly) using \textbf{matplotlib}, we will have
+occasion to use our first \texttt{IPython} magic command. These magic
+commands are often referred to as simply \emph{magics}.
+
+The following line of code tells Jupyter to print graphs as output just
+below the code cell - in the same way that other ouput is printed to the
+screen.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{\%}\NormalTok{matplotlib inline}
+\end{Highlighting}
+\end{Shaded}
+
+Magics are convenience functions that \texttt{IPython} adds to base
+\texttt{Python} to make a variety of analysis tasks easier.
+
+Another example is \texttt{\%timeit} that performs time tests on code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{\%}\NormalTok{timeit L }\OperatorTok{=}\NormalTok{ [n }\OperatorTok{**} \DecValTok{2} \ControlFlowTok{for}\NormalTok{ n }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1000}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+203 µs ± 8.65 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+\end{verbatim}
+
+You can read more about magics in Section 1.3 of \emph{Python Data
+Science Handbook}. The primary magic command that we will utilize is
+\texttt{\%matplotlib\ inline}.
+
+\hypertarget{reading-in-data-7}{%
+\section{Reading In Data}\label{reading-in-data-7}}
+
+Let's now use \textbf{pandas\_datareader} to read-in \texttt{SPY} and
+\texttt{VIX} data for 2016Q1 through 2021Q2.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo([}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\^{}VIX\textquotesingle{}}\NormalTok{], start}\OperatorTok{=}\StringTok{\textquotesingle{}2016{-}01{-}01\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}06{-}30\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  2 of 2 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+&
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Adj Close} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Close} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+High} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Low} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Open} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}@{}}{%
+Volume} \\
+& SPY & \^{}VIX & SPY & \^{}VIX & SPY & \^{}VIX & SPY & \^{}VIX & SPY &
+\^{}VIX & SPY & \^{}VIX \\
+Date & & & & & & & & & & & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2016-01-04 & 175.91 & 20.70 & 201.02 & 20.70 & 201.03 & 23.36 & 198.59 &
+20.67 & 200.49 & 22.48 & 222353500 & 0 \\
+2016-01-05 & 176.21 & 19.34 & 201.36 & 19.34 & 201.90 & 21.06 & 200.05 &
+19.25 & 201.40 & 20.75 & 110845800 & 0 \\
+2016-01-06 & 173.98 & 20.59 & 198.82 & 20.59 & 200.06 & 21.86 & 197.60 &
+19.80 & 198.34 & 21.67 & 152112600 & 0 \\
+2016-01-07 & 169.81 & 24.99 & 194.05 & 24.99 & 197.44 & 25.86 & 193.59 &
+22.40 & 195.33 & 23.22 & 213436100 & 0 \\
+2016-01-08 & 167.95 & 27.01 & 191.92 & 27.01 & 195.85 & 27.08 & 191.58 &
+22.48 & 195.19 & 22.96 & 209817200 & 0 \\
+\end{longtable}
+
+The following code cleans up the data by isolating the the
+\texttt{Close} prices, resetting the index, and then changing the column
+names
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}Close\textquotesingle{}}\NormalTok{].reset\_index()}
+\NormalTok{df\_spy.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}\^{}VIX\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& date & spy & vix \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 20.70 \\
+1 & 2016-01-05 & 201.36 & 19.34 \\
+2 & 2016-01-06 & 198.82 & 20.59 \\
+3 & 2016-01-07 & 194.05 & 24.99 \\
+4 & 2016-01-08 & 191.92 & 27.01 \\
+\end{longtable}
+
+\hypertarget{creating-a-basic-price-plot}{%
+\section{Creating a Basic Price
+Plot}\label{creating-a-basic-price-plot}}
+
+\textbf{pandas} was created by Wes McKinney when he was a quantitative
+analyst at the hedge fund called AQR. One of McKinney's goals for
+\textbf{pandas} was to facilitate the analysis of financial time series.
+For example, plotting stock prices and returns over time can be done
+very easily.
+
+The following single line of code produces a line graph consisting of
+the close prices of SPY over time.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-7-output-1.png}
+
+}
+
+\end{figure}
+
+Note that \texttt{.plot()} is a \texttt{DataFrame} method.
+
+Now, for the purposes of exploratory data analysis (EDA), this plot may
+be all that we need. However, if we needed to share this graph in a
+publication or presentation, there are a variety of shortcomings that we
+would need address by utilizing various arguments of the
+\texttt{.plot()} method.
+
+\hypertarget{improving-our-graph}{%
+\section{Improving Our Graph}\label{improving-our-graph}}
+
+As a first improvement, let's add a title to our graph, and add some
+grid lines to make it a little easier to read.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.}\OperatorTok{\textbackslash{}}
+\NormalTok{    plot(}
+\NormalTok{        x }\OperatorTok{=} \StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{,}
+\NormalTok{        y }\OperatorTok{=} \StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{,}
+\NormalTok{        title }\OperatorTok{=} \StringTok{\textquotesingle{}SPY: 2016Q1{-}2021Q2\textquotesingle{}}\NormalTok{,}
+\NormalTok{        grid }\OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{    )}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-8-output-1.png}
+
+}
+
+\end{figure}
+
+In order to add custom labels to the x-axis and y-axis we will have to
+work with the \textbf{matplotlib} API. Don't worry about the details too
+much right now, just copy this code if you need to relabel your axes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ax }\OperatorTok{=}\NormalTok{ df\_spy.}\OperatorTok{\textbackslash{}}
+\NormalTok{        plot(}
+\NormalTok{            x }\OperatorTok{=} \StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{,}
+\NormalTok{            y }\OperatorTok{=} \StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{,}
+\NormalTok{            title }\OperatorTok{=} \StringTok{\textquotesingle{}SPY: 2016Q1{-}2021Q2\textquotesingle{}}\NormalTok{,}
+\NormalTok{            grid }\OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{        )}\OperatorTok{;}
+\NormalTok{ax.set\_xlabel(}\StringTok{\textquotesingle{}Trade Date\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\NormalTok{ax.set\_ylabel(}\StringTok{\textquotesingle{}Close Price\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-9-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} Copy the code above and then see what the
+effect is of adding these arguments to \texttt{.plot()}:
+
+\begin{verbatim}
+1. figsize = (10, 5)
+2. style = 'k--'
+3. alpha = 0.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ax }\OperatorTok{=}\NormalTok{ df\_spy.}\OperatorTok{\textbackslash{}}
+\NormalTok{        plot(}
+\NormalTok{            x }\OperatorTok{=} \StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{,}
+\NormalTok{            y }\OperatorTok{=} \StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{,}
+\NormalTok{            title }\OperatorTok{=} \StringTok{\textquotesingle{}SPY: 2016Q1{-}2021Q2\textquotesingle{}}\NormalTok{,}
+\NormalTok{            grid }\OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{            figsize }\OperatorTok{=}\NormalTok{ (}\DecValTok{10}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\NormalTok{            style }\OperatorTok{=} \StringTok{\textquotesingle{}k{-}{-}\textquotesingle{}}\NormalTok{,}
+\NormalTok{            alpha }\OperatorTok{=} \FloatTok{0.5}\NormalTok{,}
+\NormalTok{        )}\OperatorTok{;}
+\NormalTok{ax.set\_xlabel(}\StringTok{\textquotesingle{}Trade Date\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\NormalTok{ax.set\_ylabel(}\StringTok{\textquotesingle{}Close Price\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-10-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+For the remainder of the chapter we will utilize graphs as we would for
+EDA, so we won't concern ourselves with titles and labels.
+
+However, whenever graphs are being used to communicate results with a
+broader audience, they should be properly labeled.
+
+\hypertarget{subplot-of-price-and-returns}{%
+\section{Subplot of Price and
+Returns}\label{subplot-of-price-and-returns}}
+
+In this section, we will plot prices and returns as subplots on the same
+x-axis. This dual plot will be our first observation of the
+\emph{leverage effect}: when the stock market suffers losses there is
+greater volatility.
+
+Let's begin by adding a \texttt{return} column to \texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{] }\OperatorTok{/}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{{-}} \DecValTok{1}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& date & spy & vix & return \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 20.70 & NaN \\
+1 & 2016-01-05 & 201.36 & 19.34 & 0.001691 \\
+2 & 2016-01-06 & 198.82 & 20.59 & -0.012614 \\
+3 & 2016-01-07 & 194.05 & 24.99 & -0.023992 \\
+4 & 2016-01-08 & 191.92 & 27.01 & -0.010977 \\
+\end{longtable}
+
+Now we can use the \texttt{subplots} argument of \texttt{.plot()} to
+plot both the prices and returns simulatneously.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{], subplots}\OperatorTok{=}\VariableTok{True}\NormalTok{, style}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{, alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{8}\NormalTok{),)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-12-output-1.png}
+
+}
+
+\end{figure}
+
+It is easy to confirm visually that when the market goes down, the
+magnitude of the proximate returns is large, i.e.~there is greater
+volatility. Similarly, during bull markets, returns tend to be smaller
+in magnitude.
+
+\hypertarget{realized-volatility}{%
+\section{Realized Volatility}\label{realized-volatility}}
+
+Plotting the realized volatility - i.e.~the rolling standard deviation -
+is another way to observe the leverage effect.
+
+In order to execute rolling calculations in \textbf{pandas} we will use
+the \texttt{DataFrame.rolling()} method.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{6}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{].rolling(}\DecValTok{42}\NormalTok{).std() }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0            NaN
+1            NaN
+2            NaN
+          ...   
+1379    0.118643
+1380    0.118678
+1381    0.117790
+Name: return, Length: 1382, dtype: float64
+\end{verbatim}
+
+Note that the argument of \texttt{.rolling()} is the window size, which
+we have set to two months.
+
+Let's add this rolling realized volatility calculation to
+\texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{].rolling(}\DecValTok{42}\NormalTok{).std() }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+& date & spy & vix & return & realized\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 20.70 & NaN & NaN \\
+1 & 2016-01-05 & 201.36 & 19.34 & 0.001691 & NaN \\
+2 & 2016-01-06 & 198.82 & 20.59 & -0.012614 & NaN \\
+3 & 2016-01-07 & 194.05 & 24.99 & -0.023992 & NaN \\
+4 & 2016-01-08 & 191.92 & 27.01 & -0.010977 & NaN \\
+\end{longtable}
+
+Again, we can use the \texttt{subplot} argument of \texttt{.plot()} to
+plot all three time series.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{,], subplots}\OperatorTok{=}\VariableTok{True}\NormalTok{, style}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{, alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-15-output-1.png}
+
+}
+
+\end{figure}
+
+Notice that when there is a market downturn, there is a spike in the
+realized volatility graph.
+
+\hypertarget{implied-volatility---the-vix-index}{%
+\section{Implied Volatility - The VIX
+Index}\label{implied-volatility---the-vix-index}}
+
+During times of market stress, options all become more expensive. One
+measure of the relative cheapness or expensiveness of options is
+\emph{implied volatility}. When options become more expensive, implied
+volatility rises.
+
+One of the complexities of implied volatility measurements is that even
+for a single underlying they differ depending on strike and expiration.
+However, all implied volatility measurements tend to rise and fall
+together.
+
+The VIX index is a single number that summarizes the general level of
+option implied volatility for options on the S\&P500. The S\&P500
+represents a large number of the most important stocks in America.
+Moreover, S\&P500 options are the most actively traded options in the
+world. For these reasons, the VIX is a good barometer for overall
+implied volatility level in the stock market.
+
+Let's plot \texttt{vix} along side the other volatility measures in the
+same graph.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{,], subplots}\OperatorTok{=}\VariableTok{True}\NormalTok{, style}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{, alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{16}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/09_pandas_line_graphs/pandas_line_graphs_files/figure-pdf/cell-16-output-1.png}
+
+}
+
+\end{figure}
+
+This plot demonstrates typical behavior of stock market returns and
+volatility: when there is a market downturn, there is a spike in both
+implied volatility and realized volatility.
+
+\hypertarget{further-reading-1}{%
+\section{Further Reading}\label{further-reading-1}}
+
+\emph{Python Data Science Handbook (VanderPlas)} - Section 1.3 - Python
+Magic Commands
+
+\emph{Python for Finance (Hilpisch)} - Section 6.2 - Financial Data
+
+\emph{Python for Data Analysis (McKinney)} - Section 8.1 - A Brief
+\textbf{matplotlib} API Primer
+
+\emph{Python for Data Analysis (McKinney)} - Section 8.2 - Plotting
+Functions in \textbf{pandas}
 
 \bookmarksetup{startatroot}
 
