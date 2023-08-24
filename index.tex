@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, frame hidden, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -4523,6 +4523,470 @@ not in \texttt{df\_etf}.
 
 \emph{Python Data Science Handboook} - Section 3.7 - Combining Datasets:
 Merging and Joining
+
+\bookmarksetup{startatroot}
+
+\hypertarget{groupby-and-.agg---part-1}{%
+\chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} - Part
+1}{.groupby() and .agg() - Part 1}}\label{groupby-and-.agg---part-1}}
+
+The real power of data analysis with \texttt{DataFrames} comes into
+focus when we start utilizing the \texttt{.groupby()} and
+\texttt{.agg()} methods. This is known as \emph{grouping} and
+\emph{aggregating}.
+
+Talking about grouping in the abstract can be confusing; I think it's
+best to see grouping in action by doing meaningful calculations.
+
+The purpose of this chapter is to introduce grouping and aggregation by
+way of the following finance task: calculating monthly returns and
+monthly volatilities for several ETFs.
+
+\hypertarget{loading-packages-2}{%
+\section{Loading Packages}\label{loading-packages-2}}
+
+Let's begin by loading the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-5}{%
+\section{Reading-In Data}\label{reading-in-data-5}}
+
+Our analysis will be on the set of of July 2021 prices for \texttt{SPY},
+\texttt{IWM}, \texttt{QQQ}, \texttt{DIA}.
+
+Let's read-in that data with \textbf{pandas\_datareader}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{25}
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo([}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}IWM\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}DIA\textquotesingle{}}\NormalTok{], start}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}06{-}30\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}07{-}31\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ df\_etf.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  4 of 4 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}llllllllllllllllllllll@{}}
+\toprule\noalign{}
+&
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}}{%
+Adj Close} &
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}}{%
+Close} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+High} & ... &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Low} &
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}}{%
+Open} &
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}@{}}{%
+Volume} \\
+& DIA & IWM & QQQ & SPY & DIA & IWM & QQQ & SPY & DIA & IWM & ... & QQQ
+& SPY & DIA & IWM & QQQ & SPY & DIA & IWM & QQQ & SPY \\
+Date & & & & & & & & & & & & & & & & & & & & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2021-06-30 & 331.30 & 223.29 & 349.98 & 415.28 & 344.95 & 229.37 &
+354.43 & 428.06 & 345.51 & 230.32 & ... & 353.83 & 427.18 & 342.38 &
+228.65 & 354.83 & 427.21 & 3778900 & 26039000 & 32724000 & 64827900 \\
+2021-07-01 & 332.66 & 225.26 & 350.11 & 417.58 & 346.36 & 231.39 &
+354.57 & 430.43 & 346.40 & 231.85 & ... & 352.68 & 428.80 & 345.78 &
+230.81 & 354.07 & 428.87 & 3606900 & 18089100 & 29290000 & 53441000 \\
+2021-07-02 & 334.17 & 223.11 & 354.13 & 420.77 & 347.94 & 229.19 &
+358.64 & 433.72 & 348.29 & 232.08 & ... & 356.28 & 430.52 & 347.04 &
+232.00 & 356.52 & 431.67 & 3013500 & 21029700 & 32727200 & 57697700 \\
+2021-07-06 & 332.14 & 219.87 & 355.66 & 420.00 & 345.82 & 225.86 &
+360.19 & 432.93 & 348.11 & 229.46 & ... & 356.49 & 430.01 & 347.75 &
+229.36 & 359.26 & 433.78 & 3910600 & 27771300 & 38842400 & 68710400 \\
+2021-07-07 & 333.20 & 217.83 & 356.41 & 421.49 & 346.92 & 223.76 &
+360.95 & 434.46 & 347.14 & 226.67 & ... & 358.94 & 431.51 & 345.65 &
+225.54 & 362.45 & 433.66 & 3347000 & 28521500 & 35265200 & 63549500 \\
+\end{longtable}
+
+This data is not as tidy as we would like. Let's use method chaining to
+perform a series of data munging operations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_etf}
+\NormalTok{        .stack() }\CommentTok{\#pivot the table}
+\NormalTok{        .reset\_index() }\CommentTok{\#turn date into a column}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}level\_1\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{\}) }\CommentTok{\#renaming a column}
+\NormalTok{        .sort\_values(by}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{]) }\CommentTok{\#sort}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Adj Close\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Close\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, }
+                         \StringTok{\textquotesingle{}High\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}high\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Low\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}low\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Open\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}open\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Volume\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{\}) }\CommentTok{\#renaming columns}
+\NormalTok{        [[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}open\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}high\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}low\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]] }\CommentTok{\#reordering columns}
+\NormalTok{        .reset\_index(drop}\OperatorTok{=}\VariableTok{True}\NormalTok{)    }
+\NormalTok{    )}
+\NormalTok{df\_etf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 \\
+3 & 2021-07-06 & DIA & 347.75 & 348.11 & 343.60 & 345.82 & 3910600 &
+332.14 \\
+4 & 2021-07-07 & DIA & 345.65 & 347.14 & 344.43 & 346.92 & 3347000 &
+333.20 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+83 & 2021-07-26 & SPY & 439.31 & 441.03 & 439.26 & 441.02 & 43719200 &
+427.85 \\
+84 & 2021-07-27 & SPY & 439.91 & 439.94 & 435.99 & 439.01 & 67397100 &
+425.90 \\
+85 & 2021-07-28 & SPY & 439.68 & 440.30 & 437.31 & 438.83 & 52472400 &
+425.73 \\
+86 & 2021-07-29 & SPY & 439.82 & 441.80 & 439.81 & 440.65 & 47435300 &
+427.49 \\
+87 & 2021-07-30 & SPY & 437.91 & 440.06 & 437.77 & 438.51 & 68951200 &
+425.42 \\
+\end{longtable}
+
+\hypertarget{daily-returns-with-groupby}{%
+\section{\texorpdfstring{Daily Returns with
+\texttt{groupby()}}{Daily Returns with groupby()}}\label{daily-returns-with-groupby}}
+
+Our ultimate goal is to calculate monthly returns and monthly
+volatilities for each ETF in \texttt{df\_etf}. These quantities are both
+functions of daily returns. So our first order of business is to
+calculate daily returns.
+
+In a previous tutorial we calculated daily returns in a simple
+vectorized fashion. Unfortunately, we can't use the exact same approach
+here because there are multiple ETFs in the data set.
+
+To overcome this challenge we will use our first application of
+\texttt{.groupby()}.
+
+Here is the \texttt{.groupby()} code that calculates daily returns for
+each ETF.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# sorting values to get everything in the right order}
+\NormalTok{df\_etf.sort\_values([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{], inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+
+\CommentTok{\# vectorized return calculation}
+\NormalTok{df\_etf[}\StringTok{\textquotesingle{}ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{].groupby(df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{]).pct\_change()}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close &
+ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 & NaN \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 & 0.004088 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 & 0.004562 \\
+3 & 2021-07-06 & DIA & 347.75 & 348.11 & 343.60 & 345.82 & 3910600 &
+332.14 & -0.006093 \\
+4 & 2021-07-07 & DIA & 345.65 & 347.14 & 344.43 & 346.92 & 3347000 &
+333.20 & 0.003181 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} If the \texttt{.group\_by()} worked correctly,
+we should see a \texttt{NaN} value in the \texttt{ret} column for the
+first trade-date of each ETF. Use \texttt{DataFrame.query()} to confirm
+this.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.query(}\StringTok{\textquotesingle{}ret.isnull()\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close &
+ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 & NaN \\
+22 & 2021-06-30 & IWM & 228.65 & 230.32 & 227.76 & 229.37 & 26039000 &
+223.29 & NaN \\
+44 & 2021-06-30 & QQQ & 354.83 & 355.23 & 353.83 & 354.43 & 32724000 &
+349.98 & NaN \\
+66 & 2021-06-30 & SPY & 427.21 & 428.78 & 427.18 & 428.06 & 64827900 &
+415.28 & NaN \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{monthly-return-for-each-symbol}{%
+\section{\texorpdfstring{Monthly Return for Each
+\texttt{symbol}}{Monthly Return for Each symbol}}\label{monthly-return-for-each-symbol}}
+
+We'll now proceed to calculate monthly returns and monthly volatilities
+for each of the ETFs in our data set. This amounts to first grouping by
+\texttt{symbol}, and then performing an aggregation calculation on
+\texttt{ret} (daily returns).
+
+Let's start with monthly returns. As a preliminary step we'll calculate
+the daily growth factor in a separate column.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[}\StringTok{\textquotesingle{}daily\_factor\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{1} \OperatorTok{+}\NormalTok{ df\_etf[}\StringTok{\textquotesingle{}ret\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close & ret
+& daily\_factor \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 & NaN & NaN \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 & 0.004088 & 1.004088 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 & 0.004562 & 1.004562 \\
+3 & 2021-07-06 & DIA & 347.75 & 348.11 & 343.60 & 345.82 & 3910600 &
+332.14 & -0.006093 & 0.993907 \\
+4 & 2021-07-07 & DIA & 345.65 & 347.14 & 344.43 & 346.92 & 3347000 &
+333.20 & 0.003181 & 1.003181 \\
+\end{longtable}
+
+Recall that the monthly growth factor is the product of the daily growth
+factors. Here is a way to write all that logic in a single line using
+\texttt{.groupby()} and \texttt{.agg()}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_grouped\_factor }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}daily\_factor\textquotesingle{}}\NormalTok{].agg([np.prod]).reset\_index()}
+\NormalTok{df\_grouped\_factor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& symbol & prod \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 1.013132 \\
+1 & IWM & 0.963727 \\
+2 & QQQ & 1.028609 \\
+3 & SPY & 1.024412 \\
+\end{longtable}
+
+Notice that \textbf{pandas} isn't very sophisticated about the name that
+it gives to the column that stores the aggregation calculation. It just
+gave it the name \texttt{prod}, which is the name of the function that
+was used in the aggregation calculation. Let's make
+\texttt{df\_grouped\_factor} a bit more readable by renaming that
+column.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_grouped\_factor.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}prod\textquotesingle{}}\NormalTok{: }\StringTok{\textquotesingle{}monthly\_factor\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_grouped\_factor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& symbol & monthly\_factor \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 1.013132 \\
+1 & IWM & 0.963727 \\
+2 & QQQ & 1.028609 \\
+3 & SPY & 1.024412 \\
+\end{longtable}
+
+And finally, recall that the monthly return is calculated by subtracting
+one from the monthly growth factor.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_grouped\_factor[}\StringTok{\textquotesingle{}monthly\_return\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_grouped\_factor[}\StringTok{\textquotesingle{}monthly\_factor\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}} \DecValTok{1}
+\NormalTok{df\_grouped\_factor[[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}monthly\_return\textquotesingle{}}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& symbol & monthly\_return \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 0.013132 \\
+1 & IWM & -0.036273 \\
+2 & QQQ & 0.028609 \\
+3 & SPY & 0.024412 \\
+\end{longtable}
+
+\hypertarget{monthly-volatility-for-each-symbol}{%
+\section{\texorpdfstring{Monthly Volatility for Each
+\texttt{symbol}}{Monthly Volatility for Each symbol}}\label{monthly-volatility-for-each-symbol}}
+
+Now let's calculate the (realized/historical) volatility for each of the
+ETFs.
+
+We once again use \texttt{.groupby()} and \texttt{.agg()} to do most of
+the work in a single line of code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_grouped\_vol }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}ret\textquotesingle{}}\NormalTok{].agg([np.std]).reset\_index()}
+
+\NormalTok{df\_grouped\_vol}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& symbol & std \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 0.007733 \\
+1 & IWM & 0.014032 \\
+2 & QQQ & 0.006832 \\
+3 & SPY & 0.007152 \\
+\end{longtable}
+
+Again, let's rename our aggregation column to something more
+descriptive.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_grouped\_vol.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}std\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}daily\_vol\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_grouped\_vol}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& symbol & daily\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 0.007733 \\
+1 & IWM & 0.014032 \\
+2 & QQQ & 0.006832 \\
+3 & SPY & 0.007152 \\
+\end{longtable}
+
+What we have calculated is a daily volatility, but when practitioners
+talk about volatility, they typically annualize it. A daily volatility
+is annualized by multiplying by \(\sqrt{252}\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_grouped\_vol[}\StringTok{\textquotesingle{}ann\_vol\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_grouped\_vol[}\StringTok{\textquotesingle{}daily\_vol\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+\NormalTok{df\_grouped\_vol}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& symbol & daily\_vol & ann\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 0.007733 & 0.122752 \\
+1 & IWM & 0.014032 & 0.222744 \\
+2 & QQQ & 0.006832 & 0.108455 \\
+3 & SPY & 0.007152 & 0.113542 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge} Use \texttt{.groupby()} and \texttt{.agg()} to
+calculate the average daily return for each of the ETFs.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}
+\NormalTok{df\_etf}
+\NormalTok{    .groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{])[[}\StringTok{\textquotesingle{}ret\textquotesingle{}}\NormalTok{]].agg(np.mean)}
+\NormalTok{    .reset\_index()}
+\NormalTok{    .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}daily\_avg\_ret\textquotesingle{}}\NormalTok{\})}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& symbol & daily\_avg\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & DIA & 0.000650 \\
+1 & IWM & -0.001665 \\
+2 & QQQ & 0.001366 \\
+3 & SPY & 0.001174 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{related-reading-5}{%
+\section{Related Reading}\label{related-reading-5}}
+
+\emph{Python Data Science Handbook (VanderPlas)} - Section 3.8 -
+Aggregation and Grouping
+
+\emph{Python for Data Analysis (McKinney)} - Chapter 9 (pp 251-274) Data
+Aggregation and Grouping Operations
+
+\emph{Options, Futures, and Other Derivatives (Hull)} - Chapter 15 (pp
+325-329) The Black-Scholes-Merton Model
 
 \bookmarksetup{startatroot}
 

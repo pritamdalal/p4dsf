@@ -13,6 +13,7 @@ book:
     - chapters/04_query/query.ipynb
     - chapters/05_functions_apply/functions_apply.ipynb
     - chapters/06_merge/merge.ipynb
+    - chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.ipynb
     - references.qmd
 
 bibliography: references.bib
