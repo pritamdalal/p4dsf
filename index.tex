@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, breakable, frame hidden, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, frame hidden, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -4091,6 +4091,438 @@ smaller \\
 \emph{A Whirlwind Tour of Python} - Chapter 8 - Control Flow
 
 \emph{A Whirlwind Tour of Python} - Chapter 9 - Defining Functions
+
+\bookmarksetup{startatroot}
+
+\hypertarget{merging-dataframes}{%
+\chapter{\texorpdfstring{Merging
+\texttt{DataFrames}}{Merging DataFrames}}\label{merging-dataframes}}
+
+In this chapter we will learn how to \emph{merge} together two
+\texttt{DataFrames}. In SQL this is referred to as \emph{joining}. The
+effect of merging is similar to the lookup functions in Excel.
+
+\hypertarget{loading-packages-1}{%
+\section{Loading Packages}\label{loading-packages-1}}
+
+Let's load the packages we will need for this tutorial.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-4}{%
+\section{Reading-In Data}\label{reading-in-data-4}}
+
+The data set we are going to use is a list of ETFs that have weekly
+expiring options. What does that mean? Most stocks or ETFs have exchange
+traded options that expire every month, and at any given time the
+monthly expiring options go out about a year. The most liquid
+underlyings have options that expire every week; these weekly expiring
+options go out about 6-8 weeks.
+
+This is a list that is published by the CBOE and it consists of all the
+ETFs that have weekly options trading.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_weekly }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}weekly\_etf.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_weekly.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& ticker & name \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & AMJ & JP Morgan Alerian MLP Index ETN \\
+1 & AMLP & Alerian MLP ETF \\
+2 & ASHR & Xtrackers Harvest CSI 300 China A-Shares ETF \\
+3 & DIA & SPDR Dow Jones Ind Av ETF Trust \\
+4 & DUST & Direxion Daily Gold Miners Index Bear 3X Shares \\
+\end{longtable}
+
+The next data set that we are going to load is a comprehensive list of
+all ETFs that are trading in the market.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{"etf.csv"}\NormalTok{)}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& symbol & name & issuer & expense\_ratio & aum & spread & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & SPDR S\&P 500 ETF Trust & State Street Global Advisors &
+0.09\% & \$275.42B & 0.00\% & Equity: U.S. - Large Cap \\
+1 & IVV & iShares Core S\&P 500 ETF & BlackRock & 0.04\% & \$155.86B &
+0.01\% & Equity: U.S. - Large Cap \\
+2 & VTI & Vanguard Total Stock Market ETF & Vanguard & 0.04\% &
+\$103.58B & 0.01\% & Equity: U.S. - Total Market \\
+3 & VOO & Vanguard S\&P 500 ETF & Vanguard & 0.04\% & \$96.91B & 0.01\%
+& Equity: U.S. - Large Cap \\
+4 & EFA & iShares MSCI EAFE ETF & BlackRock & 0.32\% & \$72.12B & 0.01\%
+& Equity: Developed Markets Ex-U.S. - Total Market \\
+\end{longtable}
+
+\textbf{Motivation:} Notice that \texttt{df\_etf} has a \texttt{segment}
+column which \texttt{df\_weekly} does not. This \texttt{segment} column
+contains asset-class information that could be useful for categorizing
+the weekly ETFs.
+
+\textbf{Objective:} we want to get the \texttt{segment} column into
+\texttt{df\_weekly}.
+
+There are a couple of ways of accomplishing this in \textbf{pandas} and
+both of them involve the \texttt{pd.merge()} method:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \emph{inner-merge}
+\item
+  \emph{left/right-merge} (sometimes called \emph{outer merge})
+\end{enumerate}
+
+\hypertarget{inner}{%
+\section{Inner}\label{inner}}
+
+As with many of the basic operations in data analysis, it's easiest to
+understand inner-merges by digging into an example.
+
+Here is the line of code that accomplishes most of the work that we want
+done:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.merge(df\_weekly, df\_etf, how}\OperatorTok{=}\StringTok{\textquotesingle{}inner\textquotesingle{}}\NormalTok{, left\_on}\OperatorTok{=}\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, right\_on}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& ticker & name\_x & symbol & name\_y & issuer & expense\_ratio & aum &
+spread & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & AMJ & JP Morgan Alerian MLP Index ETN & AMJ & J.P. Morgan Alerian
+MLP Index ETN & JPMorgan & 0.85\% & \$3.45B & 0.04\% & Equity: U.S.
+MLPs \\
+1 & AMLP & Alerian MLP ETF & AMLP & Alerian MLP ETF & ALPS & 0.85\% &
+\$10.64B & 0.10\% & Equity: U.S. MLPs \\
+2 & ASHR & Xtrackers Harvest CSI 300 China A-Shares ETF & ASHR &
+Xtrackers Harvest CSI 300 China A-Shares ETF & Deutsche Bank & 0.65\% &
+\$630.14M & 0.04\% & Equity: China - Total Market \\
+3 & DIA & SPDR Dow Jones Ind Av ETF Trust & DIA & SPDR Dow Jones
+Industrial Average ETF Trust & State Street Global Advisors & 0.17\% &
+\$21.70B & 0.01\% & Equity: U.S. - Large Cap \\
+4 & DUST & Direxion Daily Gold Miners Index Bear 3X Shares & DUST &
+Direxion Daily Gold Miners Index Bear 3x Shares & Direxion & 1.08\% &
+\$122.21M & 0.06\% & Inverse Equity: Global Gold Miners \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+61 & XLV & HEALTH CARE SELECT SECTOR SPDR & XLV & Health Care Select
+Sector SPDR Fund & State Street Global Advisors & 0.13\% & \$17.49B &
+0.01\% & Equity: U.S. Health Care \\
+62 & XLY & Consumer Discretionary Select Sector SPDR & XLY & Consumer
+Discretionary Select Sector SPDR Fund & State Street Global Advisors &
+0.13\% & \$14.35B & 0.01\% & Equity: U.S. Consumer Cyclicals \\
+63 & XME & SPDR S\&P Metals \& Mining ETF & XME & SPDR S\&P Metals \&
+Mining ETF & State Street Global Advisors & 0.35\% & \$879.10M & 0.03\%
+& Equity: U.S. Metals \& Mining \\
+64 & XOP & P Oil \& Gas Exploration \& Production ETF & XOP & SPDR S\&P
+Oil \& Gas Exploration \& Production ETF & State Street Global Advisors
+& 0.35\% & \$3.06B & 0.02\% & Equity: U.S. Oil \& Gas Exploration \&
+Production \\
+65 & XRT & SPDR S\&P Oil \& Gas Exploration \& Production ETF & XRT &
+SPDR S\&P Retail ETF & State Street Global Advisors & 0.35\% & \$704.67M
+& 0.02\% & Equity: U.S. Retail \\
+\end{longtable}
+
+\textbf{Observations on the syntax:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The first two arguments of \texttt{pd.merge()} are the two
+  \texttt{DataFrames} we want to merge together. The first
+  \texttt{DataFrame} is the \emph{left} \texttt{DataFrame} and the
+  second one is the \emph{right} \texttt{DataFrame}.
+\item
+  The \texttt{how} argument defines the type of merge.
+\item
+  \texttt{left\_on} is the column in the left table that will be used
+  for matching, \texttt{right\_on} is the column in the right table that
+  will be used for matching.
+\end{enumerate}
+
+\textbf{Observations on output:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The output is basically each of the two tables smashed together,
+  however only the rows with matching ticker/symbol are retained in the
+  output. All columns of both tables are included.
+\item
+  \texttt{df\_weekly} had 67 rows in it, and \texttt{df\_etf} had 2,160
+  row in it. The \texttt{DataFrame} that results from
+  \texttt{pd.merge()} has 66 rows in it.
+\item
+  Notice that both \texttt{df\_weekly} and \texttt{df\_etf} have a
+  column called \texttt{name}. In the merged \texttt{DataFrame},
+  suffixes of \texttt{\_x} and \texttt{\_y} have been added to the
+  column names to make them unique.
+\end{enumerate}
+
+Let's do a little clean up of our \texttt{DataFrame} so that it's just
+the information that we wanted: \texttt{df\_weekly} with the
+\texttt{segment} column added to it. Notice that \texttt{.merge()} is
+also a \texttt{DataFrame} method, and we use this form to invoke method
+chaining.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_inner }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_weekly}
+\NormalTok{        .merge(df\_etf, how}\OperatorTok{=}\StringTok{\textquotesingle{}inner\textquotesingle{}}\NormalTok{, left\_on}\OperatorTok{=}\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, right\_on}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{)}
+\NormalTok{        [[}\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}name\_x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}segment\textquotesingle{}}\NormalTok{]]}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}name\_x\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}name\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_inner}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& ticker & name & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & AMJ & JP Morgan Alerian MLP Index ETN & Equity: U.S. MLPs \\
+1 & AMLP & Alerian MLP ETF & Equity: U.S. MLPs \\
+2 & ASHR & Xtrackers Harvest CSI 300 China A-Shares ETF & Equity: China
+- Total Market \\
+3 & DIA & SPDR Dow Jones Ind Av ETF Trust & Equity: U.S. - Large Cap \\
+4 & DUST & Direxion Daily Gold Miners Index Bear 3X Shares & Inverse
+Equity: Global Gold Miners \\
+... & ... & ... & ... \\
+61 & XLV & HEALTH CARE SELECT SECTOR SPDR & Equity: U.S. Health Care \\
+62 & XLY & Consumer Discretionary Select Sector SPDR & Equity: U.S.
+Consumer Cyclicals \\
+63 & XME & SPDR S\&P Metals \& Mining ETF & Equity: U.S. Metals \&
+Mining \\
+64 & XOP & P Oil \& Gas Exploration \& Production ETF & Equity: U.S. Oil
+\& Gas Exploration \& Production \\
+65 & XRT & SPDR S\&P Oil \& Gas Exploration \& Production ETF & Equity:
+U.S. Retail \\
+\end{longtable}
+
+\hypertarget{left}{%
+\section{Left}\label{left}}
+
+Notice that in the inner-join example from the previous section, the
+original \texttt{DataFrame} of ETFs with weekly options
+(\texttt{df\_weekly}) had 67 rows, but the merged \texttt{DataFrame}
+with the \texttt{segment} column added (\texttt{df\_inner}) only has 66
+rows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(df\_weekly.shape)}
+\BuiltInTok{print}\NormalTok{(df\_inner.shape)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+(67, 2)
+(66, 3)
+\end{verbatim}
+
+So what happened? This means that one of the \texttt{tickers} from
+\texttt{df\_weekly} had no matching \texttt{symbol} in \texttt{df\_etf}.
+
+Inner-merges, by design, are only intended to retain rows that have
+matches in both tables. This may or may not be the desired behavior you
+are looking for.
+
+Let's say that instead we wanted to keep \emph{ALL} the rows in the left
+\texttt{DataFrame}, \texttt{df\_weekly}, irrespective of whether there
+is a match in the right \texttt{DataFrame}.
+
+This is precisely what a \emph{left-merge} is. The syntax is the exact
+same as before except for the \texttt{how} argument is set to
+\texttt{\textquotesingle{}left\textquotesingle{}}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.merge(df\_weekly, df\_etf, how}\OperatorTok{=}\StringTok{\textquotesingle{}left\textquotesingle{}}\NormalTok{, left\_on}\OperatorTok{=}\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, right\_on}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& ticker & name\_x & symbol & name\_y & issuer & expense\_ratio & aum &
+spread & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & AMJ & JP Morgan Alerian MLP Index ETN & AMJ & J.P. Morgan Alerian
+MLP Index ETN & JPMorgan & 0.85\% & \$3.45B & 0.04\% & Equity: U.S.
+MLPs \\
+1 & AMLP & Alerian MLP ETF & AMLP & Alerian MLP ETF & ALPS & 0.85\% &
+\$10.64B & 0.10\% & Equity: U.S. MLPs \\
+2 & ASHR & Xtrackers Harvest CSI 300 China A-Shares ETF & ASHR &
+Xtrackers Harvest CSI 300 China A-Shares ETF & Deutsche Bank & 0.65\% &
+\$630.14M & 0.04\% & Equity: China - Total Market \\
+3 & DIA & SPDR Dow Jones Ind Av ETF Trust & DIA & SPDR Dow Jones
+Industrial Average ETF Trust & State Street Global Advisors & 0.17\% &
+\$21.70B & 0.01\% & Equity: U.S. - Large Cap \\
+4 & DUST & Direxion Daily Gold Miners Index Bear 3X Shares & DUST &
+Direxion Daily Gold Miners Index Bear 3x Shares & Direxion & 1.08\% &
+\$122.21M & 0.06\% & Inverse Equity: Global Gold Miners \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+62 & XLV & HEALTH CARE SELECT SECTOR SPDR & XLV & Health Care Select
+Sector SPDR Fund & State Street Global Advisors & 0.13\% & \$17.49B &
+0.01\% & Equity: U.S. Health Care \\
+63 & XLY & Consumer Discretionary Select Sector SPDR & XLY & Consumer
+Discretionary Select Sector SPDR Fund & State Street Global Advisors &
+0.13\% & \$14.35B & 0.01\% & Equity: U.S. Consumer Cyclicals \\
+64 & XME & SPDR S\&P Metals \& Mining ETF & XME & SPDR S\&P Metals \&
+Mining ETF & State Street Global Advisors & 0.35\% & \$879.10M & 0.03\%
+& Equity: U.S. Metals \& Mining \\
+65 & XOP & P Oil \& Gas Exploration \& Production ETF & XOP & SPDR S\&P
+Oil \& Gas Exploration \& Production ETF & State Street Global Advisors
+& 0.35\% & \$3.06B & 0.02\% & Equity: U.S. Oil \& Gas Exploration \&
+Production \\
+66 & XRT & SPDR S\&P Oil \& Gas Exploration \& Production ETF & XRT &
+SPDR S\&P Retail ETF & State Street Global Advisors & 0.35\% & \$704.67M
+& 0.02\% & Equity: U.S. Retail \\
+\end{longtable}
+
+Let's put this left-merged table into a \texttt{DataFrame} called
+\texttt{df\_left}, and perform a bit of data munging.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_left }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_weekly}
+\NormalTok{        .merge(df\_etf, how}\OperatorTok{=}\StringTok{\textquotesingle{}left\textquotesingle{}}\NormalTok{, left\_on}\OperatorTok{=}\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, right\_on}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{)}
+\NormalTok{        [[}\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}name\_x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}segment\textquotesingle{}}\NormalTok{]]}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}name\_x\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}name\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_left}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& ticker & name & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & AMJ & JP Morgan Alerian MLP Index ETN & Equity: U.S. MLPs \\
+1 & AMLP & Alerian MLP ETF & Equity: U.S. MLPs \\
+2 & ASHR & Xtrackers Harvest CSI 300 China A-Shares ETF & Equity: China
+- Total Market \\
+3 & DIA & SPDR Dow Jones Ind Av ETF Trust & Equity: U.S. - Large Cap \\
+4 & DUST & Direxion Daily Gold Miners Index Bear 3X Shares & Inverse
+Equity: Global Gold Miners \\
+... & ... & ... & ... \\
+62 & XLV & HEALTH CARE SELECT SECTOR SPDR & Equity: U.S. Health Care \\
+63 & XLY & Consumer Discretionary Select Sector SPDR & Equity: U.S.
+Consumer Cyclicals \\
+64 & XME & SPDR S\&P Metals \& Mining ETF & Equity: U.S. Metals \&
+Mining \\
+65 & XOP & P Oil \& Gas Exploration \& Production ETF & Equity: U.S. Oil
+\& Gas Exploration \& Production \\
+66 & XRT & SPDR S\&P Oil \& Gas Exploration \& Production ETF & Equity:
+U.S. Retail \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Use \texttt{.query()} on \texttt{df\_left} to
+verify that \texttt{ticker} \texttt{FTK} has \texttt{NaNs} for all the
+columns from \texttt{df\_etf}. Do this in two separate ways:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  querying on \texttt{ticker}
+\item
+  querying on \texttt{segment}
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_left.query(}\StringTok{\textquotesingle{}ticker == "FTK"\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& ticker & name & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+17 & FTK & FLOTEK INDUSTRIES INC & NaN \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_left.query(}\StringTok{\textquotesingle{}segment.isnull()\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& ticker & name & segment \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+17 & FTK & FLOTEK INDUSTRIES INC & NaN \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Research Challenge:} Google \texttt{FTK} and figure out why it's
+not in \texttt{df\_etf}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# FTK is a stock not and ETF.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{related-reading-4}{%
+\section{Related Reading}\label{related-reading-4}}
+
+\emph{Python Data Science Handboook} - Section 3.7 - Combining Datasets:
+Merging and Joining
 
 \bookmarksetup{startatroot}
 

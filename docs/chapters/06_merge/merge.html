@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Analysis in Finance - 6&nbsp; Merging DataFrames</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/05_functions_apply/functions_apply.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/06_merge/merge.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging `DataFrames`</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Analysis in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">6.1</span> Loading Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">6.2</span> Reading-In Data</a></li>
+  <li><a href="#inner" id="toc-inner" class="nav-link" data-scroll-target="#inner"><span class="header-section-number">6.3</span> Inner</a></li>
+  <li><a href="#left" id="toc-left" class="nav-link" data-scroll-target="#left"><span class="header-section-number">6.4</span> Left</a></li>
+  <li><a href="#related-reading" id="toc-related-reading" class="nav-link" data-scroll-target="#related-reading"><span class="header-section-number">6.5</span> Related Reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In this chapter we will learn how to <em>merge</em> together two <code>DataFrames</code>. In SQL this is referred to as <em>joining</em>. The effect of merging is similar to the lookup functions in Excel.</p>
+<section id="loading-packages" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">6.1</span> Loading Packages</h2>
+<p>Let’s load the packages we will need for this tutorial.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reading-in-data" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">6.2</span> Reading-In Data</h2>
+<p>The data set we are going to use is a list of ETFs that have weekly expiring options. What does that mean? Most stocks or ETFs have exchange traded options that expire every month, and at any given time the monthly expiring options go out about a year. The most liquid underlyings have options that expire every week; these weekly expiring options go out about 6-8 weeks.</p>
+<p>This is a list that is published by the CBOE and it consists of all the ETFs that have weekly options trading.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_weekly <span class="op">=</span> pd.read_csv(<span class="st">'weekly_etf.csv'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_weekly.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMJ</td>
+<td>JP Morgan Alerian MLP Index ETN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Ind Av ETF Trust</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3X Shares</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The next data set that we are going to load is a comprehensive list of all ETFs that are trading in the market.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> pd.read_csv(<span class="st">"etf.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">issuer</th>
+<th data-quarto-table-cell-role="th">expense_ratio</th>
+<th data-quarto-table-cell-role="th">aum</th>
+<th data-quarto-table-cell-role="th">spread</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>SPDR S&amp;P 500 ETF Trust</td>
+<td>State Street Global Advisors</td>
+<td>0.09%</td>
+<td>$275.42B</td>
+<td>0.00%</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>IVV</td>
+<td>iShares Core S&amp;P 500 ETF</td>
+<td>BlackRock</td>
+<td>0.04%</td>
+<td>$155.86B</td>
+<td>0.01%</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>VTI</td>
+<td>Vanguard Total Stock Market ETF</td>
+<td>Vanguard</td>
+<td>0.04%</td>
+<td>$103.58B</td>
+<td>0.01%</td>
+<td>Equity: U.S. - Total Market</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>VOO</td>
+<td>Vanguard S&amp;P 500 ETF</td>
+<td>Vanguard</td>
+<td>0.04%</td>
+<td>$96.91B</td>
+<td>0.01%</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>EFA</td>
+<td>iShares MSCI EAFE ETF</td>
+<td>BlackRock</td>
+<td>0.32%</td>
+<td>$72.12B</td>
+<td>0.01%</td>
+<td>Equity: Developed Markets Ex-U.S. - Total Market</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><strong>Motivation:</strong> Notice that <code>df_etf</code> has a <code>segment</code> column which <code>df_weekly</code> does not. This <code>segment</code> column contains asset-class information that could be useful for categorizing the weekly ETFs.</p>
+<p><strong>Objective:</strong> we want to get the <code>segment</code> column into <code>df_weekly</code>.</p>
+<p>There are a couple of ways of accomplishing this in <strong>pandas</strong> and both of them involve the <code>pd.merge()</code> method:</p>
+<ol type="1">
+<li><p><em>inner-merge</em></p></li>
+<li><p><em>left/right-merge</em> (sometimes called <em>outer merge</em>)</p></li>
+</ol>
+</section>
+<section id="inner" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="inner"><span class="header-section-number">6.3</span> Inner</h2>
+<p>As with many of the basic operations in data analysis, it’s easiest to understand inner-merges by digging into an example.</p>
+<p>Here is the line of code that accomplishes most of the work that we want done:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pd.merge(df_weekly, df_etf, how<span class="op">=</span><span class="st">'inner'</span>, left_on<span class="op">=</span><span class="st">'ticker'</span>, right_on<span class="op">=</span><span class="st">'symbol'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name_x</th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">name_y</th>
+<th data-quarto-table-cell-role="th">issuer</th>
+<th data-quarto-table-cell-role="th">expense_ratio</th>
+<th data-quarto-table-cell-role="th">aum</th>
+<th data-quarto-table-cell-role="th">spread</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMJ</td>
+<td>JP Morgan Alerian MLP Index ETN</td>
+<td>AMJ</td>
+<td>J.P. Morgan Alerian MLP Index ETN</td>
+<td>JPMorgan</td>
+<td>0.85%</td>
+<td>$3.45B</td>
+<td>0.04%</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+<td>ALPS</td>
+<td>0.85%</td>
+<td>$10.64B</td>
+<td>0.10%</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+<td>Deutsche Bank</td>
+<td>0.65%</td>
+<td>$630.14M</td>
+<td>0.04%</td>
+<td>Equity: China - Total Market</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Ind Av ETF Trust</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Industrial Average ETF Trust</td>
+<td>State Street Global Advisors</td>
+<td>0.17%</td>
+<td>$21.70B</td>
+<td>0.01%</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3X Shares</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3x Shares</td>
+<td>Direxion</td>
+<td>1.08%</td>
+<td>$122.21M</td>
+<td>0.06%</td>
+<td>Inverse Equity: Global Gold Miners</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">61</td>
+<td>XLV</td>
+<td>HEALTH CARE SELECT SECTOR SPDR</td>
+<td>XLV</td>
+<td>Health Care Select Sector SPDR Fund</td>
+<td>State Street Global Advisors</td>
+<td>0.13%</td>
+<td>$17.49B</td>
+<td>0.01%</td>
+<td>Equity: U.S. Health Care</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">62</td>
+<td>XLY</td>
+<td>Consumer Discretionary Select Sector SPDR</td>
+<td>XLY</td>
+<td>Consumer Discretionary Select Sector SPDR Fund</td>
+<td>State Street Global Advisors</td>
+<td>0.13%</td>
+<td>$14.35B</td>
+<td>0.01%</td>
+<td>Equity: U.S. Consumer Cyclicals</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">63</td>
+<td>XME</td>
+<td>SPDR S&amp;P Metals &amp; Mining ETF</td>
+<td>XME</td>
+<td>SPDR S&amp;P Metals &amp; Mining ETF</td>
+<td>State Street Global Advisors</td>
+<td>0.35%</td>
+<td>$879.10M</td>
+<td>0.03%</td>
+<td>Equity: U.S. Metals &amp; Mining</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">64</td>
+<td>XOP</td>
+<td>P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>XOP</td>
+<td>SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>State Street Global Advisors</td>
+<td>0.35%</td>
+<td>$3.06B</td>
+<td>0.02%</td>
+<td>Equity: U.S. Oil &amp; Gas Exploration &amp; Production</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">65</td>
+<td>XRT</td>
+<td>SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>XRT</td>
+<td>SPDR S&amp;P Retail ETF</td>
+<td>State Street Global Advisors</td>
+<td>0.35%</td>
+<td>$704.67M</td>
+<td>0.02%</td>
+<td>Equity: U.S. Retail</td>
+</tr>
+</tbody>
+</table>
+
+<p>66 rows × 9 columns</p>
+</div>
+</div>
+</div>
+<p><strong>Observations on the syntax:</strong></p>
+<ol type="1">
+<li><p>The first two arguments of <code>pd.merge()</code> are the two <code>DataFrames</code> we want to merge together. The first <code>DataFrame</code> is the <em>left</em> <code>DataFrame</code> and the second one is the <em>right</em> <code>DataFrame</code>.</p></li>
+<li><p>The <code>how</code> argument defines the type of merge.</p></li>
+<li><p><code>left_on</code> is the column in the left table that will be used for matching, <code>right_on</code> is the column in the right table that will be used for matching.</p></li>
+</ol>
+<p><strong>Observations on output:</strong></p>
+<ol type="1">
+<li><p>The output is basically each of the two tables smashed together, however only the rows with matching ticker/symbol are retained in the output. All columns of both tables are included.</p></li>
+<li><p><code>df_weekly</code> had 67 rows in it, and <code>df_etf</code> had 2,160 row in it. The <code>DataFrame</code> that results from <code>pd.merge()</code> has 66 rows in it.</p></li>
+<li><p>Notice that both <code>df_weekly</code> and <code>df_etf</code> have a column called <code>name</code>. In the merged <code>DataFrame</code>, suffixes of <code>_x</code> and <code>_y</code> have been added to the column names to make them unique.</p></li>
+</ol>
+<p>Let’s do a little clean up of our <code>DataFrame</code> so that it’s just the information that we wanted: <code>df_weekly</code> with the <code>segment</code> column added to it. Notice that <code>.merge()</code> is also a <code>DataFrame</code> method, and we use this form to invoke method chaining.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_inner <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    df_weekly</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        .merge(df_etf, how<span class="op">=</span><span class="st">'inner'</span>, left_on<span class="op">=</span><span class="st">'ticker'</span>, right_on<span class="op">=</span><span class="st">'symbol'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        [[<span class="st">'ticker'</span>, <span class="st">'name_x'</span>, <span class="st">'segment'</span>]]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'name_x'</span>:<span class="st">'name'</span>})</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>df_inner</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMJ</td>
+<td>JP Morgan Alerian MLP Index ETN</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+<td>Equity: China - Total Market</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Ind Av ETF Trust</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3X Shares</td>
+<td>Inverse Equity: Global Gold Miners</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">61</td>
+<td>XLV</td>
+<td>HEALTH CARE SELECT SECTOR SPDR</td>
+<td>Equity: U.S. Health Care</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">62</td>
+<td>XLY</td>
+<td>Consumer Discretionary Select Sector SPDR</td>
+<td>Equity: U.S. Consumer Cyclicals</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">63</td>
+<td>XME</td>
+<td>SPDR S&amp;P Metals &amp; Mining ETF</td>
+<td>Equity: U.S. Metals &amp; Mining</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">64</td>
+<td>XOP</td>
+<td>P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>Equity: U.S. Oil &amp; Gas Exploration &amp; Production</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">65</td>
+<td>XRT</td>
+<td>SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>Equity: U.S. Retail</td>
+</tr>
+</tbody>
+</table>
+
+<p>66 rows × 3 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="left" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="left"><span class="header-section-number">6.4</span> Left</h2>
+<p>Notice that in the inner-join example from the previous section, the original <code>DataFrame</code> of ETFs with weekly options (<code>df_weekly</code>) had 67 rows, but the merged <code>DataFrame</code> with the <code>segment</code> column added (<code>df_inner</code>) only has 66 rows.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_weekly.shape)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_inner.shape)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(67, 2)
+(66, 3)</code></pre>
+</div>
+</div>
+<p>So what happened? This means that one of the <code>tickers</code> from <code>df_weekly</code> had no matching <code>symbol</code> in <code>df_etf</code>.</p>
+<p>Inner-merges, by design, are only intended to retain rows that have matches in both tables. This may or may not be the desired behavior you are looking for.</p>
+<p>Let’s say that instead we wanted to keep <em>ALL</em> the rows in the left <code>DataFrame</code>, <code>df_weekly</code>, irrespective of whether there is a match in the right <code>DataFrame</code>.</p>
+<p>This is precisely what a <em>left-merge</em> is. The syntax is the exact same as before except for the <code>how</code> argument is set to <code>'left'</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pd.merge(df_weekly, df_etf, how<span class="op">=</span><span class="st">'left'</span>, left_on<span class="op">=</span><span class="st">'ticker'</span>, right_on<span class="op">=</span><span class="st">'symbol'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name_x</th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">name_y</th>
+<th data-quarto-table-cell-role="th">issuer</th>
+<th data-quarto-table-cell-role="th">expense_ratio</th>
+<th data-quarto-table-cell-role="th">aum</th>
+<th data-quarto-table-cell-role="th">spread</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMJ</td>
+<td>JP Morgan Alerian MLP Index ETN</td>
+<td>AMJ</td>
+<td>J.P. Morgan Alerian MLP Index ETN</td>
+<td>JPMorgan</td>
+<td>0.85%</td>
+<td>$3.45B</td>
+<td>0.04%</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+<td>ALPS</td>
+<td>0.85%</td>
+<td>$10.64B</td>
+<td>0.10%</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+<td>Deutsche Bank</td>
+<td>0.65%</td>
+<td>$630.14M</td>
+<td>0.04%</td>
+<td>Equity: China - Total Market</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Ind Av ETF Trust</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Industrial Average ETF Trust</td>
+<td>State Street Global Advisors</td>
+<td>0.17%</td>
+<td>$21.70B</td>
+<td>0.01%</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3X Shares</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3x Shares</td>
+<td>Direxion</td>
+<td>1.08%</td>
+<td>$122.21M</td>
+<td>0.06%</td>
+<td>Inverse Equity: Global Gold Miners</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62</td>
+<td>XLV</td>
+<td>HEALTH CARE SELECT SECTOR SPDR</td>
+<td>XLV</td>
+<td>Health Care Select Sector SPDR Fund</td>
+<td>State Street Global Advisors</td>
+<td>0.13%</td>
+<td>$17.49B</td>
+<td>0.01%</td>
+<td>Equity: U.S. Health Care</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">63</td>
+<td>XLY</td>
+<td>Consumer Discretionary Select Sector SPDR</td>
+<td>XLY</td>
+<td>Consumer Discretionary Select Sector SPDR Fund</td>
+<td>State Street Global Advisors</td>
+<td>0.13%</td>
+<td>$14.35B</td>
+<td>0.01%</td>
+<td>Equity: U.S. Consumer Cyclicals</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64</td>
+<td>XME</td>
+<td>SPDR S&amp;P Metals &amp; Mining ETF</td>
+<td>XME</td>
+<td>SPDR S&amp;P Metals &amp; Mining ETF</td>
+<td>State Street Global Advisors</td>
+<td>0.35%</td>
+<td>$879.10M</td>
+<td>0.03%</td>
+<td>Equity: U.S. Metals &amp; Mining</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">65</td>
+<td>XOP</td>
+<td>P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>XOP</td>
+<td>SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>State Street Global Advisors</td>
+<td>0.35%</td>
+<td>$3.06B</td>
+<td>0.02%</td>
+<td>Equity: U.S. Oil &amp; Gas Exploration &amp; Production</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">66</td>
+<td>XRT</td>
+<td>SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>XRT</td>
+<td>SPDR S&amp;P Retail ETF</td>
+<td>State Street Global Advisors</td>
+<td>0.35%</td>
+<td>$704.67M</td>
+<td>0.02%</td>
+<td>Equity: U.S. Retail</td>
+</tr>
+</tbody>
+</table>
+
+<p>67 rows × 9 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s put this left-merged table into a <code>DataFrame</code> called <code>df_left</code>, and perform a bit of data munging.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_left <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    df_weekly</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        .merge(df_etf, how<span class="op">=</span><span class="st">'left'</span>, left_on<span class="op">=</span><span class="st">'ticker'</span>, right_on<span class="op">=</span><span class="st">'symbol'</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        [[<span class="st">'ticker'</span>, <span class="st">'name_x'</span>, <span class="st">'segment'</span>]]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'name_x'</span>:<span class="st">'name'</span>})</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>df_left</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMJ</td>
+<td>JP Morgan Alerian MLP Index ETN</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AMLP</td>
+<td>Alerian MLP ETF</td>
+<td>Equity: U.S. MLPs</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>ASHR</td>
+<td>Xtrackers Harvest CSI 300 China A-Shares ETF</td>
+<td>Equity: China - Total Market</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>DIA</td>
+<td>SPDR Dow Jones Ind Av ETF Trust</td>
+<td>Equity: U.S. - Large Cap</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>DUST</td>
+<td>Direxion Daily Gold Miners Index Bear 3X Shares</td>
+<td>Inverse Equity: Global Gold Miners</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">62</td>
+<td>XLV</td>
+<td>HEALTH CARE SELECT SECTOR SPDR</td>
+<td>Equity: U.S. Health Care</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">63</td>
+<td>XLY</td>
+<td>Consumer Discretionary Select Sector SPDR</td>
+<td>Equity: U.S. Consumer Cyclicals</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">64</td>
+<td>XME</td>
+<td>SPDR S&amp;P Metals &amp; Mining ETF</td>
+<td>Equity: U.S. Metals &amp; Mining</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">65</td>
+<td>XOP</td>
+<td>P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>Equity: U.S. Oil &amp; Gas Exploration &amp; Production</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">66</td>
+<td>XRT</td>
+<td>SPDR S&amp;P Oil &amp; Gas Exploration &amp; Production ETF</td>
+<td>Equity: U.S. Retail</td>
+</tr>
+</tbody>
+</table>
+
+<p>67 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Use <code>.query()</code> on <code>df_left</code> to verify that <code>ticker</code> <code>FTK</code> has <code>NaNs</code> for all the columns from <code>df_etf</code>. Do this in two separate ways:</p>
+<ol type="1">
+<li>querying on <code>ticker</code></li>
+<li>querying on <code>segment</code></li>
+</ol>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_left.query(<span class="st">'ticker == "FTK"'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">17</td>
+<td>FTK</td>
+<td>FLOTEK INDUSTRIES INC</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_left.query(<span class="st">'segment.isnull()'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">segment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">17</td>
+<td>FTK</td>
+<td>FLOTEK INDUSTRIES INC</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Research Challenge:</strong> Google <code>FTK</code> and figure out why it’s not in <code>df_etf</code>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># FTK is a stock not and ETF.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<hr>
+</section>
+<section id="related-reading" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="related-reading"><span class="header-section-number">6.5</span> Related Reading</h2>
+<p><em>Python Data Science Handboook</em> - Section 3.7 - Combining Datasets: Merging and Joining</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/05_functions_apply/functions_apply.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
