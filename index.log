@@ -1,0 +1,30 @@
+This is XeTeX, Version 3.14159265-2.6-0.999992 (TeX Live 2020) (preloaded format=xelatex 2020.12.17)  24 AUG 2023 09:15
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**index.tex
+(./index.tex
+LaTeX2e <2020-10-01> patch level 2
+L3 programming layer <2020-12-07> xparse <2020-03-03>
+
+! LaTeX Error: File `scrreprt.cls' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: cls)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.10 ^^M
+         
+Here is how much of TeX's memory you used:
+ 21 strings out of 479290
+ 365 string characters out of 5876857
+ 272021 words of memory out of 5000000
+ 19622 multiletter control sequences out of 15000+600000
+ 403430 words of font info for 27 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 32i,0n,39p,94b,13s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+No pages of output.
