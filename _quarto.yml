@@ -8,7 +8,7 @@ book:
   chapters:
     - index.qmd
     - chapters/01_jumpstart/jumpstart.ipynb
-    - chapters/02_dataframe_basics/summary.qmd
+    - chapters/02_dataframe_basics/dataframe_basics.ipynb
     - references.qmd
 
 bibliography: references.bib

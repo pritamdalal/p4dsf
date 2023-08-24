@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../chapters/02_dataframe_basics/summary.html" rel="next">
+<link href="../../chapters/02_dataframe_basics/dataframe_basics.html" rel="next">
 <link href="../../index.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
@@ -152,8 +152,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/02_dataframe_basics/summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -172,7 +172,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#what-is-a-notebook" id="toc-what-is-a-notebook" class="nav-link active" data-scroll-target="#what-is-a-notebook"><span class="header-section-number">1.1</span> What is a Notebook?</a></li>
+  <li><a href="#what-is-a-jupyter-notebook" id="toc-what-is-a-jupyter-notebook" class="nav-link active" data-scroll-target="#what-is-a-jupyter-notebook"><span class="header-section-number">1.1</span> What is a Jupyter Notebook?</a></li>
   <li><a href="#ides-for-jupyter-notebooks" id="toc-ides-for-jupyter-notebooks" class="nav-link" data-scroll-target="#ides-for-jupyter-notebooks"><span class="header-section-number">1.2</span> IDEs for Jupyter Notebooks</a></li>
   <li><a href="#code-cells" id="toc-code-cells" class="nav-link" data-scroll-target="#code-cells"><span class="header-section-number">1.3</span> Code Cells</a></li>
   <li><a href="#edit-mode-vs-command-mode" id="toc-edit-mode-vs-command-mode" class="nav-link" data-scroll-target="#edit-mode-vs-command-mode"><span class="header-section-number">1.4</span> Edit Mode vs Command Mode</a></li>
@@ -217,9 +217,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The purpose of this chapter is to introduce <em>Jupyter notebook</em> files and to give a glimpse of how to use them to work with financial data.</p>
 <p>In particular, we will visualize stock index data to observe the leverage effect: when the market suffers losses, prices become more volatile.</p>
 <p>We will move quickly without explaining all the details, so don’t worry if you aren’t able to follow everything. It may be worth coming back to this after you have completed the <em>Basic Data Wrangling</em> part of the the book.</p>
-<section id="what-is-a-notebook" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-a-notebook"><span class="header-section-number">1.1</span> What is a Notebook?</h2>
-<p>This file - the one you are currently interacting with - is a Jupyter notebook.</p>
+<section id="what-is-a-jupyter-notebook" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-a-jupyter-notebook"><span class="header-section-number">1.1</span> What is a Jupyter Notebook?</h2>
 <p>The notebook format conveniently allows you to combine sentences, code, code outputs (including plots), and mathematical notation. Notebooks have proven to be a convenient and productive programming environment for data analysis.</p>
 <p>Behind the scenes of a Jupyter notebook is a <em>kernel</em> that is responsible for executing computations. The kernel can live locally on your machine or on a remote server.</p>
 </section>
@@ -252,7 +251,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="keyboard-shortcuts" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="keyboard-shortcuts"><span class="header-section-number">1.5</span> Keyboard Shortcuts</h2>
-<p>Here are some of my favorite keyboard shortcuts:</p>
+<p>Here are some of my favorite JupyterLab keyboard shortcuts:</p>
 <p>edit mode: <strong>enter</strong></p>
 <p>command mode: <strong>esc</strong></p>
 <p>navigate up: <strong>k</strong></p>
@@ -274,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="importing-packages" class="level2" data-number="1.7">
 <h2 data-number="1.7" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">1.7</span> Importing Packages</h2>
-<p>The power and convenience of Python as a data analysis languages comes from the ecosystem of freely available third party packages.</p>
+<p>The power and convenience of Python as a data analysis language comes from the ecosystem of freely available third party packages.</p>
 <p>Here are the packages that we will be using in this tutorial:</p>
 <p><strong>numpy</strong> - efficient vector and matrix computations</p>
 <p><strong>pandas</strong> - working with <code>DataFrames</code></p>
@@ -540,7 +539,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Notice that even though we ran the <code>.reset_index()</code> method of <code>df_spy</code> it still has an index; now its index just a sequence of integers.</p>
+<p>Notice that even though we ran the <code>.reset_index()</code> method of <code>df_spy</code> it still has an index; now its index is just a sequence of integers.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_spy.index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
@@ -550,7 +549,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="a-bit-of-cleaning" class="level2" data-number="1.10">
 <h2 data-number="1.10" class="anchored" data-anchor-id="a-bit-of-cleaning"><span class="header-section-number">1.10</span> A Bit of Cleaning</h2>
-<p>As a matter of preference, I like my column names in snake case.</p>
+<p>As a matter of preference, I like my column names to be in snake case.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>,<span class="st">'_'</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -677,7 +676,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Notice that trailing commas are not an issue in Python.</p>
+<p>Notice that trailing commas do not cause errors in Python.</p>
 </section>
 <section id="series" class="level2" data-number="1.11">
 <h2 data-number="1.11" class="anchored" data-anchor-id="series"><span class="header-section-number">1.11</span> <code>Series</code></h2>
@@ -821,7 +820,7 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 </section>
 <section id="visualizing-adjusted-close-prices" class="level2" data-number="1.15">
 <h2 data-number="1.15" class="anchored" data-anchor-id="visualizing-adjusted-close-prices"><span class="header-section-number">1.15</span> Visualizing Adjusted Close Prices</h2>
-<p>Python has a variety of packages that can be used for visualization. For this tutorial, we will focus on built-in plotting capabilities of <strong>pandas</strong>. These capabilities are built on top of the <strong>matplotlib</strong> package, which is the foundation of much of Python’s visualization ecosystem.</p>
+<p>Python has a variety of packages that can be used for visualization. In this chapter we will focus on built-in plotting capabilities of <strong>pandas</strong>. These capabilities are built on top of the <strong>matplotlib</strong> package, which is the foundation of much of Python’s visualization ecosystem.</p>
 <p><code>DataFrames</code> have a built-in <code>.plot()</code> method that makes creating simple line graphs quite easy.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'adj_close'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -864,7 +863,7 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <p><img src="jumpstart_files/figure-html/cell-22-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<p>The <code>returns</code> graph above is a bit of a hack, it doesn’t really makes sense to create a line graph of consecutive returns. However, because there are so many days jammed into the x-axis, it creates a desirable effect and it used all the time in finance to demonstrate properties of volatility.</p>
+<p>The <code>returns</code> graph above is a bit of a hack, it doesn’t really make sense to create a line graph of consecutive returns. However, because there are so many days jammed into the x-axis, it creates a desirable effect and it used all the time in finance to demonstrate properties of volatility.</p>
 <p>Notice that whenever there is a sharp drop in the <code>adj_close</code> price graph, that the magnitude of the nearby returns becomes large. In contrast, during periods of steady growth (e.g.&nbsp;all of 2017) the magnitude of the returns is small. This is precisely the leverage effect.</p>
 </section>
 <section id="calculating-realized-volatility" class="level2" data-number="1.17">
@@ -888,7 +887,7 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 Name: ret, Length: 1258, dtype: float64</code></pre>
 </div>
 </div>
-<p>Let’s add these realized volatility calculations to<code>df_spy</code> this with the following code:</p>
+<p>Let’s add these realized volatility calculations to<code>df_spy</code> this with the following code.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'realized_vol'</span>] <span class="op">=</span> df_spy[<span class="st">'ret'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -994,7 +993,7 @@ Name: ret, Length: 1258, dtype: float64</code></pre>
 </section>
 <section id="visualizing-realized-volatility" class="level2" data-number="1.18">
 <h2 data-number="1.18" class="anchored" data-anchor-id="visualizing-realized-volatility"><span class="header-section-number">1.18</span> Visualizing Realized Volatility</h2>
-<p>We can easily add <code>realized_vol</code> to our graph with the following code:</p>
+<p>We can easily add <code>realized_vol</code> to our graph with the following code.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x <span class="op">=</span> <span class="st">'date'</span>, </span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> [<span class="st">'adj_close'</span>,<span class="st">'ret'</span>,<span class="st">'realized_vol'</span>,], </span>
@@ -1257,8 +1256,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../chapters/02_dataframe_basics/summary.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Summary</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
