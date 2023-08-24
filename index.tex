@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, boxrule=0pt, breakable, interior hidden, enhanced, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, boxrule=0pt, frame hidden, breakable, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -1934,6 +1934,8 @@ Starting with the 3rd row, and ending with the 6th row:
 76238600 \\
 \end{longtable}
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \textbf{Code Challenge:} Retrieve the 15th, 16th, and 17th rows of
 \texttt{df\_spy}.
 
@@ -1957,6 +1959,8 @@ Starting with the 3rd row, and ending with the 6th row:
 17 & 2021-07-26 & 439.31 & 441.03 & 439.26 & 441.02 & 427.85 &
 43719200 \\
 \end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 Using the syntax \texttt{df{[}:n{]}} automatically starts the indexing
 at \texttt{0}. For example, the following code retrieves all of
@@ -2103,6 +2107,8 @@ rows of \texttt{df\_spy}:
 75874700 \\
 \end{longtable}
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \textbf{Code Challenge:} Retrieve the first row of \texttt{df\_spy} with
 negative indexing.
 
@@ -2123,8 +2129,11 @@ negative indexing.
 64827900 \\
 \end{longtable}
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \textbf{Code Challenge:} Use simple slicing to select the last three
-rows of a \texttt{df\_spy} without explicitly using row numbers.
+rows of a \texttt{df\_spy}: 1) without explicitly using row numbers; 2)
+with explicitly using row numbers.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2168,6 +2177,8 @@ rows of a \texttt{df\_spy} without explicitly using row numbers.
 68951200 \\
 \end{longtable}
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \hypertarget{dataframe-indexes}{%
 \section{\texorpdfstring{\texttt{DataFrame}
 Indexes}{DataFrame Indexes}}\label{dataframe-indexes}}
@@ -2183,7 +2194,7 @@ sequence of non-negative integers is used.
 \texttt{implicit} - each row has an implicit row-number, and each column
 has an implicit column-number.
 
-Let's take a look at the \texttt{columns} index of \texttt{df\_spy}:
+Let's take a look at the \texttt{columns} index of \texttt{df\_spy}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2206,7 +2217,7 @@ pandas.core.indexes.base.Index
 \end{verbatim}
 
 Next, let's take a look at the explicit row \texttt{index} attribute of
-\texttt{df\_spy}:
+\texttt{df\_spy}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2238,8 +2249,8 @@ it's good to be aware \texttt{indexes} exist becase they can come into
 play for more advanced topics, such as joining tables together; they
 also come up in Stack Overflow examples frequently.
 
-For the purposes of this tutorial, our interest in \texttt{indexes}
-comes from how they are related to two built-in \texttt{DataFrame}
+For the purposes of this chapter, our interest in \texttt{indexes} comes
+from how they are related to two built-in \texttt{DataFrame}
 \emph{indexers}: \texttt{DataFrame.iloc} and \texttt{DataFrame.loc}.
 
 \hypertarget{indexing-with-dataframe.iloc}{%
@@ -2250,7 +2261,7 @@ The indexer \texttt{DataFrame.iloc} can be used to access rows and
 columns using their implicit row and column numbers.
 
 Here is an example of \texttt{iloc} that retrieves the first two rows of
-\texttt{df\_spy}:
+\texttt{df\_spy}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2275,7 +2286,7 @@ Notice, that because we didn't specify any column numbers, the code
 above retrieves all columns.
 
 The following code grabs the first three row and the first three columns
-of \texttt{df\_spy}:
+of \texttt{df\_spy}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2320,6 +2331,8 @@ to specify custom sets of columns and rows:
 Using \texttt{lists} as a means of indexing is sometimes referred to as
 \emph{fancy indexing}.
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \textbf{Code Challenge} Use fancy indexing to grab the 14th, 0th, and
 5th rows of \texttt{df\_spy} - in that order.
 
@@ -2343,6 +2356,8 @@ Using \texttt{lists} as a means of indexing is sometimes referred to as
 5 & 2021-07-08 & 428.78 & 431.73 & 427.52 & 430.92 & 418.05 &
 97595200 \\
 \end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 \hypertarget{indexing-with-dataframe.loc}{%
 \section{\texorpdfstring{Indexing with
@@ -2396,7 +2411,7 @@ DatetimeIndex(['2021-06-30', '2021-07-01', '2021-07-02', '2021-07-06',
               dtype='datetime64[ns]', name='date', freq=None)
 \end{verbatim}
 
-And notice that \texttt{date} is no longer column of \texttt{df\_spy}:
+And notice that \texttt{date} is no longer column of \texttt{df\_spy}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2413,7 +2428,7 @@ Now that we have successfully set the row \texttt{index} of
 \texttt{index} to access the data via \texttt{.loc}.
 
 Here is an example of how we can grab a slice of rows, associated with a
-date-range:
+date-range.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2462,6 +2477,8 @@ date & & \\
 2021-07-30 & 68951200 & 425.42 \\
 \end{longtable}
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \textbf{Code Challenge:} Use \texttt{.loc} to grab the \texttt{date},
 \texttt{volume}, and \texttt{close} columns from \texttt{df\_spy}.
 
@@ -2492,6 +2509,8 @@ date & & \\
 2021-07-30 & 68951200 & 438.51 \\
 \end{longtable}
 
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
 \hypertarget{related-reading-1}{%
 \section{Related Reading}\label{related-reading-1}}
 
@@ -2499,6 +2518,1105 @@ date & & \\
 
 \emph{Python Data Science Handbook} - Section 3.2 - Data Indexing and
 Selection
+
+\bookmarksetup{startatroot}
+
+\hypertarget{dataframe-querying}{%
+\chapter{\texorpdfstring{\texttt{DataFrame}
+Querying}{DataFrame Querying}}\label{dataframe-querying}}
+
+In the previous chapter we discussed accessing rows of a
+\texttt{DataFrame} by row position. In practice, I don't find this
+particularly useful. Rather, I find that I usually access rows by some
+kind of logical condition, which is referred to as \emph{querying} the
+\texttt{DataFrame}.
+
+In this chapter we discuss two ways of querying a \texttt{DataFrame}:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  masking
+\item
+  the \texttt{DataFrame.query()} method.
+\end{enumerate}
+
+\hypertarget{importing-packages-3}{%
+\section{Importing Packages}\label{importing-packages-3}}
+
+Let's first import the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\NormalTok{pd.set\_option(}\StringTok{\textquotesingle{}display.max\_rows\textquotesingle{}}\NormalTok{, }\DecValTok{10}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-2}{%
+\section{Reading-In Data}\label{reading-in-data-2}}
+
+Next, let's use \texttt{pandas\_datareader} to read-in some \texttt{SPY}
+data from July 2021.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo(}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, start}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}06{-}30\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}07{-}31\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  1 of 1 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& Open & High & Low & Close & Adj Close & Volume \\
+Date & & & & & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2021-06-30 & 427.21 & 428.78 & 427.18 & 428.06 & 415.28 & 64827900 \\
+2021-07-01 & 428.87 & 430.60 & 428.80 & 430.43 & 417.58 & 53441000 \\
+2021-07-02 & 431.67 & 434.10 & 430.52 & 433.72 & 420.77 & 57697700 \\
+2021-07-06 & 433.78 & 434.01 & 430.01 & 432.93 & 420.00 & 68710400 \\
+2021-07-07 & 433.66 & 434.76 & 431.51 & 434.46 & 421.49 & 63549500 \\
+\end{longtable}
+
+The following code resets the \texttt{index} so that \texttt{Date} is a
+regular column, and then makes the all columns names snake-case.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.reset\_index(inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy.columns }\OperatorTok{=}\NormalTok{ df\_spy.columns.}\BuiltInTok{str}\NormalTok{.lower().}\BuiltInTok{str}\NormalTok{.replace(}\StringTok{\textquotesingle{} \textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\_\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& date & open & high & low & close & adj\_close & volume \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & 427.21 & 428.78 & 427.18 & 428.06 & 415.28 &
+64827900 \\
+1 & 2021-07-01 & 428.87 & 430.60 & 428.80 & 430.43 & 417.58 &
+53441000 \\
+2 & 2021-07-02 & 431.67 & 434.10 & 430.52 & 433.72 & 420.77 &
+57697700 \\
+3 & 2021-07-06 & 433.78 & 434.01 & 430.01 & 432.93 & 420.00 &
+68710400 \\
+4 & 2021-07-07 & 433.66 & 434.76 & 431.51 & 434.46 & 421.49 &
+63549500 \\
+\end{longtable}
+
+\hypertarget{comparison-and-dataframe-columns}{%
+\section{\texorpdfstring{Comparison and \texttt{DataFrame}
+Columns}{Comparison and DataFrame Columns}}\label{comparison-and-dataframe-columns}}
+
+As discussed in a previous chapter, a column of a \texttt{DataFrame} is
+a \texttt{Series} object, which is a souped up \texttt{numpy.array}
+(think vector or matrix).
+
+Let's separate out the \texttt{adjusted} column of \texttt{df\_spy} and
+assign it to a variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{6} \CommentTok{\# this modifies the printing of dataframes}
+\NormalTok{ser\_adjusted }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]}
+\NormalTok{ser\_adjusted}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0     415.28
+1     417.58
+2     420.77
+       ...  
+19    425.73
+20    427.49
+21    425.42
+Name: adj_close, Length: 22, dtype: float64
+\end{verbatim}
+
+Recall that a \texttt{pandas.Series} is smart with respect to
+component-wise arithmetic operations, meaning it behaves like a vector
+from linear algebra. This means that arithmetic operations are
+\emph{broadcasted} as you might expect.
+
+For example, division by 100 is broadcasted component-wise.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ser\_adjusted }\OperatorTok{/} \DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0     4.1528
+1     4.1758
+2     4.2077
+       ...  
+19    4.2573
+20    4.2749
+21    4.2542
+Name: adj_close, Length: 22, dtype: float64
+\end{verbatim}
+
+It is a convenient fact that this broadcasting behavior also occurs with
+comparison, and produces a \texttt{Series} of booleans.
+
+The following code checks which elements of \texttt{ser\_adjusted} are
+greater than 425.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ser\_test }\OperatorTok{=}\NormalTok{ (ser\_adjusted }\OperatorTok{\textgreater{}} \DecValTok{425}\NormalTok{)}
+\NormalTok{ser\_test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0     False
+1     False
+2     False
+      ...  
+19     True
+20     True
+21     True
+Name: adj_close, Length: 22, dtype: bool
+\end{verbatim}
+
+Let's check that the resulting variable \texttt{ser\_test} is a
+\texttt{pandas.Series}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{type}\NormalTok{(ser\_test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+pandas.core.series.Series
+\end{verbatim}
+
+And finally let's observe the \texttt{.values} elements of
+\texttt{ser\_test}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(ser\_test.values)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[False False False False False False False False False False False False
+ False False False False  True  True  True  True  True  True]
+\end{verbatim}
+
+A few observation about what just happened:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  When we compare a \texttt{Series} of numerical values
+  (\texttt{ser\_adjusted}) to a single number (\texttt{425}), we get
+  back a \texttt{Series} of booleans (\texttt{ser\_test}).
+\item
+  We have that \texttt{ser\_test{[}i{]}} =
+  (\texttt{ser\_adjusted{[}i{]}\ \textgreater{}\ 425}).
+\item
+  So the comparison operation was broadcasted as advertised.
+\end{enumerate}
+
+This is easy to see by appending \texttt{ser\_test} to \texttt{df\_spy}
+and then reprinting.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{25}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}test\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ ser\_test}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & open & high & low & close & adj\_close & volume & test \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & 427.21 & 428.78 & 427.18 & 428.06 & 415.28 & 64827900 &
+False \\
+1 & 2021-07-01 & 428.87 & 430.60 & 428.80 & 430.43 & 417.58 & 53441000 &
+False \\
+2 & 2021-07-02 & 431.67 & 434.10 & 430.52 & 433.72 & 420.77 & 57697700 &
+False \\
+3 & 2021-07-06 & 433.78 & 434.01 & 430.01 & 432.93 & 420.00 & 68710400 &
+False \\
+4 & 2021-07-07 & 433.66 & 434.76 & 431.51 & 434.46 & 421.49 & 63549500 &
+False \\
+5 & 2021-07-08 & 428.78 & 431.73 & 427.52 & 430.92 & 418.05 & 97595200 &
+False \\
+6 & 2021-07-09 & 432.53 & 435.84 & 430.71 & 435.52 & 422.51 & 76238600 &
+False \\
+7 & 2021-07-12 & 435.43 & 437.35 & 434.97 & 437.08 & 424.03 & 52889600 &
+False \\
+8 & 2021-07-13 & 436.24 & 437.84 & 435.31 & 435.59 & 422.58 & 52911300 &
+False \\
+9 & 2021-07-14 & 437.40 & 437.92 & 434.91 & 436.24 & 423.21 & 64130400 &
+False \\
+10 & 2021-07-15 & 434.81 & 435.53 & 432.72 & 434.75 & 421.77 & 55126400
+& False \\
+11 & 2021-07-16 & 436.01 & 436.06 & 430.92 & 431.34 & 418.46 & 75874700
+& False \\
+12 & 2021-07-19 & 426.19 & 431.41 & 421.97 & 424.97 & 412.28 & 147987000
+& False \\
+13 & 2021-07-20 & 425.68 & 432.42 & 424.83 & 431.06 & 418.19 & 99608200
+& False \\
+14 & 2021-07-21 & 432.34 & 434.70 & 431.01 & 434.55 & 421.57 & 64724400
+& False \\
+15 & 2021-07-22 & 434.74 & 435.72 & 433.69 & 435.46 & 422.46 & 47878500
+& False \\
+16 & 2021-07-23 & 437.52 & 440.30 & 436.79 & 439.94 & 426.80 & 63766600
+& True \\
+17 & 2021-07-26 & 439.31 & 441.03 & 439.26 & 441.02 & 427.85 & 43719200
+& True \\
+18 & 2021-07-27 & 439.91 & 439.94 & 435.99 & 439.01 & 425.90 & 67397100
+& True \\
+19 & 2021-07-28 & 439.68 & 440.30 & 437.31 & 438.83 & 425.73 & 52472400
+& True \\
+20 & 2021-07-29 & 439.82 & 441.80 & 439.81 & 440.65 & 427.49 & 47435300
+& True \\
+21 & 2021-07-30 & 437.91 & 440.06 & 437.77 & 438.51 & 425.42 & 68951200
+& True \\
+\end{longtable}
+
+As we will see in the next two sections, the broadcasting of comparison
+can be used to query subsets of rows of a \texttt{DataFrame}.
+
+\hypertarget{dataframe-masking}{%
+\section{\texorpdfstring{\texttt{DataFrame}
+Masking}{DataFrame Masking}}\label{dataframe-masking}}
+
+From the code below we know that \texttt{df\_spy} has 22 rows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.shape}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+(22, 8)
+\end{verbatim}
+
+The following code creates a list consisting of 22 booleans, all of them
+\texttt{False}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lst\_bool }\OperatorTok{=}\NormalTok{ [}\VariableTok{False}\NormalTok{] }\OperatorTok{*} \DecValTok{22}
+\NormalTok{lst\_bool}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False,
+ False]
+\end{verbatim}
+
+Now, let's see what happens when we feed this \texttt{list} of
+\texttt{False} booleans into \texttt{df\_spy} using square brackets.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[lst\_bool]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & open & high & low & close & adj\_close & volume & test \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Verify that \texttt{df\_spy{[}lst\_bool{]}} is
+an empty \texttt{DataFrame}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{type}\NormalTok{(df\_spy[lst\_bool])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+pandas.core.frame.DataFrame
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[lst\_bool].shape}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+(0, 8)
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+Next, let's modify \texttt{lst\_bool} slightly by changing the 0th entry
+to \texttt{True}. Then lets feed \texttt{lst\_bool} into
+\texttt{df\_spy} again.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lst\_bool[}\DecValTok{0}\NormalTok{] }\OperatorTok{=} \VariableTok{True}
+\NormalTok{df\_spy[lst\_bool]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & open & high & low & close & adj\_close & volume & test \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & 427.21 & 428.78 & 427.18 & 428.06 & 415.28 & 64827900 &
+False \\
+\end{longtable}
+
+So what happened? Notice that \texttt{df\_spy{[}lst\_bool{]}} returns a
+\texttt{DataFrame} consisting only of the 0th row of \texttt{df\_spy}.
+
+Let's modify \texttt{lst\_bool} once again, by setting the 1st entry of
+\texttt{df\_spy} to \texttt{True}, and then once again feed it into
+\texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lst\_bool[}\DecValTok{1}\NormalTok{] }\OperatorTok{=} \VariableTok{True}
+\NormalTok{df\_spy[lst\_bool]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & open & high & low & close & adj\_close & volume & test \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & 427.21 & 428.78 & 427.18 & 428.06 & 415.28 & 64827900 &
+False \\
+1 & 2021-07-01 & 428.87 & 430.60 & 428.80 & 430.43 & 417.58 & 53441000 &
+False \\
+\end{longtable}
+
+\textbf{Punchline:} What is returned by the code
+\texttt{df\_spy{[}lst\_bool{]}} will be a \texttt{DataFrame} consisting
+of all the rows corresponding to the \texttt{True} entries of
+\texttt{lst\_bool}.
+
+This is called \texttt{DataFrame} \emph{masking}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Modify \texttt{lst\_bool} and then use
+\texttt{DataFrame} masking to grab the 0th, 1st and, 3rd rows of
+\texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lst\_bool[}\DecValTok{3}\NormalTok{] }\OperatorTok{=} \VariableTok{True}
+\NormalTok{df\_spy[lst\_bool]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & open & high & low & close & adj\_close & volume & test \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & 427.21 & 428.78 & 427.18 & 428.06 & 415.28 & 64827900 &
+False \\
+1 & 2021-07-01 & 428.87 & 430.60 & 428.80 & 430.43 & 417.58 & 53441000 &
+False \\
+3 & 2021-07-06 & 433.78 & 434.01 & 430.01 & 432.93 & 420.00 & 68710400 &
+False \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{querying-with-dataframe-masking}{%
+\section{\texorpdfstring{Querying with \texttt{DataFrame}
+Masking}{Querying with DataFrame Masking}}\label{querying-with-dataframe-masking}}
+
+We often want to query a \texttt{DataFrame} based on some kind of
+comparison involving its column values.
+
+We can achieve this kind of querying by combining the broadcasting of
+comparison over \texttt{DataFrame} columns with \texttt{DataFrame}
+masking.
+
+In order to consider concrete examples, let's read-in some data.
+
+The following code reads in a data set consisting of end-of-day prices
+for four different ETFs (SPY, IWM, QQQ, DIA), during the month of July
+2021.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{25}
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo([}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}IWM\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}DIA\textquotesingle{}}\NormalTok{], start}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}06{-}30\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}07{-}31\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ df\_etf.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  4 of 4 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}llllllllllllllllllllll@{}}
+\toprule\noalign{}
+&
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}}{%
+Adj Close} &
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}}{%
+Close} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+High} & ... &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Low} &
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}}{%
+Open} &
+\multicolumn{4}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 6\tabcolsep}@{}}{%
+Volume} \\
+& DIA & IWM & QQQ & SPY & DIA & IWM & QQQ & SPY & DIA & IWM & ... & QQQ
+& SPY & DIA & IWM & QQQ & SPY & DIA & IWM & QQQ & SPY \\
+Date & & & & & & & & & & & & & & & & & & & & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2021-06-30 & 331.30 & 223.29 & 349.98 & 415.28 & 344.95 & 229.37 &
+354.43 & 428.06 & 345.51 & 230.32 & ... & 353.83 & 427.18 & 342.38 &
+228.65 & 354.83 & 427.21 & 3778900 & 26039000 & 32724000 & 64827900 \\
+2021-07-01 & 332.66 & 225.26 & 350.11 & 417.58 & 346.36 & 231.39 &
+354.57 & 430.43 & 346.40 & 231.85 & ... & 352.68 & 428.80 & 345.78 &
+230.81 & 354.07 & 428.87 & 3606900 & 18089100 & 29290000 & 53441000 \\
+2021-07-02 & 334.17 & 223.11 & 354.13 & 420.77 & 347.94 & 229.19 &
+358.64 & 433.72 & 348.29 & 232.08 & ... & 356.28 & 430.52 & 347.04 &
+232.00 & 356.52 & 431.67 & 3013500 & 21029700 & 32727200 & 57697700 \\
+2021-07-06 & 332.14 & 219.87 & 355.66 & 420.00 & 345.82 & 225.86 &
+360.19 & 432.93 & 348.11 & 229.46 & ... & 356.49 & 430.01 & 347.75 &
+229.36 & 359.26 & 433.78 & 3910600 & 27771300 & 38842400 & 68710400 \\
+2021-07-07 & 333.20 & 217.83 & 356.41 & 421.49 & 346.92 & 223.76 &
+360.95 & 434.46 & 347.14 & 226.67 & ... & 358.94 & 431.51 & 345.65 &
+225.54 & 362.45 & 433.66 & 3347000 & 28521500 & 35265200 & 63549500 \\
+\end{longtable}
+
+This data is not as tidy as we would like. Let's use method chaining to
+perform a series of data munging operations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_etf}
+\NormalTok{        .stack() }\CommentTok{\#pivot the table}
+\NormalTok{        .reset\_index() }\CommentTok{\#turn date into a column}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}level\_1\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{\}) }\CommentTok{\#renaming a column}
+\NormalTok{        .sort\_values(by}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{]) }\CommentTok{\#sort}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Adj Close\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Close\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, }
+                         \StringTok{\textquotesingle{}High\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}high\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Low\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}low\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Open\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}open\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Volume\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{\}) }\CommentTok{\#renaming columns}
+\NormalTok{        [[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}open\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}high\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}low\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]] }\CommentTok{\#reordering columns}
+\NormalTok{        .reset\_index(drop}\OperatorTok{=}\VariableTok{True}\NormalTok{)    }
+\NormalTok{    )}
+\NormalTok{df\_etf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 \\
+3 & 2021-07-06 & DIA & 347.75 & 348.11 & 343.60 & 345.82 & 3910600 &
+332.14 \\
+4 & 2021-07-07 & DIA & 345.65 & 347.14 & 344.43 & 346.92 & 3347000 &
+333.20 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+83 & 2021-07-26 & SPY & 439.31 & 441.03 & 439.26 & 441.02 & 43719200 &
+427.85 \\
+84 & 2021-07-27 & SPY & 439.91 & 439.94 & 435.99 & 439.01 & 67397100 &
+425.90 \\
+85 & 2021-07-28 & SPY & 439.68 & 440.30 & 437.31 & 438.83 & 52472400 &
+425.73 \\
+86 & 2021-07-29 & SPY & 439.82 & 441.80 & 439.81 & 440.65 & 47435300 &
+427.49 \\
+87 & 2021-07-30 & SPY & 437.91 & 440.06 & 437.77 & 438.51 & 68951200 &
+425.42 \\
+\end{longtable}
+
+\hypertarget{querying-for-one-symbol}{%
+\subsection{Querying for One Symbol}\label{querying-for-one-symbol}}
+
+We are now ready to apply \texttt{DataFrame} masking to our ETF data
+set.
+
+As a first example, let's isolate all the rows of \texttt{df\_etf} that
+correspond to \texttt{IWM}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{6}
+\NormalTok{ser\_bool }\OperatorTok{=}\NormalTok{ (df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{"IWM"}\NormalTok{)}
+\NormalTok{df\_etf[ser\_bool]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+22 & 2021-06-30 & IWM & 228.65 & 230.32 & 227.76 & 229.37 & 26039000 &
+223.29 \\
+23 & 2021-07-01 & IWM & 230.81 & 231.85 & 229.71 & 231.39 & 18089100 &
+225.26 \\
+24 & 2021-07-02 & IWM & 232.00 & 232.08 & 228.56 & 229.19 & 21029700 &
+223.11 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+41 & 2021-07-28 & IWM & 219.00 & 222.59 & 217.40 & 220.82 & 33043700 &
+214.97 \\
+42 & 2021-07-29 & IWM & 222.79 & 224.44 & 222.14 & 222.52 & 22634800 &
+216.62 \\
+43 & 2021-07-30 & IWM & 221.65 & 224.05 & 220.28 & 221.05 & 28473000 &
+215.19 \\
+\end{longtable}
+
+Notice that we did this in two steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Calculate the series of \texttt{booleans} called \texttt{ser\_bool}
+  using comparison broadcasting.
+\item
+  Perform the masking by using square brackets \texttt{{[}{]}} and
+  \texttt{ser\_bool}.
+\end{enumerate}
+
+We can actually perform this masking in a single line of code, without
+creating the intermediate variable \texttt{ser\_bool}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{"IWM"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+22 & 2021-06-30 & IWM & 228.65 & 230.32 & 227.76 & 229.37 & 26039000 &
+223.29 \\
+23 & 2021-07-01 & IWM & 230.81 & 231.85 & 229.71 & 231.39 & 18089100 &
+225.26 \\
+24 & 2021-07-02 & IWM & 232.00 & 232.08 & 228.56 & 229.19 & 21029700 &
+223.11 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+41 & 2021-07-28 & IWM & 219.00 & 222.59 & 217.40 & 220.82 & 33043700 &
+214.97 \\
+42 & 2021-07-29 & IWM & 222.79 & 224.44 & 222.14 & 222.52 & 22634800 &
+216.62 \\
+43 & 2021-07-30 & IWM & 221.65 & 224.05 & 220.28 & 221.05 & 28473000 &
+215.19 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Select all the rows of \texttt{df\_etf} for
+\texttt{QQQ}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+44 & 2021-06-30 & QQQ & 354.83 & 355.23 & 353.83 & 354.43 & 32724000 &
+349.98 \\
+45 & 2021-07-01 & QQQ & 354.07 & 355.09 & 352.68 & 354.57 & 29290000 &
+350.11 \\
+46 & 2021-07-02 & QQQ & 356.52 & 358.97 & 356.28 & 358.64 & 32727200 &
+354.13 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+63 & 2021-07-28 & QQQ & 365.60 & 367.45 & 363.24 & 365.83 & 42066200 &
+361.23 \\
+64 & 2021-07-29 & QQQ & 365.25 & 367.68 & 365.25 & 366.48 & 25672500 &
+361.88 \\
+65 & 2021-07-30 & QQQ & 362.44 & 365.17 & 362.41 & 364.57 & 36484600 &
+359.99 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{querying-for-multiple-symbols}{%
+\subsection{Querying for Multiple
+Symbols}\label{querying-for-multiple-symbols}}
+
+We can use the \texttt{.isin()} method to query a \texttt{DataFrame} for
+multiple symbols. The technique is to feed \texttt{.isin()} a
+\texttt{list} of symbols you want to query for.
+
+The following code grabs all the rows of \texttt{df\_etf} for both
+\texttt{QQQ} and \texttt{DIA}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{].isin([}\StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}DIA\textquotesingle{}}\NormalTok{])]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+63 & 2021-07-28 & QQQ & 365.60 & 367.45 & 363.24 & 365.83 & 42066200 &
+361.23 \\
+64 & 2021-07-29 & QQQ & 365.25 & 367.68 & 365.25 & 366.48 & 25672500 &
+361.88 \\
+65 & 2021-07-30 & QQQ & 362.44 & 365.17 & 362.41 & 364.57 & 36484600 &
+359.99 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Grab all rows of \texttt{df\_etf} corresponding
+to \texttt{SPY}, \texttt{IWM}, and \texttt{QQQ}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{].isin([}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}IWM\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{])]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+22 & 2021-06-30 & IWM & 228.65 & 230.32 & 227.76 & 229.37 & 26039000 &
+223.29 \\
+23 & 2021-07-01 & IWM & 230.81 & 231.85 & 229.71 & 231.39 & 18089100 &
+225.26 \\
+24 & 2021-07-02 & IWM & 232.00 & 232.08 & 228.56 & 229.19 & 21029700 &
+223.11 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+85 & 2021-07-28 & SPY & 439.68 & 440.30 & 437.31 & 438.83 & 52472400 &
+425.73 \\
+86 & 2021-07-29 & SPY & 439.82 & 441.80 & 439.81 & 440.65 & 47435300 &
+427.49 \\
+87 & 2021-07-30 & SPY & 437.91 & 440.06 & 437.77 & 438.51 & 68951200 &
+425.42 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{querying-for-dates}{%
+\subsection{Querying for Dates}\label{querying-for-dates}}
+
+The following code grabs all the rows of \texttt{df\_etf} that come
+after the middle of the month.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{] }\OperatorTok{\textgreater{}} \StringTok{\textquotesingle{}2021{-}07{-}15\textquotesingle{}}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+11 & 2021-07-16 & DIA & 350.72 & 350.74 & 346.34 & 346.74 & 5710400 &
+333.22 \\
+12 & 2021-07-19 & DIA & 341.79 & 350.03 & 337.38 & 339.88 & 9715300 &
+326.63 \\
+13 & 2021-07-20 & DIA & 340.29 & 346.12 & 339.75 & 345.08 & 5802200 &
+331.62 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+85 & 2021-07-28 & SPY & 439.68 & 440.30 & 437.31 & 438.83 & 52472400 &
+425.73 \\
+86 & 2021-07-29 & SPY & 439.82 & 441.80 & 439.81 & 440.65 & 47435300 &
+427.49 \\
+87 & 2021-07-30 & SPY & 437.91 & 440.06 & 437.77 & 438.51 & 68951200 &
+425.42 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Grab all the rows of \texttt{df\_etf} for the
+last trade date of the month.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{\textquotesingle{}2021{-}07{-}30\textquotesingle{}}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+21 & 2021-07-30 & DIA & 349.88 & 351.01 & 348.67 & 349.48 & 3576700 &
+335.85 \\
+43 & 2021-07-30 & IWM & 221.65 & 224.05 & 220.28 & 221.05 & 28473000 &
+215.19 \\
+65 & 2021-07-30 & QQQ & 362.44 & 365.17 & 362.41 & 364.57 & 36484600 &
+359.99 \\
+87 & 2021-07-30 & SPY & 437.91 & 440.06 & 437.77 & 438.51 & 68951200 &
+425.42 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{querying-on-multiple-criteria}{%
+\subsection{Querying on Multiple
+Criteria}\label{querying-on-multiple-criteria}}
+
+We can filter on muliple criteria by using the \texttt{\&} operator,
+which is the vectorized version of \texttt{and}.
+
+Suppose that we want all rows for \texttt{SPY} that come before July
+fourth.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bln\_ticker }\OperatorTok{=}\NormalTok{ (df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{)}
+\NormalTok{bln\_date }\OperatorTok{=}\NormalTok{ (df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{] }\OperatorTok{\textless{}} \StringTok{\textquotesingle{}2021{-}07{-}04\textquotesingle{}}\NormalTok{)}
+\NormalTok{bln\_combined }\OperatorTok{=}\NormalTok{ bln\_ticker }\OperatorTok{\&}\NormalTok{ bln\_date}
+
+\NormalTok{df\_etf[bln\_combined]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+66 & 2021-06-30 & SPY & 427.21 & 428.78 & 427.18 & 428.06 & 64827900 &
+415.28 \\
+67 & 2021-07-01 & SPY & 428.87 & 430.60 & 428.80 & 430.43 & 53441000 &
+417.58 \\
+68 & 2021-07-02 & SPY & 431.67 & 434.10 & 430.52 & 433.72 & 57697700 &
+420.77 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Isolate the rows for \texttt{QQQ} and
+\texttt{IWM} on the last trading day before July 4th - try to not use
+intermediate variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[(df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{].isin([}\StringTok{"QQQ"}\NormalTok{, }\StringTok{"IWM"}\NormalTok{])) }\OperatorTok{\&}\NormalTok{ (df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{]}\OperatorTok{==}\StringTok{\textquotesingle{}2021{-}07{-}02\textquotesingle{}}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+24 & 2021-07-02 & IWM & 232.00 & 232.08 & 228.56 & 229.19 & 21029700 &
+223.11 \\
+46 & 2021-07-02 & QQQ & 356.52 & 358.97 & 356.28 & 358.64 & 32727200 &
+354.13 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{querying-with-.query}{%
+\section{\texorpdfstring{Querying with
+\texttt{.query()}}{Querying with .query()}}\label{querying-with-.query}}
+
+I find querying a \texttt{DataFrame} via masking to be rather
+cumbersome.
+
+I greatly prefer the use of the \texttt{DataFrame.query()} method which
+uses SQL-like strings to define queries.
+
+For example, the following code grabs all the rows corresponding to
+\texttt{IWM}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.query(}\StringTok{\textquotesingle{}symbol == "IWM"\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+22 & 2021-06-30 & IWM & 228.65 & 230.32 & 227.76 & 229.37 & 26039000 &
+223.29 \\
+23 & 2021-07-01 & IWM & 230.81 & 231.85 & 229.71 & 231.39 & 18089100 &
+225.26 \\
+24 & 2021-07-02 & IWM & 232.00 & 232.08 & 228.56 & 229.19 & 21029700 &
+223.11 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+41 & 2021-07-28 & IWM & 219.00 & 222.59 & 217.40 & 220.82 & 33043700 &
+214.97 \\
+42 & 2021-07-29 & IWM & 222.79 & 224.44 & 222.14 & 222.52 & 22634800 &
+216.62 \\
+43 & 2021-07-30 & IWM & 221.65 & 224.05 & 220.28 & 221.05 & 28473000 &
+215.19 \\
+\end{longtable}
+
+This code queries all rows corresponding to \texttt{QQQ} and
+\texttt{DIA}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.query(}\StringTok{\textquotesingle{}symbol in ("QQQ", "DIA")\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+63 & 2021-07-28 & QQQ & 365.60 & 367.45 & 363.24 & 365.83 & 42066200 &
+361.23 \\
+64 & 2021-07-29 & QQQ & 365.25 & 367.68 & 365.25 & 366.48 & 25672500 &
+361.88 \\
+65 & 2021-07-30 & QQQ & 362.44 & 365.17 & 362.41 & 364.57 & 36484600 &
+359.99 \\
+\end{longtable}
+
+Here we grab the rows corresponding to the first half of July.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.query(}\StringTok{\textquotesingle{}date \textless{} "2021{-}07{-}15"\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2021-06-30 & DIA & 342.38 & 345.51 & 342.35 & 344.95 & 3778900 &
+331.30 \\
+1 & 2021-07-01 & DIA & 345.78 & 346.40 & 344.92 & 346.36 & 3606900 &
+332.66 \\
+2 & 2021-07-02 & DIA & 347.04 & 348.29 & 346.18 & 347.94 & 3013500 &
+334.17 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+73 & 2021-07-12 & SPY & 435.43 & 437.35 & 434.97 & 437.08 & 52889600 &
+424.03 \\
+74 & 2021-07-13 & SPY & 436.24 & 437.84 & 435.31 & 435.59 & 52911300 &
+422.58 \\
+75 & 2021-07-14 & SPY & 437.40 & 437.92 & 434.91 & 436.24 & 64130400 &
+423.21 \\
+\end{longtable}
+
+And we can filter on multiple criteria via method chaining. Here we grab
+all the rows for \texttt{SPY} and \texttt{IWM} from the second half of
+the month.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}
+\NormalTok{df\_etf}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}symbol in ("SPY", "IWM")\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}date \textgreater{} "2021{-}07{-}15"\textquotesingle{}}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+33 & 2021-07-16 & IWM & 219.83 & 219.88 & 214.47 & 214.95 & 36620200 &
+209.25 \\
+34 & 2021-07-19 & IWM & 210.63 & 214.45 & 209.05 & 211.73 & 58571000 &
+206.12 \\
+35 & 2021-07-20 & IWM & 212.20 & 219.27 & 211.26 & 218.30 & 40794600 &
+212.51 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+85 & 2021-07-28 & SPY & 439.68 & 440.30 & 437.31 & 438.83 & 52472400 &
+425.73 \\
+86 & 2021-07-29 & SPY & 439.82 & 441.80 & 439.81 & 440.65 & 47435300 &
+427.49 \\
+87 & 2021-07-30 & SPY & 437.91 & 440.06 & 437.77 & 438.51 & 68951200 &
+425.42 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Grab all the rows of \texttt{df\_etf} that
+correspond to the following criteria: 1. \texttt{SPY} 2. first half of
+month 3. close less than 435
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}
+\NormalTok{df\_etf}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}symbol == "SPY"\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}date \textless{} "2021{-}07{-}15"\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}close \textless{} 435\textquotesingle{}}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+66 & 2021-06-30 & SPY & 427.21 & 428.78 & 427.18 & 428.06 & 64827900 &
+415.28 \\
+67 & 2021-07-01 & SPY & 428.87 & 430.60 & 428.80 & 430.43 & 53441000 &
+417.58 \\
+68 & 2021-07-02 & SPY & 431.67 & 434.10 & 430.52 & 433.72 & 57697700 &
+420.77 \\
+69 & 2021-07-06 & SPY & 433.78 & 434.01 & 430.01 & 432.93 & 68710400 &
+420.00 \\
+70 & 2021-07-07 & SPY & 433.66 & 434.76 & 431.51 & 434.46 & 63549500 &
+421.49 \\
+71 & 2021-07-08 & SPY & 428.78 & 431.73 & 427.52 & 430.92 & 97595200 &
+418.05 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{related-reading-2}{%
+\section{Related Reading}\label{related-reading-2}}
+
+\emph{Python Data Science Handbook} - Section 2.6 - Comparisons, Masks,
+and Boolean Logic
+
+\emph{Python Data Science Handbook} - Section 2.7 - Fancy Indexing
+
+\emph{Python Data Science Handbook} - Section 3.2 - Data Indexing and
+Selection
+
+\emph{Python Data Science Handbook} - Section 3.12 - High Performance
+Pandas
 
 \bookmarksetup{startatroot}
 
