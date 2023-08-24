@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, boxrule=0pt, frame hidden, breakable, enhanced, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, breakable, frame hidden, boxrule=0pt, sharp corners, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -3617,6 +3617,480 @@ Selection
 
 \emph{Python Data Science Handbook} - Section 3.12 - High Performance
 Pandas
+
+\bookmarksetup{startatroot}
+
+\hypertarget{functions-and-the-dataframe.apply-method}{%
+\chapter{\texorpdfstring{Functions and the \texttt{DataFrame.apply()}
+Method}{Functions and the DataFrame.apply() Method}}\label{functions-and-the-dataframe.apply-method}}
+
+We have already discussed how to add a new column to a
+\texttt{DataFrame} that is a simple function of existing columns.
+
+Suppose the situation is a little more complicated, and that the column
+we want to add is some kind of custom (user defined) function of
+existing columns.
+
+In this tutorial we discuss two ways of doing this:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  A \texttt{for} loop
+\item
+  \texttt{DataFrame.apply()}
+\end{enumerate}
+
+We will use a finance task to motivate these two techniques: calculating
+the payoffs of expiring options.
+
+\hypertarget{defining-functions}{%
+\section{Defining Functions}\label{defining-functions}}
+
+Defining functions in Python is straightforward.
+
+They syntax is simply \texttt{def\ function\_name(arguments):}.
+
+The following function squares two numbers.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ square(x):}
+\NormalTok{    sq }\OperatorTok{=}\NormalTok{ x }\OperatorTok{**} \DecValTok{2}
+    \ControlFlowTok{return}\NormalTok{(sq)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's verify that our function works.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(square(}\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(square(}\DecValTok{5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+4
+25
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Write a \texttt{cube()} function that cubes a
+number, and along the way, verify that indentation is required after the
+\texttt{def} statement.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ cube(x):}
+\NormalTok{    cb }\OperatorTok{=}\NormalTok{ x }\OperatorTok{**} \DecValTok{3}
+    \ControlFlowTok{return}\NormalTok{(cb)}
+
+\BuiltInTok{print}\NormalTok{(cube(}\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+27
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{option-payoff-function}{%
+\section{Option Payoff Function}\label{option-payoff-function}}
+
+Let's now write a more financially interesting function.
+
+Options are insurance contracts that are written on top of an underlying
+stock, much like car insurance is written \emph{on top} of your car.
+There are two types of options: \emph{puts} and \emph{calls}. Put
+options protect you from the stock price going too low, while call
+options protect you from the stock price going too high. Both types have
+a feature called a \emph{strike} price, which acts much like the
+deductible of your car insurance. Options expire sometime in the future,
+and the \emph{payoff} (payout) of the option at the time of the
+expiration is as follows:
+
+Let \(K\) be the strike price of an option, and let \(S_{T}\) price of
+its underlying at the time of expiration. Then the payoff of each type
+of option is as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{call}: \(\max(S_T - K, 0)\)
+\item
+  \textbf{put}: \(\max(K - S_T, 0)\)
+\end{enumerate}
+
+We can codify this as follows.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ option\_payoff(cp, strike, upx):}
+    \ControlFlowTok{if}\NormalTok{ cp }\OperatorTok{==} \StringTok{\textquotesingle{}call\textquotesingle{}}\NormalTok{:}
+\NormalTok{        payoff }\OperatorTok{=} \BuiltInTok{max}\NormalTok{(upx }\OperatorTok{{-}}\NormalTok{ strike, }\DecValTok{0}\NormalTok{)}
+    \ControlFlowTok{elif}\NormalTok{ cp }\OperatorTok{==} \StringTok{\textquotesingle{}put\textquotesingle{}}\NormalTok{:}
+\NormalTok{        payoff }\OperatorTok{=} \BuiltInTok{max}\NormalTok{(strike }\OperatorTok{{-}}\NormalTok{ upx, }\DecValTok{0}\NormalTok{)}
+    
+    \ControlFlowTok{return}\NormalTok{ payoff}
+\end{Highlighting}
+\end{Shaded}
+
+Let's verify that our function works.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(option\_payoff(}\StringTok{"call"}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{110}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(option\_payoff(}\StringTok{"put"}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{110}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(option\_payoff(}\StringTok{"call"}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{90}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(option\_payoff(}\StringTok{"put"}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{90}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+10
+0
+0
+10
+\end{verbatim}
+
+\hypertarget{loading-packages}{%
+\section{Loading Packages}\label{loading-packages}}
+
+Let's now load the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-3}{%
+\section{Reading-In Data}\label{reading-in-data-3}}
+
+Next, let's read in a data file called
+\texttt{spy\_expiring\_options.csv}.
+
+This data set consists of 21 different options on \texttt{SPY} that
+expired on November 16, 2018.
+
+The \texttt{upx} column is the settle price of \texttt{SPY} from that
+day, and it will be used to calculate the payoff of each of these
+options.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_opt }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{"spy\_expiring\_options.csv"}\NormalTok{)}
+\NormalTok{df\_opt }\OperatorTok{=}\NormalTok{ df\_opt.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_opt.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.0 \\
+1 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.5 \\
+2 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.0 \\
+3 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.5 \\
+4 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.0 \\
+\end{longtable}
+
+\hypertarget{initializing-payoff-columns}{%
+\section{Initializing Payoff
+Columns}\label{initializing-payoff-columns}}
+
+Our ultimate objective is to add a column of option payoffs to
+\texttt{df\_opt}. We are going to accomplish this task using two
+different methods: (1) a \texttt{for} loop; (2) the
+\texttt{DataFrame.apply()} method.
+
+As a first step, let's add two columns to \texttt{df\_opt}, one for each
+method, and then initialize them both with \texttt{np.nan}, which is a
+special data type that represents missing numerical data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_opt[}\StringTok{\textquotesingle{}payoff\_loop\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ np.nan}
+\NormalTok{df\_opt[}\StringTok{\textquotesingle{}payoff\_apply\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ np.nan}
+\NormalTok{df\_opt.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike &
+payoff\_loop & payoff\_apply \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.0 & NaN & NaN \\
+1 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.5 & NaN & NaN \\
+2 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.0 & NaN & NaN \\
+3 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.5 & NaN & NaN \\
+4 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.0 & NaN & NaN \\
+\end{longtable}
+
+\hypertarget{calculate-payoff_loop-via-for-loop}{%
+\section{\texorpdfstring{Calculate \texttt{payoff\_loop} via
+\texttt{for}
+loop}{Calculate payoff\_loop via for loop}}\label{calculate-payoff_loop-via-for-loop}}
+
+Let's iterate through \texttt{df\_opt} with a \texttt{for} loop and
+calculate the payoffs one by one. Notice that we are useing the
+\texttt{.at} indexer which is specifically designed to grab a single
+value from a column.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ ix }\KeywordTok{in}\NormalTok{ df\_opt.index:}
+    
+    \CommentTok{\# grabbing data from dataframe}
+\NormalTok{    opt\_type }\OperatorTok{=}\NormalTok{ df\_opt.at[ix, }\StringTok{\textquotesingle{}type\textquotesingle{}}\NormalTok{]}
+\NormalTok{    strike }\OperatorTok{=}\NormalTok{ df\_opt.at[ix, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{]}
+\NormalTok{    upx }\OperatorTok{=}\NormalTok{ df\_opt.at[ix, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{]}
+    
+    \CommentTok{\# calculating payoff}
+\NormalTok{    payoff }\OperatorTok{=}\NormalTok{ option\_payoff(opt\_type, strike, upx)}
+    
+    \CommentTok{\# writing payoff to dataframe}
+\NormalTok{    df\_opt.at[ix, }\StringTok{\textquotesingle{}payoff\_loop\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ payoff}
+      
+\NormalTok{df\_opt}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike &
+payoff\_loop & payoff\_apply \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.0 & 0.00 & NaN \\
+1 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.5 & 0.00 & NaN \\
+2 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.0 & 0.00 & NaN \\
+3 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.5 & 0.00 & NaN \\
+4 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.0 & 0.00 & NaN \\
+5 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.5 & 0.00 & NaN \\
+6 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 273.0 & 0.00 & NaN \\
+7 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 273.5 & 0.00 & NaN \\
+8 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 274.0 & 0.27 & NaN \\
+9 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 274.5 & 0.77 & NaN \\
+10 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 275.0 & 1.27 &
+NaN \\
+11 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 275.5 & 1.77 &
+NaN \\
+12 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 276.0 & 2.27 &
+NaN \\
+13 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 276.5 & 2.77 &
+NaN \\
+14 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 277.0 & 3.27 &
+NaN \\
+15 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 277.5 & 3.77 &
+NaN \\
+16 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 278.0 & 0.00 &
+NaN \\
+17 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 278.5 & 0.00 &
+NaN \\
+18 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 279.0 & 0.00 &
+NaN \\
+19 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 279.5 & 0.00 &
+NaN \\
+20 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 280.0 & 0.00 &
+NaN \\
+\end{longtable}
+
+\hypertarget{calculate-payoff_apply-via-.apply}{%
+\section{\texorpdfstring{Calculate \texttt{payoff\_apply} via
+\texttt{.apply()}}{Calculate payoff\_apply via .apply()}}\label{calculate-payoff_apply-via-.apply}}
+
+The \texttt{DataFrame.apply()} method allows us to perform these
+calculations without explicitly iterating through \texttt{df\_opt} with
+a \texttt{for} loop. It is a way to \emph{vectorize} user defined
+functions.
+
+In order to make use of \texttt{.apply()}, we will have to construct our
+custom payoff function slightly differently. The following
+\texttt{opt\_pay()} function expects as its argument the row of a
+\texttt{DataFrame}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ opt\_pay(row):}
+    \CommentTok{\# reading function inputs from DataFrame row}
+\NormalTok{    cp }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}type\textquotesingle{}}\NormalTok{]}
+\NormalTok{    strike }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{]}
+\NormalTok{    upx }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{]}
+    
+    \CommentTok{\# option payoff logic}
+    \ControlFlowTok{if}\NormalTok{ cp }\OperatorTok{==} \StringTok{\textquotesingle{}call\textquotesingle{}}\NormalTok{:}
+\NormalTok{        payoff }\OperatorTok{=} \BuiltInTok{max}\NormalTok{(upx }\OperatorTok{{-}}\NormalTok{ strike, }\DecValTok{0}\NormalTok{)}
+    \ControlFlowTok{elif}\NormalTok{ cp }\OperatorTok{==} \StringTok{\textquotesingle{}put\textquotesingle{}}\NormalTok{:}
+\NormalTok{        payoff }\OperatorTok{=} \BuiltInTok{max}\NormalTok{(strike }\OperatorTok{{-}}\NormalTok{ upx, }\DecValTok{0}\NormalTok{)}
+    
+    \ControlFlowTok{return}\NormalTok{ payoff}
+\end{Highlighting}
+\end{Shaded}
+
+We can use \texttt{.apply()} to calculate the payoffs in a single line
+of code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_opt[}\StringTok{\textquotesingle{}payoff\_apply\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_opt.}\BuiltInTok{apply}\NormalTok{(opt\_pay, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_opt}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike &
+payoff\_loop & payoff\_apply \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.0 & 0.00 &
+0.00 \\
+1 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.5 & 0.00 &
+0.00 \\
+2 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.0 & 0.00 &
+0.00 \\
+3 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.5 & 0.00 &
+0.00 \\
+4 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.0 & 0.00 &
+0.00 \\
+5 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.5 & 0.00 &
+0.00 \\
+6 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 273.0 & 0.00 &
+0.00 \\
+7 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 273.5 & 0.00 &
+0.00 \\
+8 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 274.0 & 0.27 &
+0.27 \\
+9 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 274.5 & 0.77 &
+0.77 \\
+10 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 275.0 & 1.27 &
+1.27 \\
+11 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 275.5 & 1.77 &
+1.77 \\
+12 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 276.0 & 2.27 &
+2.27 \\
+13 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 276.5 & 2.77 &
+2.77 \\
+14 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 277.0 & 3.27 &
+3.27 \\
+15 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 277.5 & 3.77 &
+3.77 \\
+16 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 278.0 & 0.00 &
+0.00 \\
+17 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 278.5 & 0.00 &
+0.00 \\
+18 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 279.0 & 0.00 &
+0.00 \\
+19 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 279.5 & 0.00 &
+0.00 \\
+20 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 280.0 & 0.00 &
+0.00 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Add a column to \texttt{df\_opt} that
+identifies if the \texttt{upx} is bigger or smaller than
+\texttt{strike}. Do this by writing a custom function and then using
+\texttt{DataFrame.apply()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ big\_small(row):}
+\NormalTok{    upx }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{]}
+\NormalTok{    strike }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{]}
+    
+    \ControlFlowTok{if}\NormalTok{ upx }\OperatorTok{\textgreater{}=}\NormalTok{ strike:}
+        \ControlFlowTok{return}\NormalTok{(}\StringTok{\textquotesingle{}bigger\textquotesingle{}}\NormalTok{)}
+    \ControlFlowTok{else}\NormalTok{:}
+        \ControlFlowTok{return}\NormalTok{(}\StringTok{\textquotesingle{}smaller\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_opt[}\StringTok{\textquotesingle{}big\_small\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_opt.}\BuiltInTok{apply}\NormalTok{(big\_small, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_opt}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& underlying & upx & type & expiration & data\_date & strike &
+payoff\_loop & payoff\_apply & big\_small \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.0 & 0.00 & 0.00 &
+bigger \\
+1 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 270.5 & 0.00 & 0.00 &
+bigger \\
+2 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.0 & 0.00 & 0.00 &
+bigger \\
+3 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 271.5 & 0.00 & 0.00 &
+bigger \\
+4 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.0 & 0.00 & 0.00 &
+bigger \\
+5 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 272.5 & 0.00 & 0.00 &
+bigger \\
+6 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 273.0 & 0.00 & 0.00 &
+bigger \\
+7 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 273.5 & 0.00 & 0.00 &
+bigger \\
+8 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 274.0 & 0.27 & 0.27 &
+smaller \\
+9 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 274.5 & 0.77 & 0.77 &
+smaller \\
+10 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 275.0 & 1.27 & 1.27
+& smaller \\
+11 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 275.5 & 1.77 & 1.77
+& smaller \\
+12 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 276.0 & 2.27 & 2.27
+& smaller \\
+13 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 276.5 & 2.77 & 2.77
+& smaller \\
+14 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 277.0 & 3.27 & 3.27
+& smaller \\
+15 & SPY & 273.73 & put & 2018-11-16 & 2018-11-16 & 277.5 & 3.77 & 3.77
+& smaller \\
+16 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 278.0 & 0.00 & 0.00
+& smaller \\
+17 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 278.5 & 0.00 & 0.00
+& smaller \\
+18 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 279.0 & 0.00 & 0.00
+& smaller \\
+19 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 279.5 & 0.00 & 0.00
+& smaller \\
+20 & SPY & 273.73 & call & 2018-11-16 & 2018-11-16 & 280.0 & 0.00 & 0.00
+& smaller \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{related-reading-3}{%
+\section{Related Reading}\label{related-reading-3}}
+
+\emph{A Whirlwind Tour of Python} - Chapter 8 - Control Flow
+
+\emph{A Whirlwind Tour of Python} - Chapter 9 - Defining Functions
 
 \bookmarksetup{startatroot}
 
