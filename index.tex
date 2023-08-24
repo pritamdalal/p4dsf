@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, interior hidden, breakable, enhanced, frame hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -4987,6 +4987,773 @@ Aggregation and Grouping Operations
 
 \emph{Options, Futures, and Other Derivatives (Hull)} - Chapter 15 (pp
 325-329) The Black-Scholes-Merton Model
+
+\bookmarksetup{startatroot}
+
+\hypertarget{groupby-and-.agg---part-2}{%
+\chapter{\texorpdfstring{\texttt{.groupby()} and \texttt{.agg()} - Part
+2}{.groupby() and .agg() - Part 2}}\label{groupby-and-.agg---part-2}}
+
+The purpose of this chapter is to demonstrate how to use
+\texttt{.groupby()} and \texttt{.agg()} with user defined functions.
+
+In service of this objective our analysis goal will be to calculate
+three monthly statistics for several ETFs during the year of 2020. The
+three statistics we will calculate are:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  average daily volume
+\item
+  monthly return
+\item
+  monthly volatility
+\end{enumerate}
+
+\hypertarget{loading-packages-3}{%
+\section{Loading Packages}\label{loading-packages-3}}
+
+Let's load the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-6}{%
+\section{Reading-In Data}\label{reading-in-data-6}}
+
+In this chapter we will be working with price data for the Select Sector
+SPDR ETFs. Each of these funds tracks a particular subset (sector) of
+the SP\&500 Index. For example, XLF tracks the financial sector and has
+major holdings in JP Morgan, Wells Fargo, and Bank of America.
+
+Let's use \textbf{pandas\_datareader} to grab the data from Yahoo
+Finance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{25}
+\NormalTok{lst\_symbols }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}XLY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLP\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLE\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLF\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLV\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLI\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLB\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLRE\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLK\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}XLU\textquotesingle{}}\NormalTok{,]}
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo(lst\_symbols, start}\OperatorTok{=}\StringTok{\textquotesingle{}2020{-}01{-}01\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2020{-}12{-}31\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_etf }\OperatorTok{=}\NormalTok{ df\_etf.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  10 of 10 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}llllllllllllllllllllll@{}}
+\toprule\noalign{}
+&
+\multicolumn{10}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 18\tabcolsep}}{%
+Adj Close} & ... &
+\multicolumn{10}{>{\raggedright\arraybackslash}p{(\columnwidth - 42\tabcolsep) * \real{0.0000} + 18\tabcolsep}@{}}{%
+Volume} \\
+& XLB & XLE & XLF & XLI & XLK & XLP & XLRE & XLU & XLV & XLY & ... & XLB
+& XLE & XLF & XLI & XLK & XLP & XLRE & XLU & XLV & XLY \\
+Date & & & & & & & & & & & & & & & & & & & & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2020-01-02 & 56.50 & 51.06 & 28.88 & 78.28 & 90.25 & 57.09 & 34.06 &
+57.12 & 96.64 & 123.04 & ... & 7357400 & 11944700 & 28843300 & 16121300
+& 13283500 & 14460700 & 4380100 & 19107700 & 6277400 & 6295500 \\
+2020-01-03 & 55.58 & 50.90 & 28.58 & 78.13 & 89.24 & 57.00 & 34.31 &
+57.24 & 95.80 & 122.00 & ... & 12423200 & 29502900 & 51363600 & 17571300
+& 15011800 & 26388900 & 3499000 & 17989300 & 8247500 & 5596400 \\
+2020-01-06 & 55.34 & 51.30 & 28.56 & 78.15 & 89.45 & 57.12 & 34.32 &
+57.29 & 96.39 & 122.34 & ... & 15764400 & 22458100 & 27956100 & 16153100
+& 7815000 & 22541700 & 3097200 & 10444500 & 6441800 & 6411600 \\
+2020-01-07 & 55.28 & 51.16 & 28.37 & 77.99 & 89.41 & 56.68 & 33.94 &
+57.21 & 96.20 & 122.14 & ... & 20266900 & 11462500 & 39627500 & 16675400
+& 7681800 & 15607600 & 3550600 & 13070300 & 6335300 & 9150800 \\
+2020-01-08 & 55.47 & 50.32 & 28.56 & 78.26 & 90.37 & 56.89 & 34.11 &
+57.19 & 96.83 & 122.51 & ... & 8079600 & 19021400 & 47966600 & 10677700
+& 11627200 & 11451400 & 5089000 & 12741400 & 7494700 & 4725900 \\
+\end{longtable}
+
+This data is not as tidy as we would like. Let's use method chaining to
+perform a series of data munging operations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_etf}
+\NormalTok{        .stack() }\CommentTok{\#pivot the table}
+\NormalTok{        .reset\_index() }\CommentTok{\#turn date into a column}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}level\_1\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{\}) }\CommentTok{\#renaming a column}
+\NormalTok{        .sort\_values(by}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{]) }\CommentTok{\#sort}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Symbols\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Adj Close\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Close\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, }
+                         \StringTok{\textquotesingle{}High\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}high\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Low\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}low\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Open\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}open\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Volume\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{\}) }\CommentTok{\#renaming columns}
+\NormalTok{        [[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}open\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}high\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}low\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]] }\CommentTok{\#reordering columns}
+\NormalTok{        .reset\_index(drop}\OperatorTok{=}\VariableTok{True}\NormalTok{)    }
+\NormalTok{    )}
+\NormalTok{df\_etf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2020-01-02 & XLB & 61.83 & 61.94 & 60.63 & 60.70 & 7357400 &
+56.50 \\
+1 & 2020-01-03 & XLB & 60.08 & 60.44 & 59.70 & 59.72 & 12423200 &
+55.58 \\
+2 & 2020-01-06 & XLB & 59.55 & 59.83 & 59.41 & 59.46 & 15764400 &
+55.34 \\
+3 & 2020-01-07 & XLB & 59.36 & 59.80 & 59.20 & 59.39 & 20266900 &
+55.28 \\
+4 & 2020-01-08 & XLB & 59.40 & 59.84 & 59.20 & 59.60 & 8079600 &
+55.47 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2515 & 2020-12-23 & XLY & 157.24 & 158.05 & 156.57 & 157.55 & 2173000 &
+154.46 \\
+2516 & 2020-12-24 & XLY & 157.70 & 158.12 & 157.21 & 157.88 & 1048800 &
+154.79 \\
+2517 & 2020-12-28 & XLY & 159.42 & 160.32 & 158.60 & 159.68 & 2912400 &
+156.55 \\
+2518 & 2020-12-29 & XLY & 160.24 & 160.53 & 158.98 & 159.73 & 2431200 &
+156.60 \\
+2519 & 2020-12-30 & XLY & 160.30 & 160.93 & 160.13 & 160.69 & 2440700 &
+157.54 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} Use a \texttt{DataFrame} attribute to
+determine the number of rows and columns in \texttt{df\_etf}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.shape}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+(2520, 8)
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{exploring-and-cleaning-the-data}{%
+\section{Exploring and Cleaning the
+Data}\label{exploring-and-cleaning-the-data}}
+
+As we can see from the coding challenge, this data set is large (by our
+standards). Whenever I encounter a new data set that I can't look at in
+its entirety, I like to do a bit of exploration via the built-in
+\textbf{pandas} methods.
+
+We know we have a variety of ETFs in our data, but it would be useful to
+know how many (especially if we were expecting a certain number).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{].unique())}
+\BuiltInTok{print}\NormalTok{(df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{].unique().size)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+['XLB' 'XLE' 'XLF' 'XLI' 'XLK' 'XLP' 'XLRE' 'XLU' 'XLV' 'XLY']
+10
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} What \texttt{DataFrame} attribute could we
+use to check the data types of the columns of \texttt{df\_etf}?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.info()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 2520 entries, 0 to 2519
+Data columns (total 8 columns):
+ #   Column     Non-Null Count  Dtype         
+---  ------     --------------  -----         
+ 0   date       2520 non-null   datetime64[ns]
+ 1   symbol     2520 non-null   object        
+ 2   open       2520 non-null   float64       
+ 3   high       2520 non-null   float64       
+ 4   low        2520 non-null   float64       
+ 5   close      2520 non-null   float64       
+ 6   volume     2520 non-null   int64         
+ 7   adj_close  2520 non-null   float64       
+dtypes: datetime64[ns](1), float64(5), int64(1), object(1)
+memory usage: 157.6+ KB
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+When I work with a time series of daily prices that I expect to come
+from a certain date range, I like to check the first and last trade
+dates that are represented in the data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{())}
+\BuiltInTok{print}\NormalTok{(df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{].}\BuiltInTok{max}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+2020-01-02 00:00:00
+2020-12-30 00:00:00
+\end{verbatim}
+
+Here is what we know about our data set thus far:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  10 different ETFs are represented.
+\item
+  Prices are coming from the entirety of 2020.
+\end{enumerate}
+
+Here are some things that we aren't necessarily sure of that would be
+worth checking in a high-stakes situation:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Is there a row/price for each symbol on each trade date?
+\item
+  Is there ever more than one row/price for a given symbol on a given
+  trade date?
+\end{enumerate}
+
+We won't bother answering these questions for the purposes of this
+chapter, but these are the types of data-integrity questions I will
+often try to answer when encountering a new data set.
+
+\hypertarget{calculating-daily-returns-with-groupby}{%
+\section{\texorpdfstring{Calculating Daily Returns with
+\texttt{groupby()}}{Calculating Daily Returns with groupby()}}\label{calculating-daily-returns-with-groupby}}
+
+Our ultimate goal is to calculate monthly returns and monthly
+volatilities for each ETF in \texttt{df\_etf}. These quantities are both
+functions of daily returns. So our first order of business is to
+calculate daily returns.
+
+In a previous tutorial we calculated daily returns in a simple
+vectorized fashion. Unfortunately, we can't use the exact same approach
+here because there are multiple ETFs in the data set.
+
+To overcome this challenge we will use our first application of
+\texttt{.groupby()}.
+
+Here is the \texttt{.groupby()} code that calculates daily returns for
+each ETF.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# sorting values to get everything in the right order}
+\NormalTok{df\_etf.sort\_values([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{], inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+
+\CommentTok{\# vectorized return calculation}
+\NormalTok{df\_etf[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{].groupby(df\_etf[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{]).pct\_change()}
+\NormalTok{df\_etf.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& date & symbol & open & high & low & close & volume & adj\_close &
+dly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2020-01-02 & XLB & 61.83 & 61.94 & 60.63 & 60.70 & 7357400 & 56.50 &
+NaN \\
+1 & 2020-01-03 & XLB & 60.08 & 60.44 & 59.70 & 59.72 & 12423200 & 55.58
+& -0.016145 \\
+2 & 2020-01-06 & XLB & 59.55 & 59.83 & 59.41 & 59.46 & 15764400 & 55.34
+& -0.004354 \\
+3 & 2020-01-07 & XLB & 59.36 & 59.80 & 59.20 & 59.39 & 20266900 & 55.28
+& -0.001177 \\
+4 & 2020-01-08 & XLB & 59.40 & 59.84 & 59.20 & 59.60 & 8079600 & 55.47 &
+0.003536 \\
+\end{longtable}
+
+\hypertarget{adding-year-and-month-columns}{%
+\section{\texorpdfstring{Adding \texttt{year} and \texttt{month}
+Columns}{Adding year and month Columns}}\label{adding-year-and-month-columns}}
+
+The ultimate goal is to calculate monthly statistics for each of the
+ETFs in our data set.
+
+As a preliminary step let's add a \texttt{month} and \texttt{year}
+column to the \texttt{df\_etf} by utilizing the \texttt{.dt} attribute
+that \textbf{pandas} provides for date columns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{].dt.year}
+\NormalTok{df\_etf[}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_etf[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{].dt.month}
+\NormalTok{df\_etf[[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{]].head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& date & year & month \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2020-01-02 & 2020 & 1 \\
+1 & 2020-01-03 & 2020 & 1 \\
+2 & 2020-01-06 & 2020 & 1 \\
+3 & 2020-01-07 & 2020 & 1 \\
+4 & 2020-01-08 & 2020 & 1 \\
+\end{longtable}
+
+Let's do a quick data-integrity check: There are 10 ETFs in our data set
+and there are 12 months in a year, so the number of symbol-year-month
+combinations should be 120.
+
+The following code counts the number of rows associated with each
+symbol-year-month combination and puts that data into a
+\texttt{DataFrame}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_num\_rows }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{]).size().reset\_index()}
+\NormalTok{df\_num\_rows.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & year & month & 0 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 2020 & 1 & 21 \\
+1 & XLB & 2020 & 2 & 19 \\
+2 & XLB & 2020 & 3 & 22 \\
+3 & XLB & 2020 & 4 & 21 \\
+4 & XLB & 2020 & 5 & 20 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} Confirm that there are the correct number of
+symbol-year-month combinations in \texttt{df\_num\_rows}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_num\_rows.shape}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+(120, 4)
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+Now that we've added the \texttt{year} and \texttt{month} columns we can
+proceed to calculating our monthly statistics.
+
+\hypertarget{average-daily-volume}{%
+\section{Average Daily Volume}\label{average-daily-volume}}
+
+Let's start with the most straight-forward calculation: average daily
+volume, over each month, for all 10 of the ETFs in our data set.
+
+This amounts to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  grouping by \texttt{symbol}, \texttt{month}, and \texttt{year}
+\item
+  applying the built-in \texttt{np.mean()} function to the
+  \texttt{volume} column
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_volume }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{].agg([np.mean]).reset\_index()}
+\NormalTok{df\_volume.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}mean\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}avg\_volume\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_volume.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & year & month & avg\_volume \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 2020 & 1 & 7.235429e+06 \\
+1 & XLB & 2020 & 2 & 1.058022e+07 \\
+2 & XLB & 2020 & 3 & 1.432920e+07 \\
+3 & XLB & 2020 & 4 & 9.000557e+06 \\
+4 & XLB & 2020 & 5 & 4.829185e+06 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} Calculate the maximum daily volume for each
+symbol, \emph{over the entire year}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{].agg([np.}\BuiltInTok{max}\NormalTok{]).reset\_index()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& symbol & year & amax \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 2020 & 30741700 \\
+1 & XLE & 2020 & 99356700 \\
+2 & XLF & 2020 & 256525000 \\
+3 & XLI & 2020 & 79118200 \\
+4 & XLK & 2020 & 61727100 \\
+5 & XLP & 2020 & 50978800 \\
+6 & XLRE & 2020 & 49899800 \\
+7 & XLU & 2020 & 90263100 \\
+8 & XLV & 2020 & 39561900 \\
+9 & XLY & 2020 & 20616100 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{monthly-returns}{%
+\section{Monthly Returns}\label{monthly-returns}}
+
+Next, let's calculate monthly returns for each of the ETFs in our data
+set. This amounts to:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  grouping by \texttt{symbol}, \texttt{month}, and \texttt{year}
+\item
+  applying an aggregation function to the \texttt{daily\_returns} column
+\end{enumerate}
+
+These are the same two steps that we have done in our previous
+aggregation examples. However, there is one additional wrinkle that we
+are going to have to contend with.
+
+In the previous section, we used simple built-in aggregation funtions
+available through \texttt{numpy}, such as \texttt{np.max} and
+\texttt{np.mean}. Calculating monthly returns from daily returns is a
+little more complicated.
+
+Thus, we are going to have to first create a custom function for
+calculating monthly returns from daily returns, and then use this custom
+function in \texttt{.agg()}.
+
+The following code defines our monthly returns function in terms of
+daily returns:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ monthly\_ret(dly\_ret):}
+    \ControlFlowTok{return}\NormalTok{ np.prod(}\DecValTok{1} \OperatorTok{+}\NormalTok{ dly\_ret) }\OperatorTok{{-}} \DecValTok{1}
+\end{Highlighting}
+\end{Shaded}
+
+Now we can apply our \texttt{monthly\_ret()} function for all of our
+ETFs using the following code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_ret }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{].agg([monthly\_ret]).reset\_index()}
+\NormalTok{df\_ret.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & month & year & monthly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 1 & 2020 & -0.050577 \\
+1 & XLB & 2 & 2020 & -0.085199 \\
+2 & XLB & 3 & 2020 & -0.145675 \\
+3 & XLB & 4 & 2020 & 0.151865 \\
+4 & XLB & 5 & 2020 & 0.068813 \\
+\end{longtable}
+
+We can see from our calculation that in March of 2020 XLB had a monthly
+return of -14.6\%.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} Which ETF had the highest single monthly
+return in all of 2020? What was the month?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_ret.sort\_values(by}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}monthly\_ret\textquotesingle{}}\NormalTok{], ascending}\OperatorTok{=}\VariableTok{False}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & month & year & monthly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+15 & XLE & 4 & 2020 & 0.307639 \\
+22 & XLE & 11 & 2020 & 0.279944 \\
+111 & XLY & 4 & 2020 & 0.188825 \\
+34 & XLF & 11 & 2020 & 0.168483 \\
+46 & XLI & 11 & 2020 & 0.160274 \\
+... & ... & ... & ... & ... \\
+74 & XLRE & 3 & 2020 & -0.157380 \\
+20 & XLE & 9 & 2020 & -0.159888 \\
+38 & XLI & 3 & 2020 & -0.192529 \\
+26 & XLF & 3 & 2020 & -0.216999 \\
+14 & XLE & 3 & 2020 & -0.358074 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{monthly-volatility}{%
+\section{Monthly Volatility}\label{monthly-volatility}}
+
+Let's use a similar process to calculate the monthly volatility for each
+of the ETFs.
+
+We begin by defining a custom function that calculates the monthly
+volatility from daily returns. Recall that industry convention is to
+state these volatilities in annualized terms.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ monthly\_vol(dly\_ret):}
+    \ControlFlowTok{return}\NormalTok{ np.std(dly\_ret) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+We can now use our \texttt{monthly\_vol()} function in to perform an
+aggregating calculation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_vol }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{].agg([monthly\_vol]).reset\_index()}
+\NormalTok{df\_vol.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & month & year & monthly\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 1 & 2020 & 0.150336 \\
+1 & XLB & 2 & 2020 & 0.282201 \\
+2 & XLB & 3 & 2020 & 0.932265 \\
+3 & XLB & 4 & 2020 & 0.503394 \\
+4 & XLB & 5 & 2020 & 0.277311 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Coding Challenge:} What was the volatility for XLF in December
+2018?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_vol.query(}\StringTok{\textquotesingle{}symbol == "XLF" \& month == 12\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & month & year & monthly\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+35 & XLF & 12 & 2020 & 0.137471 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{combining-metrics---inner-.merge}{%
+\section{\texorpdfstring{Combining Metrics - inner
+\texttt{.merge()}}{Combining Metrics - inner .merge()}}\label{combining-metrics---inner-.merge}}
+
+Now, suppose that we want to combine our three metrics into one report -
+meaning that we want them organized into one \texttt{DataFrame} in an
+easy to read fashion.
+
+One way to do this is to use the \texttt{pandas.merge()} method that we
+learned in the previous tutorial to join together \texttt{df\_volume}
+(average daily volume), \texttt{df\_ret} (monthly returns), and
+\texttt{df\_vol} (monthly volatility).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_joined }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_volume}
+\NormalTok{        .merge(df\_ret, on}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{])}
+\NormalTok{        .merge(df\_vol, on}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{])}
+\NormalTok{    )}
+\NormalTok{df\_joined.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& symbol & year & month & avg\_volume & monthly\_ret & monthly\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 2020 & 1 & 7.235429e+06 & -0.050577 & 0.150336 \\
+1 & XLB & 2020 & 2 & 1.058022e+07 & -0.085199 & 0.282201 \\
+2 & XLB & 2020 & 3 & 1.432920e+07 & -0.145675 & 0.932265 \\
+3 & XLB & 2020 & 4 & 9.000557e+06 & 0.151865 & 0.503394 \\
+4 & XLB & 2020 & 5 & 4.829185e+06 & 0.068813 & 0.277311 \\
+\end{longtable}
+
+\hypertarget{combining-metrics---multiple-aggregation}{%
+\section{Combining Metrics - multiple
+aggregation}\label{combining-metrics---multiple-aggregation}}
+
+Another way to combine all our statistics into a single
+\texttt{DataFrame} is to supply all of our custom aggregation functions
+as arguments to the \texttt{.agg()} function at the same time.
+
+Here is what that looks like:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# defining aggregations}
+\NormalTok{agg\_funcs }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    \{}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{:[np.mean], }\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:[monthly\_ret, monthly\_vol]\}}
+
+\CommentTok{\# performing all aggregations all three aggregations at once}
+\NormalTok{df\_joined }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{]).agg(agg\_funcs).reset\_index()}
+
+\CommentTok{\# looking at the data frame}
+\NormalTok{df\_joined.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& symbol & month & year & volume &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 12\tabcolsep) * \real{0.0000} + 2\tabcolsep}@{}}{%
+dly\_ret} \\
+& & & & mean & monthly\_ret & monthly\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 1 & 2020 & 7.235429e+06 & -0.050577 & 0.150336 \\
+1 & XLB & 2 & 2020 & 1.058022e+07 & -0.085199 & 0.282201 \\
+2 & XLB & 3 & 2020 & 1.432920e+07 & -0.145675 & 0.932265 \\
+3 & XLB & 4 & 2020 & 9.000557e+06 & 0.151865 & 0.503394 \\
+4 & XLB & 5 & 2020 & 4.829185e+06 & 0.068813 & 0.277311 \\
+\end{longtable}
+
+Notice that the input into the \texttt{.agg()} method is a \texttt{dict}
+whose elements are pairs that look like:
+
+\texttt{\textquotesingle{}column\_name\textquotesingle{}:{[}list\_of\_aggregating\_functions}{]}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Modify the code above to add maximum daily
+volume to the report.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# defining aggregations}
+\NormalTok{agg\_funcs }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    \{}\StringTok{\textquotesingle{}volume\textquotesingle{}}\NormalTok{:[np.mean, np.}\BuiltInTok{max}\NormalTok{], }\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:[monthly\_ret, monthly\_vol]\}}
+
+\CommentTok{\# performing all aggregations all three aggregations at once}
+\NormalTok{df\_joined }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_etf.groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{]).agg(agg\_funcs).reset\_index()}
+
+\CommentTok{\# looking at the data frame}
+\NormalTok{df\_joined.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& symbol & month & year &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+volume} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0000} + 2\tabcolsep}@{}}{%
+dly\_ret} \\
+& & & & mean & amax & monthly\_ret & monthly\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & XLB & 1 & 2020 & 7.235429e+06 & 20266900 & -0.050577 & 0.150336 \\
+1 & XLB & 2 & 2020 & 1.058022e+07 & 30741700 & -0.085199 & 0.282201 \\
+2 & XLB & 3 & 2020 & 1.432920e+07 & 28390200 & -0.145675 & 0.932265 \\
+3 & XLB & 4 & 2020 & 9.000557e+06 & 30738000 & 0.151865 & 0.503394 \\
+4 & XLB & 5 & 2020 & 4.829185e+06 & 7386300 & 0.068813 & 0.277311 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{related-reading-6}{%
+\section{Related Reading}\label{related-reading-6}}
+
+\emph{Python Data Science Handbook (VanderPlas)} - Section 3.7 -
+Combining Datasets: Merging and Joining
+
+\emph{Python Data Science Handbook (VanderPlas)} - Section 3.8 -
+Aggregation and Grouping
+
+\emph{Python for Data Analysis (McKinney)} - Chapter 9 (pp 251-274) Data
+Aggregation and Grouping Operations
 
 \bookmarksetup{startatroot}
 

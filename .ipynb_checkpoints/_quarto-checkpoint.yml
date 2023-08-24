@@ -14,6 +14,7 @@ book:
     - chapters/05_functions_apply/functions_apply.ipynb
     - chapters/06_merge/merge.ipynb
     - chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.ipynb
+    - chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.ipynb
     - references.qmd
 
 bibliography: references.bib

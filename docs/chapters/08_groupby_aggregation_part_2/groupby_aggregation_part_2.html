@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Analysis in Finance - 8&nbsp; .groupby() and .agg() - Part 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">`.groupby()` and `.agg()` - Part 2</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Analysis in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - Part 1</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - Part 2</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">8.1</span> Loading Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">8.2</span> Reading-In Data</a></li>
+  <li><a href="#exploring-and-cleaning-the-data" id="toc-exploring-and-cleaning-the-data" class="nav-link" data-scroll-target="#exploring-and-cleaning-the-data"><span class="header-section-number">8.3</span> Exploring and Cleaning the Data</a></li>
+  <li><a href="#calculating-daily-returns-with-groupby" id="toc-calculating-daily-returns-with-groupby" class="nav-link" data-scroll-target="#calculating-daily-returns-with-groupby"><span class="header-section-number">8.4</span> Calculating Daily Returns with <code>groupby()</code></a></li>
+  <li><a href="#adding-year-and-month-columns" id="toc-adding-year-and-month-columns" class="nav-link" data-scroll-target="#adding-year-and-month-columns"><span class="header-section-number">8.5</span> Adding <code>year</code> and <code>month</code> Columns</a></li>
+  <li><a href="#average-daily-volume" id="toc-average-daily-volume" class="nav-link" data-scroll-target="#average-daily-volume"><span class="header-section-number">8.6</span> Average Daily Volume</a></li>
+  <li><a href="#monthly-returns" id="toc-monthly-returns" class="nav-link" data-scroll-target="#monthly-returns"><span class="header-section-number">8.7</span> Monthly Returns</a></li>
+  <li><a href="#monthly-volatility" id="toc-monthly-volatility" class="nav-link" data-scroll-target="#monthly-volatility"><span class="header-section-number">8.8</span> Monthly Volatility</a></li>
+  <li><a href="#combining-metrics---inner-.merge" id="toc-combining-metrics---inner-.merge" class="nav-link" data-scroll-target="#combining-metrics---inner-.merge"><span class="header-section-number">8.9</span> Combining Metrics - inner <code>.merge()</code></a></li>
+  <li><a href="#combining-metrics---multiple-aggregation" id="toc-combining-metrics---multiple-aggregation" class="nav-link" data-scroll-target="#combining-metrics---multiple-aggregation"><span class="header-section-number">8.10</span> Combining Metrics - multiple aggregation</a></li>
+  <li><a href="#related-reading" id="toc-related-reading" class="nav-link" data-scroll-target="#related-reading"><span class="header-section-number">8.11</span> Related Reading</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - Part 2</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>The purpose of this chapter is to demonstrate how to use <code>.groupby()</code> and <code>.agg()</code> with user defined functions.</p>
+<p>In service of this objective our analysis goal will be to calculate three monthly statistics for several ETFs during the year of 2020. The three statistics we will calculate are:</p>
+<ol type="1">
+<li><p>average daily volume</p></li>
+<li><p>monthly return</p></li>
+<li><p>monthly volatility</p></li>
+</ol>
+<section id="loading-packages" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">8.1</span> Loading Packages</h2>
+<p>Let’s load the packages that we will need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reading-in-data" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">8.2</span> Reading-In Data</h2>
+<p>In this chapter we will be working with price data for the Select Sector SPDR ETFs. Each of these funds tracks a particular subset (sector) of the SP&amp;500 Index. For example, XLF tracks the financial sector and has major holdings in JP Morgan, Wells Fargo, and Bank of America.</p>
+<p>Let’s use <strong>pandas_datareader</strong> to grab the data from Yahoo Finance.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">25</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lst_symbols <span class="op">=</span> [<span class="st">'XLY'</span>, <span class="st">'XLP'</span>, <span class="st">'XLE'</span>, <span class="st">'XLF'</span>, <span class="st">'XLV'</span>, <span class="st">'XLI'</span>, <span class="st">'XLB'</span>, <span class="st">'XLRE'</span>, <span class="st">'XLK'</span>, <span class="st">'XLU'</span>,]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> pdr.get_data_yahoo(lst_symbols, start<span class="op">=</span><span class="st">'2020-01-01'</span>, end<span class="op">=</span><span class="st">'2020-12-31'</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> df_etf.<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[*********************100%***********************]  10 of 10 completed</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th colspan="10" data-quarto-table-cell-role="th" data-halign="left">Adj Close</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th colspan="10" data-quarto-table-cell-role="th" data-halign="left">Volume</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">XLB</th>
+<th data-quarto-table-cell-role="th">XLE</th>
+<th data-quarto-table-cell-role="th">XLF</th>
+<th data-quarto-table-cell-role="th">XLI</th>
+<th data-quarto-table-cell-role="th">XLK</th>
+<th data-quarto-table-cell-role="th">XLP</th>
+<th data-quarto-table-cell-role="th">XLRE</th>
+<th data-quarto-table-cell-role="th">XLU</th>
+<th data-quarto-table-cell-role="th">XLV</th>
+<th data-quarto-table-cell-role="th">XLY</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">XLB</th>
+<th data-quarto-table-cell-role="th">XLE</th>
+<th data-quarto-table-cell-role="th">XLF</th>
+<th data-quarto-table-cell-role="th">XLI</th>
+<th data-quarto-table-cell-role="th">XLK</th>
+<th data-quarto-table-cell-role="th">XLP</th>
+<th data-quarto-table-cell-role="th">XLRE</th>
+<th data-quarto-table-cell-role="th">XLU</th>
+<th data-quarto-table-cell-role="th">XLV</th>
+<th data-quarto-table-cell-role="th">XLY</th>
+</tr>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020-01-02</td>
+<td>56.50</td>
+<td>51.06</td>
+<td>28.88</td>
+<td>78.28</td>
+<td>90.25</td>
+<td>57.09</td>
+<td>34.06</td>
+<td>57.12</td>
+<td>96.64</td>
+<td>123.04</td>
+<td>...</td>
+<td>7357400</td>
+<td>11944700</td>
+<td>28843300</td>
+<td>16121300</td>
+<td>13283500</td>
+<td>14460700</td>
+<td>4380100</td>
+<td>19107700</td>
+<td>6277400</td>
+<td>6295500</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-01-03</td>
+<td>55.58</td>
+<td>50.90</td>
+<td>28.58</td>
+<td>78.13</td>
+<td>89.24</td>
+<td>57.00</td>
+<td>34.31</td>
+<td>57.24</td>
+<td>95.80</td>
+<td>122.00</td>
+<td>...</td>
+<td>12423200</td>
+<td>29502900</td>
+<td>51363600</td>
+<td>17571300</td>
+<td>15011800</td>
+<td>26388900</td>
+<td>3499000</td>
+<td>17989300</td>
+<td>8247500</td>
+<td>5596400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020-01-06</td>
+<td>55.34</td>
+<td>51.30</td>
+<td>28.56</td>
+<td>78.15</td>
+<td>89.45</td>
+<td>57.12</td>
+<td>34.32</td>
+<td>57.29</td>
+<td>96.39</td>
+<td>122.34</td>
+<td>...</td>
+<td>15764400</td>
+<td>22458100</td>
+<td>27956100</td>
+<td>16153100</td>
+<td>7815000</td>
+<td>22541700</td>
+<td>3097200</td>
+<td>10444500</td>
+<td>6441800</td>
+<td>6411600</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2020-01-07</td>
+<td>55.28</td>
+<td>51.16</td>
+<td>28.37</td>
+<td>77.99</td>
+<td>89.41</td>
+<td>56.68</td>
+<td>33.94</td>
+<td>57.21</td>
+<td>96.20</td>
+<td>122.14</td>
+<td>...</td>
+<td>20266900</td>
+<td>11462500</td>
+<td>39627500</td>
+<td>16675400</td>
+<td>7681800</td>
+<td>15607600</td>
+<td>3550600</td>
+<td>13070300</td>
+<td>6335300</td>
+<td>9150800</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2020-01-08</td>
+<td>55.47</td>
+<td>50.32</td>
+<td>28.56</td>
+<td>78.26</td>
+<td>90.37</td>
+<td>56.89</td>
+<td>34.11</td>
+<td>57.19</td>
+<td>96.83</td>
+<td>122.51</td>
+<td>...</td>
+<td>8079600</td>
+<td>19021400</td>
+<td>47966600</td>
+<td>10677700</td>
+<td>11627200</td>
+<td>11451400</td>
+<td>5089000</td>
+<td>12741400</td>
+<td>7494700</td>
+<td>4725900</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 60 columns</p>
+</div>
+</div>
+</div>
+<p>This data is not as tidy as we would like. Let’s use method chaining to perform a series of data munging operations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df_etf</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .stack() <span class="co">#pivot the table</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .reset_index() <span class="co">#turn date into a column</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'level_1'</span>:<span class="st">'Symbols'</span>}) <span class="co">#renaming a column</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .sort_values(by<span class="op">=</span>[<span class="st">'Symbols'</span>, <span class="st">'Date'</span>]) <span class="co">#sort</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>, <span class="st">'Symbols'</span>:<span class="st">'symbol'</span>, <span class="st">'Adj Close'</span>:<span class="st">'adj_close'</span>,<span class="st">'Close'</span>:<span class="st">'close'</span>, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'High'</span>:<span class="st">'high'</span>, <span class="st">'Low'</span>:<span class="st">'low'</span>, <span class="st">'Open'</span>:<span class="st">'open'</span>, <span class="st">'Volume'</span>:<span class="st">'volume'</span>}) <span class="co">#renaming columns</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        [[<span class="st">'date'</span>, <span class="st">'symbol'</span>,<span class="st">'open'</span>, <span class="st">'high'</span>, <span class="st">'low'</span>, <span class="st">'close'</span>, <span class="st">'volume'</span>, <span class="st">'adj_close'</span>]] <span class="co">#reordering columns</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        .reset_index(drop<span class="op">=</span><span class="va">True</span>)    </span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>df_etf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2020-01-02</td>
+<td>XLB</td>
+<td>61.83</td>
+<td>61.94</td>
+<td>60.63</td>
+<td>60.70</td>
+<td>7357400</td>
+<td>56.50</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2020-01-03</td>
+<td>XLB</td>
+<td>60.08</td>
+<td>60.44</td>
+<td>59.70</td>
+<td>59.72</td>
+<td>12423200</td>
+<td>55.58</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2020-01-06</td>
+<td>XLB</td>
+<td>59.55</td>
+<td>59.83</td>
+<td>59.41</td>
+<td>59.46</td>
+<td>15764400</td>
+<td>55.34</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2020-01-07</td>
+<td>XLB</td>
+<td>59.36</td>
+<td>59.80</td>
+<td>59.20</td>
+<td>59.39</td>
+<td>20266900</td>
+<td>55.28</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2020-01-08</td>
+<td>XLB</td>
+<td>59.40</td>
+<td>59.84</td>
+<td>59.20</td>
+<td>59.60</td>
+<td>8079600</td>
+<td>55.47</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2515</td>
+<td>2020-12-23</td>
+<td>XLY</td>
+<td>157.24</td>
+<td>158.05</td>
+<td>156.57</td>
+<td>157.55</td>
+<td>2173000</td>
+<td>154.46</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2516</td>
+<td>2020-12-24</td>
+<td>XLY</td>
+<td>157.70</td>
+<td>158.12</td>
+<td>157.21</td>
+<td>157.88</td>
+<td>1048800</td>
+<td>154.79</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2517</td>
+<td>2020-12-28</td>
+<td>XLY</td>
+<td>159.42</td>
+<td>160.32</td>
+<td>158.60</td>
+<td>159.68</td>
+<td>2912400</td>
+<td>156.55</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2518</td>
+<td>2020-12-29</td>
+<td>XLY</td>
+<td>160.24</td>
+<td>160.53</td>
+<td>158.98</td>
+<td>159.73</td>
+<td>2431200</td>
+<td>156.60</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2519</td>
+<td>2020-12-30</td>
+<td>XLY</td>
+<td>160.30</td>
+<td>160.93</td>
+<td>160.13</td>
+<td>160.69</td>
+<td>2440700</td>
+<td>157.54</td>
+</tr>
+</tbody>
+</table>
+
+<p>2520 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Coding Challenge:</strong> Use a <code>DataFrame</code> attribute to determine the number of rows and columns in <code>df_etf</code>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_etf.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>(2520, 8)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="exploring-and-cleaning-the-data" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="exploring-and-cleaning-the-data"><span class="header-section-number">8.3</span> Exploring and Cleaning the Data</h2>
+<p>As we can see from the coding challenge, this data set is large (by our standards). Whenever I encounter a new data set that I can’t look at in its entirety, I like to do a bit of exploration via the built-in <strong>pandas</strong> methods.</p>
+<p>We know we have a variety of ETFs in our data, but it would be useful to know how many (especially if we were expecting a certain number).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'symbol'</span>].unique())</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'symbol'</span>].unique().size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['XLB' 'XLE' 'XLF' 'XLI' 'XLK' 'XLP' 'XLRE' 'XLU' 'XLV' 'XLY']
+10</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Coding Challenge:</strong> What <code>DataFrame</code> attribute could we use to check the data types of the columns of <code>df_etf</code>?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_etf.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 2520 entries, 0 to 2519
+Data columns (total 8 columns):
+ #   Column     Non-Null Count  Dtype         
+---  ------     --------------  -----         
+ 0   date       2520 non-null   datetime64[ns]
+ 1   symbol     2520 non-null   object        
+ 2   open       2520 non-null   float64       
+ 3   high       2520 non-null   float64       
+ 4   low        2520 non-null   float64       
+ 5   close      2520 non-null   float64       
+ 6   volume     2520 non-null   int64         
+ 7   adj_close  2520 non-null   float64       
+dtypes: datetime64[ns](1), float64(5), int64(1), object(1)
+memory usage: 157.6+ KB</code></pre>
+</div>
+</div>
+<hr>
+<p>When I work with a time series of daily prices that I expect to come from a certain date range, I like to check the first and last trade dates that are represented in the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'date'</span>].<span class="bu">min</span>())</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'date'</span>].<span class="bu">max</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>2020-01-02 00:00:00
+2020-12-30 00:00:00</code></pre>
+</div>
+</div>
+<p>Here is what we know about our data set thus far:</p>
+<ol type="1">
+<li><p>10 different ETFs are represented.</p></li>
+<li><p>Prices are coming from the entirety of 2020.</p></li>
+</ol>
+<p>Here are some things that we aren’t necessarily sure of that would be worth checking in a high-stakes situation:</p>
+<ol type="1">
+<li><p>Is there a row/price for each symbol on each trade date?</p></li>
+<li><p>Is there ever more than one row/price for a given symbol on a given trade date?</p></li>
+</ol>
+<p>We won’t bother answering these questions for the purposes of this chapter, but these are the types of data-integrity questions I will often try to answer when encountering a new data set.</p>
+</section>
+<section id="calculating-daily-returns-with-groupby" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="calculating-daily-returns-with-groupby"><span class="header-section-number">8.4</span> Calculating Daily Returns with <code>groupby()</code></h2>
+<p>Our ultimate goal is to calculate monthly returns and monthly volatilities for each ETF in <code>df_etf</code>. These quantities are both functions of daily returns. So our first order of business is to calculate daily returns.</p>
+<p>In a previous tutorial we calculated daily returns in a simple vectorized fashion. Unfortunately, we can’t use the exact same approach here because there are multiple ETFs in the data set.</p>
+<p>To overcome this challenge we will use our first application of <code>.groupby()</code>.</p>
+<p>Here is the <code>.groupby()</code> code that calculates daily returns for each ETF.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sorting values to get everything in the right order</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_etf.sort_values([<span class="st">'symbol'</span>, <span class="st">'date'</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># vectorized return calculation</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'dly_ret'</span>] <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    df_etf[<span class="st">'close'</span>].groupby(df_etf[<span class="st">'symbol'</span>]).pct_change()</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">dly_ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2020-01-02</td>
+<td>XLB</td>
+<td>61.83</td>
+<td>61.94</td>
+<td>60.63</td>
+<td>60.70</td>
+<td>7357400</td>
+<td>56.50</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2020-01-03</td>
+<td>XLB</td>
+<td>60.08</td>
+<td>60.44</td>
+<td>59.70</td>
+<td>59.72</td>
+<td>12423200</td>
+<td>55.58</td>
+<td>-0.016145</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2020-01-06</td>
+<td>XLB</td>
+<td>59.55</td>
+<td>59.83</td>
+<td>59.41</td>
+<td>59.46</td>
+<td>15764400</td>
+<td>55.34</td>
+<td>-0.004354</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2020-01-07</td>
+<td>XLB</td>
+<td>59.36</td>
+<td>59.80</td>
+<td>59.20</td>
+<td>59.39</td>
+<td>20266900</td>
+<td>55.28</td>
+<td>-0.001177</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2020-01-08</td>
+<td>XLB</td>
+<td>59.40</td>
+<td>59.84</td>
+<td>59.20</td>
+<td>59.60</td>
+<td>8079600</td>
+<td>55.47</td>
+<td>0.003536</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="adding-year-and-month-columns" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="adding-year-and-month-columns"><span class="header-section-number">8.5</span> Adding <code>year</code> and <code>month</code> Columns</h2>
+<p>The ultimate goal is to calculate monthly statistics for each of the ETFs in our data set.</p>
+<p>As a preliminary step let’s add a <code>month</code> and <code>year</code> column to the <code>df_etf</code> by utilizing the <code>.dt</code> attribute that <strong>pandas</strong> provides for date columns.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'year'</span>] <span class="op">=</span> df_etf[<span class="st">'date'</span>].dt.year</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'month'</span>] <span class="op">=</span> df_etf[<span class="st">'date'</span>].dt.month</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>df_etf[[<span class="st">'date'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2020-01-02</td>
+<td>2020</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2020-01-03</td>
+<td>2020</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2020-01-06</td>
+<td>2020</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2020-01-07</td>
+<td>2020</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2020-01-08</td>
+<td>2020</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Let’s do a quick data-integrity check: There are 10 ETFs in our data set and there are 12 months in a year, so the number of symbol-year-month combinations should be 120.</p>
+<p>The following code counts the number of rows associated with each symbol-year-month combination and puts that data into a <code>DataFrame</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_num_rows <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>]).size().reset_index()</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df_num_rows.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>2020</td>
+<td>1</td>
+<td>21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2020</td>
+<td>2</td>
+<td>19</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>2020</td>
+<td>3</td>
+<td>22</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>2020</td>
+<td>4</td>
+<td>21</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>2020</td>
+<td>5</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Coding Challenge:</strong> Confirm that there are the correct number of symbol-year-month combinations in <code>df_num_rows</code>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_num_rows.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>(120, 4)</code></pre>
+</div>
+</div>
+<hr>
+<p>Now that we’ve added the <code>year</code> and <code>month</code> columns we can proceed to calculating our monthly statistics.</p>
+</section>
+<section id="average-daily-volume" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="average-daily-volume"><span class="header-section-number">8.6</span> Average Daily Volume</h2>
+<p>Let’s start with the most straight-forward calculation: average daily volume, over each month, for all 10 of the ETFs in our data set.</p>
+<p>This amounts to:</p>
+<ol type="1">
+<li><p>grouping by <code>symbol</code>, <code>month</code>, and <code>year</code></p></li>
+<li><p>applying the built-in <code>np.mean()</code> function to the <code>volume</code> column</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_volume <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>])[<span class="st">'volume'</span>].agg([np.mean]).reset_index()</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>df_volume.rename(columns<span class="op">=</span>{<span class="st">'mean'</span>:<span class="st">'avg_volume'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>df_volume.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">avg_volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>2020</td>
+<td>1</td>
+<td>7.235429e+06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2020</td>
+<td>2</td>
+<td>1.058022e+07</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>2020</td>
+<td>3</td>
+<td>1.432920e+07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>2020</td>
+<td>4</td>
+<td>9.000557e+06</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>2020</td>
+<td>5</td>
+<td>4.829185e+06</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Coding Challenge:</strong> Calculate the maximum daily volume for each symbol, <em>over the entire year</em>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'year'</span>])[<span class="st">'volume'</span>].agg([np.<span class="bu">max</span>]).reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">amax</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>2020</td>
+<td>30741700</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLE</td>
+<td>2020</td>
+<td>99356700</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLF</td>
+<td>2020</td>
+<td>256525000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLI</td>
+<td>2020</td>
+<td>79118200</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLK</td>
+<td>2020</td>
+<td>61727100</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>XLP</td>
+<td>2020</td>
+<td>50978800</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>XLRE</td>
+<td>2020</td>
+<td>49899800</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>XLU</td>
+<td>2020</td>
+<td>90263100</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>XLV</td>
+<td>2020</td>
+<td>39561900</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>XLY</td>
+<td>2020</td>
+<td>20616100</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="monthly-returns" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="monthly-returns"><span class="header-section-number">8.7</span> Monthly Returns</h2>
+<p>Next, let’s calculate monthly returns for each of the ETFs in our data set. This amounts to:</p>
+<ol type="1">
+<li><p>grouping by <code>symbol</code>, <code>month</code>, and <code>year</code></p></li>
+<li><p>applying an aggregation function to the <code>daily_returns</code> column</p></li>
+</ol>
+<p>These are the same two steps that we have done in our previous aggregation examples. However, there is one additional wrinkle that we are going to have to contend with.</p>
+<p>In the previous section, we used simple built-in aggregation funtions available through <code>numpy</code>, such as <code>np.max</code> and <code>np.mean</code>. Calculating monthly returns from daily returns is a little more complicated.</p>
+<p>Thus, we are going to have to first create a custom function for calculating monthly returns from daily returns, and then use this custom function in <code>.agg()</code>.</p>
+<p>The following code defines our monthly returns function in terms of daily returns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> monthly_ret(dly_ret):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.prod(<span class="dv">1</span> <span class="op">+</span> dly_ret) <span class="op">-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can apply our <code>monthly_ret()</code> function for all of our ETFs using the following code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_ret <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'month'</span>, <span class="st">'year'</span>])[<span class="st">'dly_ret'</span>].agg([monthly_ret]).reset_index()</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df_ret.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">monthly_ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>1</td>
+<td>2020</td>
+<td>-0.050577</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2</td>
+<td>2020</td>
+<td>-0.085199</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>3</td>
+<td>2020</td>
+<td>-0.145675</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>4</td>
+<td>2020</td>
+<td>0.151865</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>5</td>
+<td>2020</td>
+<td>0.068813</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>We can see from our calculation that in March of 2020 XLB had a monthly return of -14.6%.</p>
+<hr>
+<p><strong>Coding Challenge:</strong> Which ETF had the highest single monthly return in all of 2020? What was the month?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_ret.sort_values(by<span class="op">=</span>[<span class="st">'monthly_ret'</span>], ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">monthly_ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">15</td>
+<td>XLE</td>
+<td>4</td>
+<td>2020</td>
+<td>0.307639</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">22</td>
+<td>XLE</td>
+<td>11</td>
+<td>2020</td>
+<td>0.279944</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">111</td>
+<td>XLY</td>
+<td>4</td>
+<td>2020</td>
+<td>0.188825</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">34</td>
+<td>XLF</td>
+<td>11</td>
+<td>2020</td>
+<td>0.168483</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">46</td>
+<td>XLI</td>
+<td>11</td>
+<td>2020</td>
+<td>0.160274</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">74</td>
+<td>XLRE</td>
+<td>3</td>
+<td>2020</td>
+<td>-0.157380</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">20</td>
+<td>XLE</td>
+<td>9</td>
+<td>2020</td>
+<td>-0.159888</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">38</td>
+<td>XLI</td>
+<td>3</td>
+<td>2020</td>
+<td>-0.192529</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">26</td>
+<td>XLF</td>
+<td>3</td>
+<td>2020</td>
+<td>-0.216999</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>XLE</td>
+<td>3</td>
+<td>2020</td>
+<td>-0.358074</td>
+</tr>
+</tbody>
+</table>
+
+<p>120 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="monthly-volatility" class="level2" data-number="8.8">
+<h2 data-number="8.8" class="anchored" data-anchor-id="monthly-volatility"><span class="header-section-number">8.8</span> Monthly Volatility</h2>
+<p>Let’s use a similar process to calculate the monthly volatility for each of the ETFs.</p>
+<p>We begin by defining a custom function that calculates the monthly volatility from daily returns. Recall that industry convention is to state these volatilities in annualized terms.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> monthly_vol(dly_ret):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.std(dly_ret) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now use our <code>monthly_vol()</code> function in to perform an aggregating calculation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_vol <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'month'</span>, <span class="st">'year'</span>])[<span class="st">'dly_ret'</span>].agg([monthly_vol]).reset_index()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>df_vol.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">monthly_vol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>1</td>
+<td>2020</td>
+<td>0.150336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2</td>
+<td>2020</td>
+<td>0.282201</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>3</td>
+<td>2020</td>
+<td>0.932265</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>4</td>
+<td>2020</td>
+<td>0.503394</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>5</td>
+<td>2020</td>
+<td>0.277311</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Coding Challenge:</strong> What was the volatility for XLF in December 2018?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_vol.query(<span class="st">'symbol == "XLF" &amp; month == 12'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">monthly_vol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">35</td>
+<td>XLF</td>
+<td>12</td>
+<td>2020</td>
+<td>0.137471</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="combining-metrics---inner-.merge" class="level2" data-number="8.9">
+<h2 data-number="8.9" class="anchored" data-anchor-id="combining-metrics---inner-.merge"><span class="header-section-number">8.9</span> Combining Metrics - inner <code>.merge()</code></h2>
+<p>Now, suppose that we want to combine our three metrics into one report - meaning that we want them organized into one <code>DataFrame</code> in an easy to read fashion.</p>
+<p>One way to do this is to use the <code>pandas.merge()</code> method that we learned in the previous tutorial to join together <code>df_volume</code> (average daily volume), <code>df_ret</code> (monthly returns), and <code>df_vol</code> (monthly volatility).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_joined <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    df_volume</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>        .merge(df_ret, on<span class="op">=</span>[<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>])</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>        .merge(df_vol, on<span class="op">=</span>[<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>])</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>df_joined.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">avg_volume</th>
+<th data-quarto-table-cell-role="th">monthly_ret</th>
+<th data-quarto-table-cell-role="th">monthly_vol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>2020</td>
+<td>1</td>
+<td>7.235429e+06</td>
+<td>-0.050577</td>
+<td>0.150336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2020</td>
+<td>2</td>
+<td>1.058022e+07</td>
+<td>-0.085199</td>
+<td>0.282201</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>2020</td>
+<td>3</td>
+<td>1.432920e+07</td>
+<td>-0.145675</td>
+<td>0.932265</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>2020</td>
+<td>4</td>
+<td>9.000557e+06</td>
+<td>0.151865</td>
+<td>0.503394</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>2020</td>
+<td>5</td>
+<td>4.829185e+06</td>
+<td>0.068813</td>
+<td>0.277311</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="combining-metrics---multiple-aggregation" class="level2" data-number="8.10">
+<h2 data-number="8.10" class="anchored" data-anchor-id="combining-metrics---multiple-aggregation"><span class="header-section-number">8.10</span> Combining Metrics - multiple aggregation</h2>
+<p>Another way to combine all our statistics into a single <code>DataFrame</code> is to supply all of our custom aggregation functions as arguments to the <code>.agg()</code> function at the same time.</p>
+<p>Here is what that looks like:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># defining aggregations</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>agg_funcs <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'volume'</span>:[np.mean], <span class="st">'dly_ret'</span>:[monthly_ret, monthly_vol]}</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># performing all aggregations all three aggregations at once</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>df_joined <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'month'</span>, <span class="st">'year'</span>]).agg(agg_funcs).reset_index()</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># looking at the data frame</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>df_joined.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">dly_ret</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">monthly_ret</th>
+<th data-quarto-table-cell-role="th">monthly_vol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>1</td>
+<td>2020</td>
+<td>7.235429e+06</td>
+<td>-0.050577</td>
+<td>0.150336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2</td>
+<td>2020</td>
+<td>1.058022e+07</td>
+<td>-0.085199</td>
+<td>0.282201</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>3</td>
+<td>2020</td>
+<td>1.432920e+07</td>
+<td>-0.145675</td>
+<td>0.932265</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>4</td>
+<td>2020</td>
+<td>9.000557e+06</td>
+<td>0.151865</td>
+<td>0.503394</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>5</td>
+<td>2020</td>
+<td>4.829185e+06</td>
+<td>0.068813</td>
+<td>0.277311</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Notice that the input into the <code>.agg()</code> method is a <code>dict</code> whose elements are pairs that look like:</p>
+<p><code>'column_name':[list_of_aggregating_functions</code>].</p>
+<hr>
+<p><strong>Code Challenge:</strong> Modify the code above to add maximum daily volume to the report.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># defining aggregations</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>agg_funcs <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'volume'</span>:[np.mean, np.<span class="bu">max</span>], <span class="st">'dly_ret'</span>:[monthly_ret, monthly_vol]}</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co"># performing all aggregations all three aggregations at once</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>df_joined <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'month'</span>, <span class="st">'year'</span>]).agg(agg_funcs).reset_index()</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co"># looking at the data frame</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>df_joined.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">symbol</th>
+<th data-quarto-table-cell-role="th">month</th>
+<th data-quarto-table-cell-role="th">year</th>
+<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">volume</th>
+<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">dly_ret</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mean</th>
+<th data-quarto-table-cell-role="th">amax</th>
+<th data-quarto-table-cell-role="th">monthly_ret</th>
+<th data-quarto-table-cell-role="th">monthly_vol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>XLB</td>
+<td>1</td>
+<td>2020</td>
+<td>7.235429e+06</td>
+<td>20266900</td>
+<td>-0.050577</td>
+<td>0.150336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>XLB</td>
+<td>2</td>
+<td>2020</td>
+<td>1.058022e+07</td>
+<td>30741700</td>
+<td>-0.085199</td>
+<td>0.282201</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>XLB</td>
+<td>3</td>
+<td>2020</td>
+<td>1.432920e+07</td>
+<td>28390200</td>
+<td>-0.145675</td>
+<td>0.932265</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>XLB</td>
+<td>4</td>
+<td>2020</td>
+<td>9.000557e+06</td>
+<td>30738000</td>
+<td>0.151865</td>
+<td>0.503394</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>XLB</td>
+<td>5</td>
+<td>2020</td>
+<td>4.829185e+06</td>
+<td>7386300</td>
+<td>0.068813</td>
+<td>0.277311</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="related-reading" class="level2" data-number="8.11">
+<h2 data-number="8.11" class="anchored" data-anchor-id="related-reading"><span class="header-section-number">8.11</span> Related Reading</h2>
+<p><em>Python Data Science Handbook (VanderPlas)</em> - Section 3.7 - Combining Datasets: Merging and Joining</p>
+<p><em>Python Data Science Handbook (VanderPlas)</em> - Section 3.8 - Aggregation and Grouping</p>
+<p><em>Python for Data Analysis (McKinney)</em> - Chapter 9 (pp 251-274) Data Aggregation and Grouping Operations</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - Part 1</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
