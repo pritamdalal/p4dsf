@@ -24,6 +24,7 @@ book:
       - chapters/11_pandas_scatter_plots/pandas_scatter_plots.ipynb
       - chapters/12_seaborn/seaborn.ipynb
       - chapters/13_bokeh_basic/bokeh_basic.ipynb
+      - chapters/14_bokeh_advanced/bokeh_advanced.ipynb
     - references.qmd
 
 bibliography: references.bib

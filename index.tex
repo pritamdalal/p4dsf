@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, frame hidden, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners, enhanced]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -7763,6 +7763,435 @@ remedy this in the next notebook.
 
 \CommentTok{\# putting them together using column()}
 \NormalTok{show(column(p1, p2, p3, p4))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_load.v0+json
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\hypertarget{advanced-plotting-with-bokeh}{%
+\chapter{\texorpdfstring{Advanced Plotting with
+\textbf{bokeh}}{Advanced Plotting with bokeh}}\label{advanced-plotting-with-bokeh}}
+
+In this chapter we will build on our work from a previous chapter and
+add a variety of interactions to the plots that we have created.
+
+\hypertarget{data-1}{%
+\section{Data}\label{data-1}}
+
+Let's begin by loading the data that we will need for our
+visualizations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+
+\CommentTok{\# SPY Close, Returns, Realized Volatility, and VIX}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo([}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\^{}VIX\textquotesingle{}}\NormalTok{], start}\OperatorTok{=}\StringTok{\textquotesingle{}2016{-}01{-}01\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}09{-}30\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}Close\textquotesingle{}}\NormalTok{].reset\_index()}
+\NormalTok{df\_spy.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}\^{}VIX\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ np.log(df\_spy[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{] }\OperatorTok{/}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{))}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{].rolling(}\DecValTok{42}\NormalTok{).std() }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+
+\CommentTok{\# SPY Monthly Returns}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{].dt.year}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{].dt.month}
+\NormalTok{df\_monthly }\OperatorTok{=}\NormalTok{ df\_spy.groupby([}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{], as\_index}\OperatorTok{=}\VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{]].}\BuiltInTok{sum}\NormalTok{()}
+\NormalTok{df\_monthly[}\StringTok{\textquotesingle{}year\_month\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ (df\_monthly[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{*} \DecValTok{100}\NormalTok{) }\OperatorTok{+}\NormalTok{ df\_monthly[}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_monthly[}\StringTok{\textquotesingle{}year\_month\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_monthly[}\StringTok{\textquotesingle{}year\_month\textquotesingle{}}\NormalTok{].astype(}\BuiltInTok{str}\NormalTok{)}
+
+\CommentTok{\# Implied Leverage Effect}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\_change\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{] }\OperatorTok{/} \DecValTok{100}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\_change\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}vix\_change\textquotesingle{}}\NormalTok{] }\OperatorTok{/} \DecValTok{100}
+
+\CommentTok{\# Asset Allocation {-} hypothetical allocation through time}
+\NormalTok{df\_asset\_allocation }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}asset\_allocation.csv\textquotesingle{}}\NormalTok{, parse\_dates}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  2 of 2 completed
+\end{verbatim}
+
+\hypertarget{linked-panning-with-gridplot}{%
+\section{\texorpdfstring{Linked Panning with
+\texttt{gridplot()}}{Linked Panning with gridplot()}}\label{linked-panning-with-gridplot}}
+
+In a previous chapter, we created a \texttt{column()} of plots to
+visualize the leverage effect. However, the plots were all independent
+of one another, which may not be desireable.
+
+We remedy that here using the \texttt{gridplot()} function. We also
+modify the \texttt{x\_range} inputs of all of our figures so that they
+link properly.
+
+Notice that we now have a single toolbar for all four plots.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ bokeh.io }\ImportTok{import}\NormalTok{ output\_notebook, show}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ figure}
+\ImportTok{from}\NormalTok{ bokeh.layouts }\ImportTok{import}\NormalTok{ gridplot}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ NumeralTickFormatter}
+
+\NormalTok{output\_notebook()}
+
+\CommentTok{\# defining plot options all at once}
+\NormalTok{plot\_options }\OperatorTok{=} \BuiltInTok{dict}\NormalTok{(width}\OperatorTok{=}\DecValTok{600}\NormalTok{, height}\OperatorTok{=}\DecValTok{200}\NormalTok{, x\_axis\_type}\OperatorTok{=}\StringTok{\textquotesingle{}datetime\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# defining multiple plots {-} notice the change in the x\_range for p2, p3, p3}
+\NormalTok{p1 }\OperatorTok{=}\NormalTok{ figure(}\OperatorTok{**}\NormalTok{plot\_options, title}\OperatorTok{=}\StringTok{\textquotesingle{}SPY Leverage Effect\textquotesingle{}}\NormalTok{)}
+\NormalTok{p1.line(x}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{], y}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{], legend\_label}\OperatorTok{=}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{)}
+\NormalTok{p1.legend.location }\OperatorTok{=} \StringTok{\textquotesingle{}top\_left\textquotesingle{}}
+
+\NormalTok{p2 }\OperatorTok{=}\NormalTok{ figure(x\_range}\OperatorTok{=}\NormalTok{p1.x\_range,  }\OperatorTok{**}\NormalTok{plot\_options)}
+\NormalTok{p2.line(x}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{], y}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{], legend\_label}\OperatorTok{=}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{)}
+\NormalTok{p2.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+\NormalTok{p2.legend.location }\OperatorTok{=} \StringTok{\textquotesingle{}top\_left\textquotesingle{}}
+
+\NormalTok{p3 }\OperatorTok{=}\NormalTok{ figure(x\_range}\OperatorTok{=}\NormalTok{p1.x\_range, }\OperatorTok{**}\NormalTok{plot\_options)}
+\NormalTok{p3.line(x}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{], y}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{], legend\_label}\OperatorTok{=}\StringTok{\textquotesingle{}realized volatility\textquotesingle{}}\NormalTok{)}
+\NormalTok{p3.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+\NormalTok{p3.legend.location }\OperatorTok{=} \StringTok{\textquotesingle{}top\_left\textquotesingle{}}
+
+\NormalTok{p4 }\OperatorTok{=}\NormalTok{ figure(x\_range}\OperatorTok{=}\NormalTok{p1.x\_range, }\OperatorTok{**}\NormalTok{plot\_options)}
+\NormalTok{p4.line(x}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{], y}\OperatorTok{=}\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{], legend\_label}\OperatorTok{=}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{)}
+\NormalTok{p4.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+\NormalTok{p4.legend.location }\OperatorTok{=} \StringTok{\textquotesingle{}top\_left\textquotesingle{}}
+
+\CommentTok{\# putting all plots into a grid plot}
+\NormalTok{p }\OperatorTok{=}\NormalTok{ gridplot([[p1], }
+\NormalTok{              [p2], }
+\NormalTok{              [p3],}
+\NormalTok{              [p4]]}
+\NormalTok{            )}
+
+\NormalTok{show(p)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_load.v0+json
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\hypertarget{specifying-tools}{%
+\section{Specifying Tools}\label{specifying-tools}}
+
+We can also specify the interactive tools that we want in our graph.
+
+The easiest way to do this is the \texttt{tools} argument of the
+\texttt{figure()} function which takes values that are comma delimited
+strings such as
+\texttt{\textquotesingle{}reset,hover,save\textquotesingle{}}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ bokeh.io }\ImportTok{import}\NormalTok{ output\_notebook, show}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ figure}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ ColumnDataSource}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ NumeralTickFormatter}
+
+\NormalTok{output\_notebook()}
+
+\NormalTok{cds }\OperatorTok{=}\NormalTok{ ColumnDataSource(df\_spy)}
+
+\CommentTok{\# creating custom tool list}
+\NormalTok{tools }\OperatorTok{=} \StringTok{\textquotesingle{}box\_select,box\_zoom,lasso\_select,pan,wheel\_zoom,reset,hover,save\textquotesingle{}}
+
+\CommentTok{\# adding custom tool list to figurw}
+\NormalTok{p }\OperatorTok{=}\NormalTok{ figure(width}\OperatorTok{=}\DecValTok{600}\NormalTok{, height}\OperatorTok{=}\DecValTok{400}\NormalTok{, tools}\OperatorTok{=}\NormalTok{tools, title}\OperatorTok{=}\StringTok{\textquotesingle{}SPY Implied Leverage Effect\textquotesingle{}}\NormalTok{,}
+\NormalTok{           x\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, y\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}vix change\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# adding glyph}
+\NormalTok{p.}\BuiltInTok{hex}\NormalTok{(}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vix\_change\textquotesingle{}}\NormalTok{, line\_color}\OperatorTok{=}\StringTok{"navy"}\NormalTok{, fill\_color}\OperatorTok{=}\StringTok{"orange"}\NormalTok{, size}\OperatorTok{=}\DecValTok{15}\NormalTok{, source}\OperatorTok{=}\NormalTok{cds)}
+
+\CommentTok{\# formatting the x{-}axis and y{-}axis to percents}
+\NormalTok{p.xaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{) }
+\NormalTok{p.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{show(p)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_load.v0+json
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\hypertarget{linked-properties}{%
+\section{Linked Properties}\label{linked-properties}}
+
+We can also link properities of the graph to widgets.
+
+The example below allows us to modify the size of the \texttt{.hex}
+glyphs so we can dial in the appearance of our graph.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ bokeh.io }\ImportTok{import}\NormalTok{ output\_notebook, show}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ figure}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ ColumnDataSource}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ Slider}
+\ImportTok{from}\NormalTok{ bokeh.layouts }\ImportTok{import}\NormalTok{ column}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ NumeralTickFormatter}
+
+\NormalTok{output\_notebook()}
+
+\NormalTok{cds }\OperatorTok{=}\NormalTok{ ColumnDataSource(df\_spy)}
+
+\NormalTok{p }\OperatorTok{=}\NormalTok{ figure(width}\OperatorTok{=}\DecValTok{600}\NormalTok{, height}\OperatorTok{=}\DecValTok{400}\NormalTok{, title}\OperatorTok{=}\StringTok{\textquotesingle{}SPY Implied Leverage Effect\textquotesingle{}}\NormalTok{,}
+\NormalTok{           x\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, y\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}vix change\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# adding glyph}
+\NormalTok{r }\OperatorTok{=}\NormalTok{ p.}\BuiltInTok{hex}\NormalTok{(}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vix\_change\textquotesingle{}}\NormalTok{, line\_color}\OperatorTok{=}\StringTok{"navy"}\NormalTok{, fill\_color}\OperatorTok{=}\StringTok{"orange"}\NormalTok{, size}\OperatorTok{=}\DecValTok{10}\NormalTok{, source}\OperatorTok{=}\NormalTok{cds)}
+
+\CommentTok{\# linking slider to  the size of the hex glyph }
+\NormalTok{slider }\OperatorTok{=}\NormalTok{ Slider(start}\OperatorTok{=}\DecValTok{1}\NormalTok{, end}\OperatorTok{=}\DecValTok{20}\NormalTok{, step}\OperatorTok{=}\DecValTok{1}\NormalTok{, value}\OperatorTok{=}\DecValTok{10}\NormalTok{)}
+\NormalTok{slider.js\_link(}\StringTok{\textquotesingle{}value\textquotesingle{}}\NormalTok{, r.glyph, }\StringTok{\textquotesingle{}size\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# formatting the x{-}axis and y{-}axis to percents}
+\NormalTok{p.xaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{) }
+\NormalTok{p.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{show(column(p, slider))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_load.v0+json
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\hypertarget{linked-brushing}{%
+\section{Linked Brushing}\label{linked-brushing}}
+
+Linked brushing allows us to highlight related data between two graphs.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ bokeh.io }\ImportTok{import}\NormalTok{ output\_notebook, show}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ figure}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ ColumnDataSource}
+\ImportTok{from}\NormalTok{ bokeh.layouts }\ImportTok{import}\NormalTok{ gridplot}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ NumeralTickFormatter}
+
+\NormalTok{output\_notebook()}
+
+\NormalTok{cds }\OperatorTok{=}\NormalTok{ ColumnDataSource(df\_spy)}
+
+\CommentTok{\# defining plot options all at once, passing custom tool list directly}
+\NormalTok{plot\_options }\OperatorTok{=} \BuiltInTok{dict}\NormalTok{(width}\OperatorTok{=}\DecValTok{500}\NormalTok{, height}\OperatorTok{=}\DecValTok{350}\NormalTok{, tools}\OperatorTok{=}\StringTok{\textquotesingle{}box\_zoom,lasso\_select,reset, box\_select\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{p1 }\OperatorTok{=}\NormalTok{ figure(}\OperatorTok{**}\NormalTok{plot\_options, title}\OperatorTok{=}\StringTok{\textquotesingle{}SPY Leverage Effect\textquotesingle{}}\NormalTok{, x\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, y\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}vix change\textquotesingle{}}\NormalTok{)}
+\NormalTok{p1.}\BuiltInTok{hex}\NormalTok{(}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vix\_change\textquotesingle{}}\NormalTok{, line\_color}\OperatorTok{=}\StringTok{"navy"}\NormalTok{, fill\_color}\OperatorTok{=}\StringTok{"orange"}\NormalTok{, size}\OperatorTok{=}\DecValTok{10}\NormalTok{, source}\OperatorTok{=}\NormalTok{cds)}
+\CommentTok{\# formatting the x{-}axis and y{-}axis to percents}
+\NormalTok{p1.xaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{) }
+\NormalTok{p1.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{p2 }\OperatorTok{=}\NormalTok{ figure(}\OperatorTok{**}\NormalTok{plot\_options, x\_range}\OperatorTok{=}\NormalTok{p1.x\_range, title}\OperatorTok{=}\StringTok{\textquotesingle{}Return vs Realized Vol\textquotesingle{}}\NormalTok{,}
+\NormalTok{            x\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, y\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}realize vol\textquotesingle{}}\NormalTok{)}
+\NormalTok{p2.}\BuiltInTok{hex}\NormalTok{(}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{, line\_color}\OperatorTok{=}\StringTok{"navy"}\NormalTok{, fill\_color}\OperatorTok{=}\StringTok{"red"}\NormalTok{, size}\OperatorTok{=}\DecValTok{10}\NormalTok{, source}\OperatorTok{=}\NormalTok{cds)}
+\CommentTok{\# formatting the x{-}axis and y{-}axis to percents}
+\NormalTok{p2.xaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{) }
+\NormalTok{p2.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{p }\OperatorTok{=}\NormalTok{ gridplot([[p1,p2]])}
+\NormalTok{show(p)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_load.v0+json
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\hypertarget{hover-tool}{%
+\section{Hover Tool}\label{hover-tool}}
+
+Hover tools can be helpful for making large visualizations more
+readable. Here we add one to our monthly returns bar chart.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ bokeh.io }\ImportTok{import}\NormalTok{ output\_notebook}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ ColumnDataSource}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ figure, show}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ reset\_output}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ NumeralTickFormatter}
+\ImportTok{import}\NormalTok{ math}
+\NormalTok{reset\_output()}
+
+\NormalTok{output\_notebook()}
+
+\NormalTok{source }\OperatorTok{=}\NormalTok{ ColumnDataSource(df\_monthly)}
+
+\CommentTok{\# defining custom tool list}
+\NormalTok{tools }\OperatorTok{=} \StringTok{\textquotesingle{}box\_zoom, reset\textquotesingle{}}
+
+\CommentTok{\# defining tool tip}
+\NormalTok{tooltips }\OperatorTok{=}\NormalTok{ [}
+\NormalTok{    (}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}@year\_month\textquotesingle{}}\NormalTok{),}
+\NormalTok{    (}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}@return\{0.0\%\}\textquotesingle{}}\NormalTok{),}
+\NormalTok{]}
+
+\NormalTok{p }\OperatorTok{=}\NormalTok{ figure(width}\OperatorTok{=}\DecValTok{1000}\NormalTok{, height}\OperatorTok{=}\DecValTok{400}\NormalTok{, x\_range}\OperatorTok{=}\NormalTok{df\_monthly[}\StringTok{\textquotesingle{}year\_month\textquotesingle{}}\NormalTok{], tools}\OperatorTok{=}\NormalTok{[tools], tooltips}\OperatorTok{=}\NormalTok{tooltips,}
+\NormalTok{           title}\OperatorTok{=}\StringTok{\textquotesingle{}SPY Monthly Returns 2016Q1 to 2021Q3\textquotesingle{}}\NormalTok{, x\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, y\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}monthly return\textquotesingle{}}\NormalTok{)}
+\NormalTok{p.vbar(x}\OperatorTok{=}\StringTok{\textquotesingle{}year\_month\textquotesingle{}}\NormalTok{, bottom}\OperatorTok{=}\DecValTok{0}\NormalTok{, top}\OperatorTok{=}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, color}\OperatorTok{=}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{, width}\OperatorTok{=}\FloatTok{0.75}\NormalTok{, source}\OperatorTok{=}\NormalTok{source)}
+
+\CommentTok{\# formatting the y{-}axis to percents}
+\NormalTok{p.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{p.xaxis.major\_label\_orientation }\OperatorTok{=}\NormalTok{ math.pi}\OperatorTok{/}\DecValTok{4}
+
+\NormalTok{show(p)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_load.v0+json
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): text/html
+\end{verbatim}
+
+\begin{verbatim}
+Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\hypertarget{hover-tool-interactive-legend}{%
+\section{Hover Tool + Interactive
+Legend}\label{hover-tool-interactive-legend}}
+
+Here we add a hover tool to our asset allocation stacked area plot.
+
+We also make the legend interactive to be able to focus in on specific
+allocation buckets.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ bokeh}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ ColumnDataSource}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ NumeralTickFormatter}
+\ImportTok{from}\NormalTok{ bokeh.models }\ImportTok{import}\NormalTok{ HoverTool}
+\ImportTok{from}\NormalTok{ bokeh.plotting }\ImportTok{import}\NormalTok{ figure, output\_file, show}
+\ImportTok{from}\NormalTok{ bokeh.io }\ImportTok{import}\NormalTok{ output\_notebook}
+
+\NormalTok{output\_notebook()}
+
+\NormalTok{source }\OperatorTok{=}\NormalTok{ ColumnDataSource(df\_asset\_allocation)}
+
+\NormalTok{p }\OperatorTok{=}\NormalTok{ figure(width}\OperatorTok{=}\DecValTok{900}\NormalTok{, height}\OperatorTok{=}\DecValTok{500}\NormalTok{, x\_axis\_type}\OperatorTok{=}\StringTok{\textquotesingle{}datetime\textquotesingle{}}\NormalTok{, title}\OperatorTok{=}\StringTok{\textquotesingle{}Asset Allocation 2019{-}2020\textquotesingle{}}\NormalTok{,}
+\NormalTok{           x\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{, y\_axis\_label}\OperatorTok{=}\StringTok{\textquotesingle{}allocation\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# choosing assets and colors to graph}
+\NormalTok{assets }\OperatorTok{=}\NormalTok{ df\_asset\_allocation.drop(columns}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{).columns}
+\NormalTok{num\_assets }\OperatorTok{=} \BuiltInTok{len}\NormalTok{(assets)}
+\NormalTok{colors }\OperatorTok{=}\NormalTok{ bokeh.palettes.magma(num\_assets) }\CommentTok{\# choosing color palette}
+
+\CommentTok{\# adding glyphs}
+\NormalTok{p.varea\_stack(assets, x}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, color}\OperatorTok{=}\NormalTok{colors, source}\OperatorTok{=}\NormalTok{source, legend\_label}\OperatorTok{=}\NormalTok{assets.to\_list())}
+\NormalTok{p.vline\_stack(assets.to\_list(), x}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, color}\OperatorTok{=}\NormalTok{colors, source}\OperatorTok{=}\NormalTok{source,)}
+
+\CommentTok{\# defining tool tip}
+\NormalTok{p.add\_tools(HoverTool(}
+\NormalTok{    tooltips }\OperatorTok{=}\NormalTok{ [}
+\NormalTok{        (}\StringTok{"Trade Date"}\NormalTok{, }\StringTok{"@trade\_date\{}\SpecialCharTok{\%F}\StringTok{\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"VXX"}\NormalTok{, }\StringTok{"@VXX\{0\%\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"DBA"}\NormalTok{, }\StringTok{"@DBA\{0\%\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"USO"}\NormalTok{, }\StringTok{"@USO\{0\%\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"HYG"}\NormalTok{, }\StringTok{"@HYG\{0\%\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"TLT"}\NormalTok{, }\StringTok{"@TLT\{0\%\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"IWM"}\NormalTok{, }\StringTok{"@IWM\{0\%\}"}\NormalTok{),}
+\NormalTok{        (}\StringTok{"SPY"}\NormalTok{, }\StringTok{"@SPY\{0\%\}"}\NormalTok{),}
+\NormalTok{    ],}
+\NormalTok{    formatters}\OperatorTok{=}\NormalTok{\{}
+        \StringTok{\textquotesingle{}@trade\_date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}datetime\textquotesingle{}}\NormalTok{, }\CommentTok{\# use \textquotesingle{}datetime\textquotesingle{} formatter for \textquotesingle{}date\textquotesingle{} field}
+\NormalTok{    \},}
+
+\NormalTok{))}
+
+\CommentTok{\# interactive legend}
+\NormalTok{p.legend.click\_policy}\OperatorTok{=}\StringTok{\textquotesingle{}hide\textquotesingle{}}
+
+\CommentTok{\# reformatting }
+\NormalTok{p.yaxis.formatter }\OperatorTok{=}\NormalTok{ NumeralTickFormatter(}\BuiltInTok{format}\OperatorTok{=}\StringTok{\textquotesingle{}0\%\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# reversing ordering of legend to make it consistent with stacking order}
+\NormalTok{p.legend[}\DecValTok{0}\NormalTok{].items.reverse()}
+
+\CommentTok{\# moving legend off of the graph}
+\NormalTok{p.add\_layout(p.legend[}\DecValTok{0}\NormalTok{], }\StringTok{\textquotesingle{}right\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{show(p)}
 \end{Highlighting}
 \end{Shaded}
 
