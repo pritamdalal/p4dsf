@@ -23,6 +23,7 @@ book:
       - chapters/10_pandas_bar_charts/pandas_bar_charts.ipynb
       - chapters/11_pandas_scatter_plots/pandas_scatter_plots.ipynb
       - chapters/12_seaborn/seaborn.ipynb
+      - chapters/13_bokeh_basic/bokeh_basic.ipynb
     - references.qmd
 
 bibliography: references.bib
