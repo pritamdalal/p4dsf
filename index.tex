@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, boxrule=0pt, interior hidden, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, enhanced, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -9370,6 +9370,610 @@ outcomes when you double and quadruple the \texttt{hedge\_frequency}.
 Std Dev: 0.42
 Min:    -1.89
 Max:     1.92
+\end{verbatim}
+
+\hypertarget{volatility-forecasting-close-to-close-estimator}{%
+\chapter{Volatility Forecasting: Close-to-Close
+Estimator}\label{volatility-forecasting-close-to-close-estimator}}
+
+This material is closely related to a the following white papers:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \emph{Volatility Modeling and Trading} - Artur Sepp, 2016
+\item
+  \emph{Measuring Historic Volatility} - Colin Bennet \& Miguel Gil,
+  2012
+\end{enumerate}
+
+Our main objective will be to implement the code for the close-to-close
+volatility estimator. To test our work, we will attempt to replicate
+Sepp's results for \emph{weekly} volatility forecasts for SPY (see pp
+38-43).
+
+For the related project you will be asked to implement code for other
+estimators and a number of ETFs.
+
+\hypertarget{loading-packages-7}{%
+\section{Loading Packages}\label{loading-packages-7}}
+
+Let's begin by loading the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\ImportTok{import}\NormalTok{ sklearn}
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{10}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-spy-data-from-yahoo-finance}{%
+\section{Reading-In SPY Data From Yahoo
+Finance}\label{reading-in-spy-data-from-yahoo-finance}}
+
+Sepp's analysis covers data starting from 1/1/2005 and ending on
+4/2/2016. Let's grab these SPY prices from Yahoo Finance using
+\textbf{pandas\_datareader}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo(}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, start }\OperatorTok{=} \StringTok{\textquotesingle{}2004{-}12{-}31\textquotesingle{}}\NormalTok{, end }\OperatorTok{=} \StringTok{\textquotesingle{}2016{-}04{-}02\textquotesingle{}}\NormalTok{).reset\_index()}
+\NormalTok{df\_spy.columns }\OperatorTok{=}\NormalTok{ df\_spy.columns.}\BuiltInTok{str}\NormalTok{.lower().}\BuiltInTok{str}\NormalTok{.replace(}\StringTok{\textquotesingle{} \textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\_\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy.rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{\}, inplace }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy.insert(}\DecValTok{0}\NormalTok{, }\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  1 of 1 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & open & high & low & close & adj\_close &
+volume \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2004-12-31 & 121.300003 & 121.660004 & 120.800003 & 120.870003
+& 84.657806 & 28648800 \\
+1 & SPY & 2005-01-03 & 121.559998 & 121.760002 & 119.900002 & 120.300003
+& 84.258568 & 55748000 \\
+2 & SPY & 2005-01-04 & 120.459999 & 120.540001 & 118.440002 & 118.830002
+& 83.228973 & 69167600 \\
+3 & SPY & 2005-01-05 & 118.739998 & 119.250000 & 118.000000 & 118.010002
+& 82.654648 & 65667300 \\
+4 & SPY & 2005-01-06 & 118.440002 & 119.150002 & 118.260002 & 118.610001
+& 83.074875 & 47814700 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2827 & SPY & 2016-03-28 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770126 & 62408200 \\
+2828 & SPY & 2016-03-29 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 \\
+2829 & SPY & 2016-03-30 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215378 & 86365300 \\
+2830 & SPY & 2016-03-31 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 \\
+2831 & SPY & 2016-04-01 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007065 & 114423500 \\
+\end{longtable}
+
+\hypertarget{calculating-daily-returns-realized-volatility}{%
+\section{Calculating Daily Returns \& Realized
+Volatility}\label{calculating-daily-returns-realized-volatility}}
+
+The close-to-close estimator is a function of daily returns so let's
+calculate those now. In particular, we will use log-returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ np.log(df\_spy[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{]).diff()}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy[}\DecValTok{1}\NormalTok{:].reset\_index(drop }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & open & high & low & close & adj\_close & volume
+& dly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2005-01-03 & 121.559998 & 121.760002 & 119.900002 & 120.300003
+& 84.258568 & 55748000 & -0.004727 \\
+1 & SPY & 2005-01-04 & 120.459999 & 120.540001 & 118.440002 & 118.830002
+& 83.228973 & 69167600 & -0.012295 \\
+2 & SPY & 2005-01-05 & 118.739998 & 119.250000 & 118.000000 & 118.010002
+& 82.654648 & 65667300 & -0.006925 \\
+3 & SPY & 2005-01-06 & 118.440002 & 119.150002 & 118.260002 & 118.610001
+& 83.074875 & 47814700 & 0.005071 \\
+4 & SPY & 2005-01-07 & 118.970001 & 119.230003 & 118.129997 & 118.440002
+& 82.955849 & 55847700 & -0.001434 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2826 & SPY & 2016-03-28 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770126 & 62408200 & 0.000591 \\
+2827 & SPY & 2016-03-29 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 & 0.009208 \\
+2828 & SPY & 2016-03-30 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215378 & 86365300 & 0.004378 \\
+2829 & SPY & 2016-03-31 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 \\
+2830 & SPY & 2016-04-01 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007065 & 114423500 & 0.006789 \\
+\end{longtable}
+
+\hypertarget{organizing-dates-for-backtest}{%
+\section{Organizing Dates for
+Backtest}\label{organizing-dates-for-backtest}}
+
+Organizing dates is an important step in a historical analysis.
+
+We are performing a weekly analysis, which means that in later steps we
+will performing aggregation calculations of daily calculations grouped
+into weeks. Therefore, we will need to add a column to \texttt{df\_spy}
+that will allow us to group by weeks.
+
+The key to our approach will be to use the \texttt{.dt.weekday}
+attribute of the \texttt{trade\_date} columns. In the following code,
+the variable \texttt{weekday} is a \texttt{Series} that contains the
+weekday associated with each date. Notice that Monday is encoded by
+\texttt{0} and Friday is encoded by \texttt{4}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weekday }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].dt.weekday}
+\NormalTok{weekday}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0       0
+1       1
+2       2
+3       3
+4       4
+       ..
+2826    0
+2827    1
+2828    2
+2829    3
+2830    4
+Name: trade_date, Length: 2831, dtype: int32
+\end{verbatim}
+
+The following code is a simple \texttt{for}-loop that has the effect of
+creating a week-number for each week.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{week\_num }\OperatorTok{=}\NormalTok{ []}
+\NormalTok{ix\_week }\OperatorTok{=} \DecValTok{0}
+\NormalTok{week\_num.append(ix\_week)}
+\ControlFlowTok{for}\NormalTok{ ix }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{0}\NormalTok{, }\BuiltInTok{len}\NormalTok{(weekday) }\OperatorTok{{-}} \DecValTok{1}\NormalTok{):}
+\NormalTok{    prev\_day }\OperatorTok{=}\NormalTok{ weekday[ix]}
+\NormalTok{    curr\_day }\OperatorTok{=}\NormalTok{ weekday[ix }\OperatorTok{+} \DecValTok{1}\NormalTok{]}
+    \ControlFlowTok{if}\NormalTok{ curr\_day }\OperatorTok{\textless{}}\NormalTok{ prev\_day:}
+\NormalTok{        ix\_week }\OperatorTok{=}\NormalTok{ ix\_week }\OperatorTok{+} \DecValTok{1}
+\NormalTok{    week\_num.append(ix\_week)}
+\NormalTok{np.array(week\_num) }\CommentTok{\# I use the array function simply because it looks better when it prints}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+array([  0,   0,   0, ..., 586, 586, 586])
+\end{verbatim}
+
+Let's now insert the week numbers into \texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.insert(}\DecValTok{2}\NormalTok{, }\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, week\_num)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & week\_num & open & high & low & close &
+adj\_close & volume & dly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2005-01-03 & 0 & 121.559998 & 121.760002 & 119.900002 &
+120.300003 & 84.258568 & 55748000 & -0.004727 \\
+1 & SPY & 2005-01-04 & 0 & 120.459999 & 120.540001 & 118.440002 &
+118.830002 & 83.228973 & 69167600 & -0.012295 \\
+2 & SPY & 2005-01-05 & 0 & 118.739998 & 119.250000 & 118.000000 &
+118.010002 & 82.654648 & 65667300 & -0.006925 \\
+3 & SPY & 2005-01-06 & 0 & 118.440002 & 119.150002 & 118.260002 &
+118.610001 & 83.074875 & 47814700 & 0.005071 \\
+4 & SPY & 2005-01-07 & 0 & 118.970001 & 119.230003 & 118.129997 &
+118.440002 & 82.955849 & 55847700 & -0.001434 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2826 & SPY & 2016-03-28 & 586 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770126 & 62408200 & 0.000591 \\
+2827 & SPY & 2016-03-29 & 586 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 & 0.009208 \\
+2828 & SPY & 2016-03-30 & 586 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215378 & 86365300 & 0.004378 \\
+2829 & SPY & 2016-03-31 & 586 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 \\
+2830 & SPY & 2016-04-01 & 586 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007065 & 114423500 & 0.006789 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Question:} The \texttt{pandas.Series.dt.week}
+attribute gives the \emph{week-of-the-year} for a give trade-date. My
+initial idea was to use \texttt{.dt.week} and \texttt{dt.year} for my
+grouping, but I ran into an issue. Can you think what the issue was?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\textgreater{} Weeks at the beginning and end of the year may be partial weeks.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+We can now use \texttt{.groupby()} to calculate the starting and ending
+dates for each week.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_start\_end }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_spy.groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{]].agg([}\BuiltInTok{min}\NormalTok{, }\BuiltInTok{max}\NormalTok{])[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{]}
+\NormalTok{    .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}min\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}max\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    .reset\_index()}
+\NormalTok{    .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}index\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_start\_end}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & 2005-01-03 & 2005-01-07 \\
+1 & 1 & 2005-01-10 & 2005-01-14 \\
+2 & 2 & 2005-01-18 & 2005-01-21 \\
+3 & 3 & 2005-01-24 & 2005-01-28 \\
+4 & 4 & 2005-01-31 & 2005-02-04 \\
+... & ... & ... & ... \\
+582 & 582 & 2016-02-29 & 2016-03-04 \\
+583 & 583 & 2016-03-07 & 2016-03-11 \\
+584 & 584 & 2016-03-14 & 2016-03-18 \\
+585 & 585 & 2016-03-21 & 2016-03-24 \\
+586 & 586 & 2016-03-28 & 2016-04-01 \\
+\end{longtable}
+
+Let's merge these columns into \texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.merge(df\_start\_end)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & week\_num & open & high & low & close &
+adj\_close & volume & dly\_ret & week\_start & week\_end \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2005-01-03 & 0 & 121.559998 & 121.760002 & 119.900002 &
+120.300003 & 84.258568 & 55748000 & -0.004727 & 2005-01-03 &
+2005-01-07 \\
+1 & SPY & 2005-01-04 & 0 & 120.459999 & 120.540001 & 118.440002 &
+118.830002 & 83.228973 & 69167600 & -0.012295 & 2005-01-03 &
+2005-01-07 \\
+2 & SPY & 2005-01-05 & 0 & 118.739998 & 119.250000 & 118.000000 &
+118.010002 & 82.654648 & 65667300 & -0.006925 & 2005-01-03 &
+2005-01-07 \\
+3 & SPY & 2005-01-06 & 0 & 118.440002 & 119.150002 & 118.260002 &
+118.610001 & 83.074875 & 47814700 & 0.005071 & 2005-01-03 &
+2005-01-07 \\
+4 & SPY & 2005-01-07 & 0 & 118.970001 & 119.230003 & 118.129997 &
+118.440002 & 82.955849 & 55847700 & -0.001434 & 2005-01-03 &
+2005-01-07 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... \\
+2826 & SPY & 2016-03-28 & 586 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770126 & 62408200 & 0.000591 & 2016-03-28 &
+2016-04-01 \\
+2827 & SPY & 2016-03-29 & 586 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 & 0.009208 & 2016-03-28 &
+2016-04-01 \\
+2828 & SPY & 2016-03-30 & 586 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215378 & 86365300 & 0.004378 & 2016-03-28 &
+2016-04-01 \\
+2829 & SPY & 2016-03-31 & 586 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 & 2016-03-28 &
+2016-04-01 \\
+2830 & SPY & 2016-04-01 & 586 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007065 & 114423500 & 0.006789 & 2016-03-28 &
+2016-04-01 \\
+\end{longtable}
+
+\hypertarget{calculating-weekly-realized-volatility}{%
+\section{Calculating Weekly Realized
+Volatility}\label{calculating-weekly-realized-volatility}}
+
+Now that we have a \texttt{week\_num} associated with each
+\texttt{trade\_date}, we can use \texttt{.groupby()} to calculate the
+realized volatility.
+
+These weekly realized volatilities are the labels that we will be
+predicting later in our analysis.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_realized }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_spy}
+\NormalTok{        .groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{]].agg(}\KeywordTok{lambda}\NormalTok{ x: np.std(x) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{))}
+\NormalTok{        .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_realized }\OperatorTok{=}\NormalTok{ df\_realized[}\DecValTok{1}\NormalTok{:]}
+\NormalTok{df\_realized}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end & realized\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 1 & 2005-01-10 & 2005-01-14 & 0.093295 \\
+2 & 2 & 2005-01-18 & 2005-01-21 & 0.126557 \\
+3 & 3 & 2005-01-24 & 2005-01-28 & 0.029753 \\
+4 & 4 & 2005-01-31 & 2005-02-04 & 0.069583 \\
+5 & 5 & 2005-02-07 & 2005-02-11 & 0.084567 \\
+... & ... & ... & ... & ... \\
+582 & 582 & 2016-02-29 & 2016-03-04 & 0.159055 \\
+583 & 583 & 2016-03-07 & 2016-03-11 & 0.137591 \\
+584 & 584 & 2016-03-14 & 2016-03-18 & 0.057861 \\
+585 & 585 & 2016-03-21 & 2016-03-24 & 0.048135 \\
+586 & 586 & 2016-03-28 & 2016-04-01 & 0.066437 \\
+\end{longtable}
+
+\hypertarget{close-to-close-estimator}{%
+\section{Close-to-Close Estimator}\label{close-to-close-estimator}}
+
+Let's now implement the close-to-close estimator.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ close\_to\_close(r):}
+\NormalTok{    T }\OperatorTok{=}\NormalTok{ r.shape[}\DecValTok{0}\NormalTok{]}
+\NormalTok{    r\_bar }\OperatorTok{=}\NormalTok{ r.mean()}
+\NormalTok{    vol }\OperatorTok{=}\NormalTok{ np.sqrt((}\DecValTok{1} \OperatorTok{/}\NormalTok{ (T }\OperatorTok{{-}} \DecValTok{1}\NormalTok{)) }\OperatorTok{*}\NormalTok{ ((r }\OperatorTok{{-}}\NormalTok{ r\_bar) }\OperatorTok{**} \DecValTok{2}\NormalTok{).}\BuiltInTok{sum}\NormalTok{()) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+    \ControlFlowTok{return}\NormalTok{(vol)}
+\end{Highlighting}
+\end{Shaded}
+
+Notice that \texttt{close\_to\_close()} is an aggregation function that
+takes in an array of daily returns and returns back a number. In order
+to calculate weekly estimates we use \texttt{close\_to\_close()} as the
+aggregation function applied to a \texttt{.groupby()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_close\_to\_close }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_spy}
+\NormalTok{        .groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{]]}
+\NormalTok{        .agg(close\_to\_close)}
+\NormalTok{        .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_close\_to\_close }\OperatorTok{=}\NormalTok{ df\_close\_to\_close[}\DecValTok{0}\NormalTok{:}\OperatorTok{{-}}\DecValTok{1}\NormalTok{]}
+\NormalTok{df\_close\_to\_close}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end & close\_to\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & 2005-01-03 & 2005-01-07 & 0.102492 \\
+1 & 1 & 2005-01-10 & 2005-01-14 & 0.104307 \\
+2 & 2 & 2005-01-18 & 2005-01-21 & 0.146136 \\
+3 & 3 & 2005-01-24 & 2005-01-28 & 0.033265 \\
+4 & 4 & 2005-01-31 & 2005-02-04 & 0.077796 \\
+... & ... & ... & ... & ... \\
+581 & 581 & 2016-02-22 & 2016-02-26 & 0.175394 \\
+582 & 582 & 2016-02-29 & 2016-03-04 & 0.177829 \\
+583 & 583 & 2016-03-07 & 2016-03-11 & 0.153831 \\
+584 & 584 & 2016-03-14 & 2016-03-18 & 0.064691 \\
+585 & 585 & 2016-03-21 & 2016-03-24 & 0.055581 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Question:} Verify that the \texttt{.groupby()} above
+works just fine with out including \texttt{week\_start} and
+\texttt{week\_end}. If that is the case, then why did I include it?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}
+\NormalTok{df\_spy}
+\NormalTok{    .groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{]]}
+\NormalTok{    .agg(close\_to\_close)}
+\NormalTok{    .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{\})}
+\NormalTok{)}
+
+\CommentTok{\# It makes the code and the dataframe more readable.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end & close\_to\_close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & 2005-01-03 & 2005-01-07 & 0.102492 \\
+1 & 1 & 2005-01-10 & 2005-01-14 & 0.104307 \\
+2 & 2 & 2005-01-18 & 2005-01-21 & 0.146136 \\
+3 & 3 & 2005-01-24 & 2005-01-28 & 0.033265 \\
+4 & 4 & 2005-01-31 & 2005-02-04 & 0.077796 \\
+... & ... & ... & ... & ... \\
+582 & 582 & 2016-02-29 & 2016-03-04 & 0.177829 \\
+583 & 583 & 2016-03-07 & 2016-03-11 & 0.153831 \\
+584 & 584 & 2016-03-14 & 2016-03-18 & 0.064691 \\
+585 & 585 & 2016-03-21 & 2016-03-24 & 0.055581 \\
+586 & 586 & 2016-03-28 & 2016-04-01 & 0.074279 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Create an alternative version of our
+close-to-close function using \texttt{np.std()}. Call the new function
+\texttt{close\_to\_close\_std()}. Verify that your values match.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ close\_to\_close\_std(r):}
+\NormalTok{    vol }\OperatorTok{=}\NormalTok{ np.std(r, ddof }\OperatorTok{=} \DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+    \ControlFlowTok{return}\NormalTok{(vol)}
+
+\NormalTok{df\_std }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_spy}
+\NormalTok{        .groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{]]}
+\NormalTok{        .agg(close\_to\_close\_std)}
+\NormalTok{        .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+    
+\NormalTok{df\_std }\OperatorTok{=}\NormalTok{ df\_std[:}\OperatorTok{{-}}\DecValTok{1}\NormalTok{]}
+\BuiltInTok{print}\NormalTok{(df\_std[}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{())}
+\BuiltInTok{print}\NormalTok{(df\_close\_to\_close[}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+90.6980642016463
+90.6980642016463
+\end{verbatim}
+
+In Sepp 2016, the author uses the \(R^2\) between the forecasts and the
+realized labels as a means of assessing the quality of a particular
+estimator. Let's utilize \textbf{sklearn} to do the same.
+
+We being by importing the \texttt{LinearRegression()} constructor and
+instantiating a model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ sklearn.linear\_model }\ImportTok{import}\NormalTok{ LinearRegression}
+\NormalTok{mdl\_reg }\OperatorTok{=}\NormalTok{ LinearRegression(fit\_intercept }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, let's organize our features and labels.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{X }\OperatorTok{=}\NormalTok{ df\_close\_to\_close[[}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{]]}
+\NormalTok{y }\OperatorTok{=}\NormalTok{ df\_realized[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+We can now fit the model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mdl\_reg.fit(X, y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+LinearRegression()
+\end{verbatim}
+
+The \texttt{.score()} method of a \texttt{LinearRegression} model
+returns the \(R^2\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mdl\_reg.score(X, y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.4093645253435927
+\end{verbatim}
+
+And we can examine the slope and intercept of our model as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Intercept:"}\NormalTok{, mdl\_reg.intercept\_)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Slope:   "}\NormalTok{, mdl\_reg.coef\_)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Intercept: 0.04933384095053199
+Slope:    [0.57068844]
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Question:} How do our results compare to Sepp's?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# They seem close enough that there probably isn\textquotesingle{}t some error in my calculations.}
+\CommentTok{\# The differences probably come down to differences in data.}
+\CommentTok{\# I do wish the results were a bit closer to feel totally comfortable.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+Let's also measure the bias and efficiency of the the close-to-close
+estimator.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# bias}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Bias:      "}\NormalTok{, np.mean(df\_close\_to\_close[}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ df\_realized[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{]))}
+
+\CommentTok{\# efficiency}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Efficiency:"}\NormalTok{, np.std(df\_realized[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ np.std(df\_close\_to\_close[}\StringTok{\textquotesingle{}close\_to\_close\textquotesingle{}}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Bias:       0.01708041424884867
+Efficiency: 0.8919571135609281
 \end{verbatim}
 
 \bookmarksetup{startatroot}

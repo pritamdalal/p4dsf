@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Analysis in Finance - 16&nbsp; Volatility Forecasting: Close-to-Close Estimator</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/15_option_replication/option_replication.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/03_applications/applications.html">Applications</a></li><li class="breadcrumb-item"><a href="../../chapters/16_close_to_close/close_to_close.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Analysis in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/01_part_basic_data_wrangling/part_basic_data_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basic Data Wrangling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 2</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/02_part_visualization/part_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/12_seaborn/seaborn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Visualization with <strong>seaborn</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/13_bokeh_basic/bokeh_basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Basic Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/14_bokeh_advanced/bokeh_advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Advanced Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/03_applications/applications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Applications</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/15_option_replication/option_replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/16_close_to_close/close_to_close.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">16.1</span> Loading Packages</a></li>
+  <li><a href="#reading-in-spy-data-from-yahoo-finance" id="toc-reading-in-spy-data-from-yahoo-finance" class="nav-link" data-scroll-target="#reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">16.2</span> Reading-In SPY Data From Yahoo Finance</a></li>
+  <li><a href="#calculating-daily-returns-realized-volatility" id="toc-calculating-daily-returns-realized-volatility" class="nav-link" data-scroll-target="#calculating-daily-returns-realized-volatility"><span class="header-section-number">16.3</span> Calculating Daily Returns &amp; Realized Volatility</a></li>
+  <li><a href="#organizing-dates-for-backtest" id="toc-organizing-dates-for-backtest" class="nav-link" data-scroll-target="#organizing-dates-for-backtest"><span class="header-section-number">16.4</span> Organizing Dates for Backtest</a></li>
+  <li><a href="#calculating-weekly-realized-volatility" id="toc-calculating-weekly-realized-volatility" class="nav-link" data-scroll-target="#calculating-weekly-realized-volatility"><span class="header-section-number">16.5</span> Calculating Weekly Realized Volatility</a></li>
+  <li><a href="#close-to-close-estimator" id="toc-close-to-close-estimator" class="nav-link" data-scroll-target="#close-to-close-estimator"><span class="header-section-number">16.6</span> Close-to-Close Estimator</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>This material is closely related to a the following white papers:</p>
+<ol type="1">
+<li><p><em>Volatility Modeling and Trading</em> - Artur Sepp, 2016</p></li>
+<li><p><em>Measuring Historic Volatility</em> - Colin Bennet &amp; Miguel Gil, 2012</p></li>
+</ol>
+<p>Our main objective will be to implement the code for the close-to-close volatility estimator. To test our work, we will attempt to replicate Sepp’s results for <em>weekly</em> volatility forecasts for SPY (see pp 38-43).</p>
+<p>For the related project you will be asked to implement code for other estimators and a number of ETFs.</p>
+<section id="loading-packages" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">16.1</span> Loading Packages</h2>
+<p>Let’s begin by loading the packages that we will need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reading-in-spy-data-from-yahoo-finance" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">16.2</span> Reading-In SPY Data From Yahoo Finance</h2>
+<p>Sepp’s analysis covers data starting from 1/1/2005 and ending on 4/2/2016. Let’s grab these SPY prices from Yahoo Finance using <strong>pandas_datareader</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>2004-12-31</td>
+<td>121.300003</td>
+<td>121.660004</td>
+<td>120.800003</td>
+<td>120.870003</td>
+<td>84.657806</td>
+<td>28648800</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>2005-01-03</td>
+<td>121.559998</td>
+<td>121.760002</td>
+<td>119.900002</td>
+<td>120.300003</td>
+<td>84.258568</td>
+<td>55748000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>2005-01-04</td>
+<td>120.459999</td>
+<td>120.540001</td>
+<td>118.440002</td>
+<td>118.830002</td>
+<td>83.228973</td>
+<td>69167600</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>2005-01-05</td>
+<td>118.739998</td>
+<td>119.250000</td>
+<td>118.000000</td>
+<td>118.010002</td>
+<td>82.654648</td>
+<td>65667300</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>2005-01-06</td>
+<td>118.440002</td>
+<td>119.150002</td>
+<td>118.260002</td>
+<td>118.610001</td>
+<td>83.074875</td>
+<td>47814700</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2827</td>
+<td>SPY</td>
+<td>2016-03-28</td>
+<td>203.610001</td>
+<td>203.860001</td>
+<td>202.710007</td>
+<td>203.240005</td>
+<td>178.770126</td>
+<td>62408200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2828</td>
+<td>SPY</td>
+<td>2016-03-29</td>
+<td>202.759995</td>
+<td>205.250000</td>
+<td>202.399994</td>
+<td>205.119995</td>
+<td>180.423782</td>
+<td>92922900</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2829</td>
+<td>SPY</td>
+<td>2016-03-30</td>
+<td>206.300003</td>
+<td>206.869995</td>
+<td>205.589996</td>
+<td>206.020004</td>
+<td>181.215378</td>
+<td>86365300</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2830</td>
+<td>SPY</td>
+<td>2016-03-31</td>
+<td>205.910004</td>
+<td>206.410004</td>
+<td>205.330002</td>
+<td>205.520004</td>
+<td>180.775589</td>
+<td>94584100</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2831</td>
+<td>SPY</td>
+<td>2016-04-01</td>
+<td>204.350006</td>
+<td>207.139999</td>
+<td>203.979996</td>
+<td>206.919998</td>
+<td>182.007065</td>
+<td>114423500</td>
+</tr>
+</tbody>
+</table>
+
+<p>2832 rows × 8 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="calculating-daily-returns-realized-volatility" class="level2" data-number="16.3">
+<h2 data-number="16.3" class="anchored" data-anchor-id="calculating-daily-returns-realized-volatility"><span class="header-section-number">16.3</span> Calculating Daily Returns &amp; Realized Volatility</h2>
+<p>The close-to-close estimator is a function of daily returns so let’s calculate those now. In particular, we will use log-returns.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'close'</span>]).diff()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="dv">1</span>:].reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">dly_ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>2005-01-03</td>
+<td>121.559998</td>
+<td>121.760002</td>
+<td>119.900002</td>
+<td>120.300003</td>
+<td>84.258568</td>
+<td>55748000</td>
+<td>-0.004727</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>2005-01-04</td>
+<td>120.459999</td>
+<td>120.540001</td>
+<td>118.440002</td>
+<td>118.830002</td>
+<td>83.228973</td>
+<td>69167600</td>
+<td>-0.012295</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>2005-01-05</td>
+<td>118.739998</td>
+<td>119.250000</td>
+<td>118.000000</td>
+<td>118.010002</td>
+<td>82.654648</td>
+<td>65667300</td>
+<td>-0.006925</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>2005-01-06</td>
+<td>118.440002</td>
+<td>119.150002</td>
+<td>118.260002</td>
+<td>118.610001</td>
+<td>83.074875</td>
+<td>47814700</td>
+<td>0.005071</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>2005-01-07</td>
+<td>118.970001</td>
+<td>119.230003</td>
+<td>118.129997</td>
+<td>118.440002</td>
+<td>82.955849</td>
+<td>55847700</td>
+<td>-0.001434</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2826</td>
+<td>SPY</td>
+<td>2016-03-28</td>
+<td>203.610001</td>
+<td>203.860001</td>
+<td>202.710007</td>
+<td>203.240005</td>
+<td>178.770126</td>
+<td>62408200</td>
+<td>0.000591</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2827</td>
+<td>SPY</td>
+<td>2016-03-29</td>
+<td>202.759995</td>
+<td>205.250000</td>
+<td>202.399994</td>
+<td>205.119995</td>
+<td>180.423782</td>
+<td>92922900</td>
+<td>0.009208</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2828</td>
+<td>SPY</td>
+<td>2016-03-30</td>
+<td>206.300003</td>
+<td>206.869995</td>
+<td>205.589996</td>
+<td>206.020004</td>
+<td>181.215378</td>
+<td>86365300</td>
+<td>0.004378</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2829</td>
+<td>SPY</td>
+<td>2016-03-31</td>
+<td>205.910004</td>
+<td>206.410004</td>
+<td>205.330002</td>
+<td>205.520004</td>
+<td>180.775589</td>
+<td>94584100</td>
+<td>-0.002430</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2830</td>
+<td>SPY</td>
+<td>2016-04-01</td>
+<td>204.350006</td>
+<td>207.139999</td>
+<td>203.979996</td>
+<td>206.919998</td>
+<td>182.007065</td>
+<td>114423500</td>
+<td>0.006789</td>
+</tr>
+</tbody>
+</table>
+
+<p>2831 rows × 9 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="organizing-dates-for-backtest" class="level2" data-number="16.4">
+<h2 data-number="16.4" class="anchored" data-anchor-id="organizing-dates-for-backtest"><span class="header-section-number">16.4</span> Organizing Dates for Backtest</h2>
+<p>Organizing dates is an important step in a historical analysis.</p>
+<p>We are performing a weekly analysis, which means that in later steps we will performing aggregation calculations of daily calculations grouped into weeks. Therefore, we will need to add a column to <code>df_spy</code> that will allow us to group by weeks.</p>
+<p>The key to our approach will be to use the <code>.dt.weekday</code> attribute of the <code>trade_date</code> columns. In the following code, the variable <code>weekday</code> is a <code>Series</code> that contains the weekday associated with each date. Notice that Monday is encoded by <code>0</code> and Friday is encoded by <code>4</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>weekday <span class="op">=</span> df_spy[<span class="st">'trade_date'</span>].dt.weekday</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>weekday</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0       0
+1       1
+2       2
+3       3
+4       4
+       ..
+2826    0
+2827    1
+2828    2
+2829    3
+2830    4
+Name: trade_date, Length: 2831, dtype: int32</code></pre>
+</div>
+</div>
+<p>The following code is a simple <code>for</code>-loop that has the effect of creating a week-number for each week.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>week_num <span class="op">=</span> []</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ix_week <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>week_num.append(ix_week)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(weekday) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    prev_day <span class="op">=</span> weekday[ix]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    curr_day <span class="op">=</span> weekday[ix <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> curr_day <span class="op">&lt;</span> prev_day:</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        ix_week <span class="op">=</span> ix_week <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    week_num.append(ix_week)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>np.array(week_num) <span class="co"># I use the array function simply because it looks better when it prints</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([  0,   0,   0, ..., 586, 586, 586])</code></pre>
+</div>
+</div>
+<p>Let’s now insert the week numbers into <code>df_spy</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">2</span>, <span class="st">'week_num'</span>, week_num)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">week_num</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">dly_ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>2005-01-03</td>
+<td>0</td>
+<td>121.559998</td>
+<td>121.760002</td>
+<td>119.900002</td>
+<td>120.300003</td>
+<td>84.258568</td>
+<td>55748000</td>
+<td>-0.004727</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>2005-01-04</td>
+<td>0</td>
+<td>120.459999</td>
+<td>120.540001</td>
+<td>118.440002</td>
+<td>118.830002</td>
+<td>83.228973</td>
+<td>69167600</td>
+<td>-0.012295</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>2005-01-05</td>
+<td>0</td>
+<td>118.739998</td>
+<td>119.250000</td>
+<td>118.000000</td>
+<td>118.010002</td>
+<td>82.654648</td>
+<td>65667300</td>
+<td>-0.006925</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>2005-01-06</td>
+<td>0</td>
+<td>118.440002</td>
+<td>119.150002</td>
+<td>118.260002</td>
+<td>118.610001</td>
+<td>83.074875</td>
+<td>47814700</td>
+<td>0.005071</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>2005-01-07</td>
+<td>0</td>
+<td>118.970001</td>
+<td>119.230003</td>
+<td>118.129997</td>
+<td>118.440002</td>
+<td>82.955849</td>
+<td>55847700</td>
+<td>-0.001434</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2826</td>
+<td>SPY</td>
+<td>2016-03-28</td>
+<td>586</td>
+<td>203.610001</td>
+<td>203.860001</td>
+<td>202.710007</td>
+<td>203.240005</td>
+<td>178.770126</td>
+<td>62408200</td>
+<td>0.000591</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2827</td>
+<td>SPY</td>
+<td>2016-03-29</td>
+<td>586</td>
+<td>202.759995</td>
+<td>205.250000</td>
+<td>202.399994</td>
+<td>205.119995</td>
+<td>180.423782</td>
+<td>92922900</td>
+<td>0.009208</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2828</td>
+<td>SPY</td>
+<td>2016-03-30</td>
+<td>586</td>
+<td>206.300003</td>
+<td>206.869995</td>
+<td>205.589996</td>
+<td>206.020004</td>
+<td>181.215378</td>
+<td>86365300</td>
+<td>0.004378</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2829</td>
+<td>SPY</td>
+<td>2016-03-31</td>
+<td>586</td>
+<td>205.910004</td>
+<td>206.410004</td>
+<td>205.330002</td>
+<td>205.520004</td>
+<td>180.775589</td>
+<td>94584100</td>
+<td>-0.002430</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2830</td>
+<td>SPY</td>
+<td>2016-04-01</td>
+<td>586</td>
+<td>204.350006</td>
+<td>207.139999</td>
+<td>203.979996</td>
+<td>206.919998</td>
+<td>182.007065</td>
+<td>114423500</td>
+<td>0.006789</td>
+</tr>
+</tbody>
+</table>
+
+<p>2831 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Discussion Question:</strong> The <code>pandas.Series.dt.week</code> attribute gives the <em>week-of-the-year</em> for a give trade-date. My initial idea was to use <code>.dt.week</code> and <code>dt.year</code> for my grouping, but I ran into an issue. Can you think what the issue was?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; Weeks at the beginning and end of the year may be partial weeks.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<hr>
+<p>We can now use <code>.groupby()</code> to calculate the starting and ending dates for each week.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_start_end <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    df_spy.groupby([<span class="st">'week_num'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'trade_date'</span>]].agg([<span class="bu">min</span>, <span class="bu">max</span>])[<span class="st">'trade_date'</span>]</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'min'</span>:<span class="st">'week_start'</span>, <span class="st">'max'</span>:<span class="st">'week_end'</span>})</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'index'</span>:<span class="st">'week_num'</span>})</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>df_start_end</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">week_num</th>
+<th data-quarto-table-cell-role="th">week_start</th>
+<th data-quarto-table-cell-role="th">week_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2005-01-10</td>
+<td>2005-01-14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2005-01-18</td>
+<td>2005-01-21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>2005-01-24</td>
+<td>2005-01-28</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>2005-01-31</td>
+<td>2005-02-04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">582</td>
+<td>582</td>
+<td>2016-02-29</td>
+<td>2016-03-04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">583</td>
+<td>583</td>
+<td>2016-03-07</td>
+<td>2016-03-11</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">584</td>
+<td>584</td>
+<td>2016-03-14</td>
+<td>2016-03-18</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">585</td>
+<td>585</td>
+<td>2016-03-21</td>
+<td>2016-03-24</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">586</td>
+<td>586</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+</tr>
+</tbody>
+</table>
+
+<p>587 rows × 3 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s merge these columns into <code>df_spy</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.merge(df_start_end)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">week_num</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">dly_ret</th>
+<th data-quarto-table-cell-role="th">week_start</th>
+<th data-quarto-table-cell-role="th">week_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>2005-01-03</td>
+<td>0</td>
+<td>121.559998</td>
+<td>121.760002</td>
+<td>119.900002</td>
+<td>120.300003</td>
+<td>84.258568</td>
+<td>55748000</td>
+<td>-0.004727</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>2005-01-04</td>
+<td>0</td>
+<td>120.459999</td>
+<td>120.540001</td>
+<td>118.440002</td>
+<td>118.830002</td>
+<td>83.228973</td>
+<td>69167600</td>
+<td>-0.012295</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>2005-01-05</td>
+<td>0</td>
+<td>118.739998</td>
+<td>119.250000</td>
+<td>118.000000</td>
+<td>118.010002</td>
+<td>82.654648</td>
+<td>65667300</td>
+<td>-0.006925</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>2005-01-06</td>
+<td>0</td>
+<td>118.440002</td>
+<td>119.150002</td>
+<td>118.260002</td>
+<td>118.610001</td>
+<td>83.074875</td>
+<td>47814700</td>
+<td>0.005071</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>2005-01-07</td>
+<td>0</td>
+<td>118.970001</td>
+<td>119.230003</td>
+<td>118.129997</td>
+<td>118.440002</td>
+<td>82.955849</td>
+<td>55847700</td>
+<td>-0.001434</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2826</td>
+<td>SPY</td>
+<td>2016-03-28</td>
+<td>586</td>
+<td>203.610001</td>
+<td>203.860001</td>
+<td>202.710007</td>
+<td>203.240005</td>
+<td>178.770126</td>
+<td>62408200</td>
+<td>0.000591</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2827</td>
+<td>SPY</td>
+<td>2016-03-29</td>
+<td>586</td>
+<td>202.759995</td>
+<td>205.250000</td>
+<td>202.399994</td>
+<td>205.119995</td>
+<td>180.423782</td>
+<td>92922900</td>
+<td>0.009208</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2828</td>
+<td>SPY</td>
+<td>2016-03-30</td>
+<td>586</td>
+<td>206.300003</td>
+<td>206.869995</td>
+<td>205.589996</td>
+<td>206.020004</td>
+<td>181.215378</td>
+<td>86365300</td>
+<td>0.004378</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2829</td>
+<td>SPY</td>
+<td>2016-03-31</td>
+<td>586</td>
+<td>205.910004</td>
+<td>206.410004</td>
+<td>205.330002</td>
+<td>205.520004</td>
+<td>180.775589</td>
+<td>94584100</td>
+<td>-0.002430</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2830</td>
+<td>SPY</td>
+<td>2016-04-01</td>
+<td>586</td>
+<td>204.350006</td>
+<td>207.139999</td>
+<td>203.979996</td>
+<td>206.919998</td>
+<td>182.007065</td>
+<td>114423500</td>
+<td>0.006789</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+</tr>
+</tbody>
+</table>
+
+<p>2831 rows × 12 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="calculating-weekly-realized-volatility" class="level2" data-number="16.5">
+<h2 data-number="16.5" class="anchored" data-anchor-id="calculating-weekly-realized-volatility"><span class="header-section-number">16.5</span> Calculating Weekly Realized Volatility</h2>
+<p>Now that we have a <code>week_num</code> associated with each <code>trade_date</code>, we can use <code>.groupby()</code> to calculate the realized volatility.</p>
+<p>These weekly realized volatilities are the labels that we will be predicting later in our analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]].agg(<span class="kw">lambda</span> x: np.std(x) <span class="op">*</span> np.sqrt(<span class="dv">252</span>))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'realized_vol'</span>})</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> df_realized[<span class="dv">1</span>:]</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>df_realized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">week_num</th>
+<th data-quarto-table-cell-role="th">week_start</th>
+<th data-quarto-table-cell-role="th">week_end</th>
+<th data-quarto-table-cell-role="th">realized_vol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2005-01-10</td>
+<td>2005-01-14</td>
+<td>0.093295</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2005-01-18</td>
+<td>2005-01-21</td>
+<td>0.126557</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>2005-01-24</td>
+<td>2005-01-28</td>
+<td>0.029753</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>2005-01-31</td>
+<td>2005-02-04</td>
+<td>0.069583</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5</td>
+<td>5</td>
+<td>2005-02-07</td>
+<td>2005-02-11</td>
+<td>0.084567</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">582</td>
+<td>582</td>
+<td>2016-02-29</td>
+<td>2016-03-04</td>
+<td>0.159055</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">583</td>
+<td>583</td>
+<td>2016-03-07</td>
+<td>2016-03-11</td>
+<td>0.137591</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">584</td>
+<td>584</td>
+<td>2016-03-14</td>
+<td>2016-03-18</td>
+<td>0.057861</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">585</td>
+<td>585</td>
+<td>2016-03-21</td>
+<td>2016-03-24</td>
+<td>0.048135</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">586</td>
+<td>586</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+<td>0.066437</td>
+</tr>
+</tbody>
+</table>
+
+<p>586 rows × 4 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="close-to-close-estimator" class="level2" data-number="16.6">
+<h2 data-number="16.6" class="anchored" data-anchor-id="close-to-close-estimator"><span class="header-section-number">16.6</span> Close-to-Close Estimator</h2>
+<p>Let’s now implement the close-to-close estimator.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close(r):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> r.shape[<span class="dv">0</span>]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    r_bar <span class="op">=</span> r.mean()</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    vol <span class="op">=</span> np.sqrt((<span class="dv">1</span> <span class="op">/</span> (T <span class="op">-</span> <span class="dv">1</span>)) <span class="op">*</span> ((r <span class="op">-</span> r_bar) <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>()) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(vol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that <code>close_to_close()</code> is an aggregation function that takes in an array of daily returns and returns back a number. In order to calculate weekly estimates we use <code>close_to_close()</code> as the aggregation function applied to a <code>.groupby()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_close_to_close <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]]</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        .agg(close_to_close)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'close_to_close'</span>})</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>df_close_to_close <span class="op">=</span> df_close_to_close[<span class="dv">0</span>:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>df_close_to_close</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">week_num</th>
+<th data-quarto-table-cell-role="th">week_start</th>
+<th data-quarto-table-cell-role="th">week_end</th>
+<th data-quarto-table-cell-role="th">close_to_close</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+<td>0.102492</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2005-01-10</td>
+<td>2005-01-14</td>
+<td>0.104307</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2005-01-18</td>
+<td>2005-01-21</td>
+<td>0.146136</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>2005-01-24</td>
+<td>2005-01-28</td>
+<td>0.033265</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>2005-01-31</td>
+<td>2005-02-04</td>
+<td>0.077796</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">581</td>
+<td>581</td>
+<td>2016-02-22</td>
+<td>2016-02-26</td>
+<td>0.175394</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">582</td>
+<td>582</td>
+<td>2016-02-29</td>
+<td>2016-03-04</td>
+<td>0.177829</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">583</td>
+<td>583</td>
+<td>2016-03-07</td>
+<td>2016-03-11</td>
+<td>0.153831</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">584</td>
+<td>584</td>
+<td>2016-03-14</td>
+<td>2016-03-18</td>
+<td>0.064691</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">585</td>
+<td>585</td>
+<td>2016-03-21</td>
+<td>2016-03-24</td>
+<td>0.055581</td>
+</tr>
+</tbody>
+</table>
+
+<p>586 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Discussion Question:</strong> Verify that the <code>.groupby()</code> above works just fine with out including <code>week_start</code> and <code>week_end</code>. If that is the case, then why did I include it?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df_spy</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]]</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    .agg(close_to_close)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'close_to_close'</span>})</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># It makes the code and the dataframe more readable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">week_num</th>
+<th data-quarto-table-cell-role="th">week_start</th>
+<th data-quarto-table-cell-role="th">week_end</th>
+<th data-quarto-table-cell-role="th">close_to_close</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>2005-01-03</td>
+<td>2005-01-07</td>
+<td>0.102492</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>2005-01-10</td>
+<td>2005-01-14</td>
+<td>0.104307</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>2005-01-18</td>
+<td>2005-01-21</td>
+<td>0.146136</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>2005-01-24</td>
+<td>2005-01-28</td>
+<td>0.033265</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>2005-01-31</td>
+<td>2005-02-04</td>
+<td>0.077796</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">582</td>
+<td>582</td>
+<td>2016-02-29</td>
+<td>2016-03-04</td>
+<td>0.177829</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">583</td>
+<td>583</td>
+<td>2016-03-07</td>
+<td>2016-03-11</td>
+<td>0.153831</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">584</td>
+<td>584</td>
+<td>2016-03-14</td>
+<td>2016-03-18</td>
+<td>0.064691</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">585</td>
+<td>585</td>
+<td>2016-03-21</td>
+<td>2016-03-24</td>
+<td>0.055581</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">586</td>
+<td>586</td>
+<td>2016-03-28</td>
+<td>2016-04-01</td>
+<td>0.074279</td>
+</tr>
+</tbody>
+</table>
+
+<p>587 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Create an alternative version of our close-to-close function using <code>np.std()</code>. Call the new function <code>close_to_close_std()</code>. Verify that your values match.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close_std(r):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    vol <span class="op">=</span> np.std(r, ddof <span class="op">=</span> <span class="dv">1</span>) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(vol)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>df_std <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]]</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        .agg(close_to_close_std)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'close_to_close'</span>})</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>df_std <span class="op">=</span> df_std[:<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_std[<span class="st">'close_to_close'</span>].<span class="bu">sum</span>())</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_close_to_close[<span class="st">'close_to_close'</span>].<span class="bu">sum</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>90.6980642016463
+90.6980642016463</code></pre>
+</div>
+</div>
+<p>In Sepp 2016, the author uses the <span class="math inline">\(R^2\)</span> between the forecasts and the realized labels as a means of assessing the quality of a particular estimator. Let’s utilize <strong>sklearn</strong> to do the same.</p>
+<p>We being by importing the <code>LinearRegression()</code> constructor and instantiating a model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>mdl_reg <span class="op">=</span> LinearRegression(fit_intercept <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, let’s organize our features and labels.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df_close_to_close[[<span class="st">'close_to_close'</span>]]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df_realized[<span class="st">'realized_vol'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now fit the model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mdl_reg.fit(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
+</div>
+</div>
+<p>The <code>.score()</code> method of a <code>LinearRegression</code> model returns the <span class="math inline">\(R^2\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mdl_reg.score(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.4093645253435927</code></pre>
+</div>
+</div>
+<p>And we can examine the slope and intercept of our model as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Intercept:"</span>, mdl_reg.intercept_)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Slope:   "</span>, mdl_reg.coef_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Intercept: 0.04933384095053199
+Slope:    [0.57068844]</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Discussion Question:</strong> How do our results compare to Sepp’s?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># They seem close enough that there probably isn't some error in my calculations.</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The differences probably come down to differences in data.</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># I do wish the results were a bit closer to feel totally comfortable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<hr>
+<p>Let’s also measure the bias and efficiency of the the close-to-close estimator.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Bias:      "</span>, np.mean(df_close_to_close[<span class="st">'close_to_close'</span>] <span class="op">-</span> df_realized[<span class="st">'realized_vol'</span>]))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># efficiency</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Efficiency:"</span>, np.std(df_realized[<span class="st">'realized_vol'</span>]) <span class="op">/</span> np.std(df_close_to_close[<span class="st">'close_to_close'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bias:       0.01708041424884867
+Efficiency: 0.8919571135609281</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/15_option_replication/option_replication.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
