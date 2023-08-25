@@ -25,6 +25,9 @@ book:
       - chapters/12_seaborn/seaborn.ipynb
       - chapters/13_bokeh_basic/bokeh_basic.ipynb
       - chapters/14_bokeh_advanced/bokeh_advanced.ipynb
+    - part: parts/03_applications/applications.ipynb
+      chapters:
+      - chapters/15_option_replication/option_replication.ipynb
     - references.qmd
 
 bibliography: references.bib

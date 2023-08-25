@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Analysis in Finance - 15&nbsp; Black-Scholes-Merton Option Replication</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../references.html" rel="next">
+<link href="../../parts/03_applications/applications.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/03_applications/applications.html">Applications</a></li><li class="breadcrumb-item"><a href="../../chapters/15_option_replication/option_replication.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Analysis in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/01_part_basic_data_wrangling/part_basic_data_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basic Data Wrangling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 2</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/02_part_visualization/part_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/12_seaborn/seaborn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Visualization with <strong>seaborn</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/13_bokeh_basic/bokeh_basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Basic Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/14_bokeh_advanced/bokeh_advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Advanced Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/03_applications/applications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Applications</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/15_option_replication/option_replication.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">15.1</span> Loading Packages</a></li>
+  <li><a href="#converting-py_vollib-functions" id="toc-converting-py_vollib-functions" class="nav-link" data-scroll-target="#converting-py_vollib-functions"><span class="header-section-number">15.2</span> Converting <code>py_vollib</code> Functions</a></li>
+  <li><a href="#geometric-brownian-motion" id="toc-geometric-brownian-motion" class="nav-link" data-scroll-target="#geometric-brownian-motion"><span class="header-section-number">15.3</span> Geometric Brownian Motion</a></li>
+  <li><a href="#the-option-we-will-analyze" id="toc-the-option-we-will-analyze" class="nav-link" data-scroll-target="#the-option-we-will-analyze"><span class="header-section-number">15.4</span> The Option We Will Analyze</a></li>
+  <li><a href="#delta-hedging-a-single-simulated-underlying-price-path" id="toc-delta-hedging-a-single-simulated-underlying-price-path" class="nav-link" data-scroll-target="#delta-hedging-a-single-simulated-underlying-price-path"><span class="header-section-number">15.5</span> Delta-Hedging: A Single Simulated Underlying Price Path</a></li>
+  <li><a href="#delta-hedging-multiple-simulated-underlying-price-paths" id="toc-delta-hedging-multiple-simulated-underlying-price-paths" class="nav-link" data-scroll-target="#delta-hedging-multiple-simulated-underlying-price-paths"><span class="header-section-number">15.6</span> Delta-Hedging: Multiple Simulated Underlying Price Paths</a></li>
+  <li><a href="#what-if-realized-volatility-is-different-that-pricing-volatility" id="toc-what-if-realized-volatility-is-different-that-pricing-volatility" class="nav-link" data-scroll-target="#what-if-realized-volatility-is-different-that-pricing-volatility"><span class="header-section-number">15.7</span> What If Realized Volatility is Different that Pricing Volatility?</a></li>
+  <li><a href="#increasing-delta-hedge-frequency-reduces-pnl-variability" id="toc-increasing-delta-hedge-frequency-reduces-pnl-variability" class="nav-link" data-scroll-target="#increasing-delta-hedge-frequency-reduces-pnl-variability"><span class="header-section-number">15.8</span> Increasing Delta-Hedge Frequency Reduces PNL Variability</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>The Black-Scholes-Merton (BSM) model is one of the foundations of quantitative finance. Not only does it provide a theoretical pricing framework for options, but it also gives a practical engineering result: the manufacturing process a derivatives desk should employ to construct options for its customers. This manufacturing process gave birth to the entire derivatives industry.</p>
+<p>The purpose of this case study is to explore the BSM option manufacturing process by performing data analysis on simulated data.</p>
+<section id="loading-packages" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">15.1</span> Loading Packages</h2>
+<p>Let’s begin by loading the packages we will need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Additionally, we will also require several functions from the <strong>py_vollib</strong> package for calculating option greeks.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> py_vollib.black_scholes_merton <span class="im">import</span> black_scholes_merton</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> py_vollib.black_scholes_merton.greeks.analytical <span class="im">import</span> delta</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> py_vollib.black_scholes_merton.greeks.analytical <span class="im">import</span> vega</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> py_vollib.black_scholes_merton.implied_volatility <span class="im">import</span> implied_volatility</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="converting-py_vollib-functions" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="converting-py_vollib-functions"><span class="header-section-number">15.2</span> Converting <code>py_vollib</code> Functions</h2>
+<p>In this section, we convert several of the <strong>py_vollib</strong> functions we imported above so that they can accept a row of a <code>DataFrame</code> as their argument. This will allow us to use these function with the <code>DataFrame.apply()</code> method, which we will use to write compact vectorized code. Notice that we assume a zero risk-free rate, and zero dividend yield throughout this tutorial, and thus those values are hardcoded into these functions..</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bsm_px(row):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    cp <span class="op">=</span> row[<span class="st">'cp'</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    upx <span class="op">=</span> row[<span class="st">'upx'</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    strike <span class="op">=</span> row[<span class="st">'strike'</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    t2x <span class="op">=</span> row[<span class="st">'t2x'</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    rf <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> row[<span class="st">'volatility'</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    px <span class="op">=</span> black_scholes_merton(cp, upx, strike, t2x, rf, volatility, q)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    px <span class="op">=</span> np.<span class="bu">round</span>(px, <span class="dv">2</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(px)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bsm_delta(row):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    cp <span class="op">=</span> row[<span class="st">'cp'</span>]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    upx <span class="op">=</span> row[<span class="st">'upx'</span>]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    strike <span class="op">=</span> row[<span class="st">'strike'</span>]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    t2x <span class="op">=</span> row[<span class="st">'t2x'</span>]</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    rf <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> row[<span class="st">'volatility'</span>]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t2x <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span>(<span class="dv">0</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    diff <span class="op">=</span> delta(cp, upx, strike, t2x, rf, volatility, q)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    diff <span class="op">=</span> np.<span class="bu">round</span>(diff, <span class="dv">3</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(diff)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bsm_vega(row):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    cp <span class="op">=</span> row[<span class="st">'cp'</span>]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    upx <span class="op">=</span> row[<span class="st">'upx'</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    strike <span class="op">=</span> row[<span class="st">'strike'</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    t2x <span class="op">=</span> row[<span class="st">'t2x'</span>]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    rf <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    volatility <span class="op">=</span> row[<span class="st">'volatility'</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t2x <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span>(<span class="dv">0</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    vga <span class="op">=</span> vega(cp, upx, strike, t2x, rf, volatility, q)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    vga <span class="op">=</span> np.<span class="bu">round</span>(vga, <span class="dv">3</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(vga)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="geometric-brownian-motion" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="geometric-brownian-motion"><span class="header-section-number">15.3</span> Geometric Brownian Motion</h2>
+<p>The series of trade prices for a stock is often modeled as a series of random variables, which is also referred to as a <em>stochastic process</em>. There many types of stochastic processes; some of them resemble actual stock price movements better than others.</p>
+<p>The Black-Scholes-Merton option pricing framework assumes that the price process of the underlying asset follows a <em>geometric brownian motion</em> (GBM). This means that:</p>
+<ol type="1">
+<li><p>The price process is continuous.</p></li>
+<li><p>The log return over any period of time is normally distributed.</p></li>
+<li><p>The returns during any two disjoint periods are independent.</p></li>
+</ol>
+<p>GBMs are one of the simplest types of processes that reasonably model asset price dynamics, so it’s often a good place to start when learning about simulating stock price data.</p>
+<p>The price process of a geometric brownian motion is determined by the current risk-free rate <span class="math inline">\(r\)</span> and the annualized volatility of the underlying <span class="math inline">\(\sigma\)</span>. Prices that are separated by <span class="math inline">\(\Delta t\)</span> units of time are related by following equation:</p>
+<p><span class="math display">\[S_{t} =  S_{t - \Delta t} \cdot \exp\bigg(\bigg(r - \frac{1}{2}\sigma^2\bigg)\Delta t + \sigma \sqrt{\Delta t} z_{t}\bigg)\]</span></p>
+<p>where <span class="math inline">\(z_{t}\)</span> is a standard normal random variable.</p>
+<p>This is called the <em>Euler discretization</em> of a GBM. It will serve as the recipe for our price-path simulation algorithm. Note that the expression in the parentheses is the log-return of the stock between time <span class="math inline">\(t - \Delta t\)</span> and <span class="math inline">\(t\)</span>.</p>
+<p>Although the GBM assumptions are often violated in actual prices, there is still enough truth in them that the Black-Scholes-Merton manufacturing process is practically useful. It prescribes a process that derivative dealers can use to construct the contracts that their customers are interested in. This manufacturing process is referred to as <em>constructing a replicating portfolio</em>, which in the case of vanilla option is accomplished via a dynamic trading strategy of the underlying asset. This dynamic strategy is called <em>delta</em>-hedging.</p>
+<hr>
+<p><strong>Discussion Question:</strong> Put-call parity is a pricing identity that emanates from a static manufacturing (replication) strategy of a certain type of derivative. Describe the strategy: what kind of derivative does this replication strategy manufacture, and what is the resulting pricing identity.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; A forward contract can be manufactured/replicated with a </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; portfolio consisting of long call position plus a short put </span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; position, both with the same strike, call it K.  Thus, the </span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; put-call parity identity is: c(K, T) - p(K, T) = S - Ke^(-rT). </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<hr>
+</section>
+<section id="the-option-we-will-analyze" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="the-option-we-will-analyze"><span class="header-section-number">15.4</span> The Option We Will Analyze</h2>
+<p>We want to analyze what it means for a derivatives dealer to trade an option and then delta-hedge the position. Let’s consider an option that actually traded in the market place:</p>
+<ul>
+<li>underlying: QQQ</li>
+<li>current date: 11/16/2018</li>
+<li>expiration: 12/21/2018</li>
+<li>type: put</li>
+<li>strike: 160</li>
+<li>upx: 168</li>
+<li>days-to-expiration (d2x): 24</li>
+<li>price: 2.25</li>
+</ul>
+<p>From this trade price, we can calculate an implied volatility, which we will also refer to as the <em>pricing volatility</em>. (Note that this is the typical flow of events, the price of an option is observed and from that observed price, an implied volatility is calculated.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pricing_vol <span class="op">=</span> implied_volatility(price <span class="op">=</span> <span class="fl">2.25</span>, S <span class="op">=</span> <span class="dv">168</span>, K <span class="op">=</span> <span class="dv">160</span>, t <span class="op">=</span> <span class="dv">24</span><span class="op">/</span><span class="dv">252</span>, r <span class="op">=</span> <span class="dv">0</span>, q <span class="op">=</span> <span class="dv">0</span>, flag <span class="op">=</span> <span class="st">'p'</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pricing_vol <span class="op">=</span> np.<span class="bu">round</span>(pricing_vol, <span class="dv">4</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pricing_vol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.2636</code></pre>
+</div>
+</div>
+</section>
+<section id="delta-hedging-a-single-simulated-underlying-price-path" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="delta-hedging-a-single-simulated-underlying-price-path"><span class="header-section-number">15.5</span> Delta-Hedging: A Single Simulated Underlying Price Path</h2>
+<p>It is typical that a derivatives dealer will trade the above option with a customer, and then hold that option option until expiration and delta hedge it on a daily basis.</p>
+<p>The BSM manufacturing framework states that <strong>the dealer will break even if</strong>:</p>
+<ol type="1">
+<li>the underlying price follows a geometric brownian motion</li>
+<li>the realized volatility during the life of the option is equal to the implied volatility used to price the option</li>
+<li>the dealer delta-hedges with frequent rebalancing (in order for the result to be deterministic the delta-hedging must be continuous)</li>
+</ol>
+<p>In this section we are explore what this manufacturing process looks like for a particular price path of the underlying. In order to do this, let’s simulate a single geometric brownian motion path whose realized volatility is equal to the pricing volatility of our QQQ option. This price path will consist of a series of daily prices that starts with 168, the spot price at the time of the trade. We will rebalance the delta-hedge daily.</p>
+<p>The following code generates the price path.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setting the random seed</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># parameters of simulation</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>path_vol <span class="op">=</span> pricing_vol</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> <span class="fl">1.</span><span class="op">/</span><span class="dv">252</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># initializing paths</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>single_path <span class="op">=</span> np.zeros(<span class="dv">25</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>single_path[<span class="dv">0</span>] <span class="op">=</span> <span class="dv">168</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># looping through days and generating steps in the paths</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">25</span>):</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.random.standard_normal(<span class="dv">1</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    single_path[t] <span class="op">=</span> single_path[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> path_vol <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> path_vol <span class="op">*</span> np.sqrt(dt) <span class="op">*</span> z) <span class="co"># memorize this line</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    single_path[t] <span class="op">=</span> np.<span class="bu">round</span>(single_path[t], <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s take a look at the path we generated. (Obviously, in a real-world situation this price path would be realized over the course of the life of the option.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>single_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([168.  , 172.57, 170.8 , 169.29, 166.28, 168.66, 162.31, 167.06,
+       164.94, 165.79, 165.08, 169.11, 163.4 , 162.51, 161.45, 164.5 ,
+       161.5 , 161.02, 158.67, 158.76, 160.28, 157.36, 160.36, 162.76,
+       164.1 ])</code></pre>
+</div>
+</div>
+<p>Next, let’s create a <code>DataFrame</code> that will track the PNL from delta-hedging the option; this <code>DataFrame</code> will contain all the information needed to calculate the price and greeks of the option on a daily basis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_path <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">'underlying'</span>:<span class="st">'QQQ'</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">'cp'</span>:<span class="st">'p'</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">'strike'</span>:<span class="dv">160</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>         <span class="st">'volatility'</span>:<span class="fl">0.2636</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         <span class="st">'upx'</span>:single_path, </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>         <span class="st">'d2x'</span>:<span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">24</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>         <span class="st">'buy_sell'</span>:<span class="dv">1</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        }       </span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    .assign(t2x <span class="op">=</span> <span class="kw">lambda</span> df: df.d2x <span class="op">/</span> <span class="dv">252</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">d2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>168.00</td>
+<td>24</td>
+<td>1</td>
+<td>0.095238</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>172.57</td>
+<td>23</td>
+<td>1</td>
+<td>0.091270</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>170.80</td>
+<td>22</td>
+<td>1</td>
+<td>0.087302</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>169.29</td>
+<td>21</td>
+<td>1</td>
+<td>0.083333</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>166.28</td>
+<td>20</td>
+<td>1</td>
+<td>0.079365</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.28</td>
+<td>4</td>
+<td>1</td>
+<td>0.015873</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>157.36</td>
+<td>3</td>
+<td>1</td>
+<td>0.011905</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.36</td>
+<td>2</td>
+<td>1</td>
+<td>0.007937</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>162.76</td>
+<td>1</td>
+<td>1</td>
+<td>0.003968</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>164.10</td>
+<td>0</td>
+<td>1</td>
+<td>0.000000</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<p>We can now use the <code>bsm_px()</code> function to calculate the prices of the option for each day in the simulation. At a derivatives dealer, the option value and greeks would be monitored in real-time in a position management system.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'option_price'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_px, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">d2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>168.00</td>
+<td>24</td>
+<td>1</td>
+<td>0.095238</td>
+<td>2.25</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>172.57</td>
+<td>23</td>
+<td>1</td>
+<td>0.091270</td>
+<td>1.21</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>170.80</td>
+<td>22</td>
+<td>1</td>
+<td>0.087302</td>
+<td>1.44</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>169.29</td>
+<td>21</td>
+<td>1</td>
+<td>0.083333</td>
+<td>1.67</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>166.28</td>
+<td>20</td>
+<td>1</td>
+<td>0.079365</td>
+<td>2.33</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.28</td>
+<td>4</td>
+<td>1</td>
+<td>0.015873</td>
+<td>1.98</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>157.36</td>
+<td>3</td>
+<td>1</td>
+<td>0.011905</td>
+<td>3.44</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.36</td>
+<td>2</td>
+<td>1</td>
+<td>0.007937</td>
+<td>1.33</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>162.76</td>
+<td>1</td>
+<td>1</td>
+<td>0.003968</td>
+<td>0.21</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>164.10</td>
+<td>0</td>
+<td>1</td>
+<td>0.000000</td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 9 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s calculate the deltas through time. Notice that as the price of the underlying goes down the (absolute) delta of the put increases, and as the price of the underlying goes up the delta decreases.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'delta'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_delta, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">d2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+<th data-quarto-table-cell-role="th">delta</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>168.00</td>
+<td>24</td>
+<td>1</td>
+<td>0.095238</td>
+<td>2.25</td>
+<td>-0.261</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>172.57</td>
+<td>23</td>
+<td>1</td>
+<td>0.091270</td>
+<td>1.21</td>
+<td>-0.161</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>170.80</td>
+<td>22</td>
+<td>1</td>
+<td>0.087302</td>
+<td>1.44</td>
+<td>-0.190</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>169.29</td>
+<td>21</td>
+<td>1</td>
+<td>0.083333</td>
+<td>1.67</td>
+<td>-0.218</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>166.28</td>
+<td>20</td>
+<td>1</td>
+<td>0.079365</td>
+<td>2.33</td>
+<td>-0.289</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.28</td>
+<td>4</td>
+<td>1</td>
+<td>0.015873</td>
+<td>1.98</td>
+<td>-0.472</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>157.36</td>
+<td>3</td>
+<td>1</td>
+<td>0.011905</td>
+<td>3.44</td>
+<td>-0.714</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.36</td>
+<td>2</td>
+<td>1</td>
+<td>0.007937</td>
+<td>1.33</td>
+<td>-0.457</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>162.76</td>
+<td>1</td>
+<td>1</td>
+<td>0.003968</td>
+<td>0.21</td>
+<td>-0.150</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>164.10</td>
+<td>0</td>
+<td>1</td>
+<td>0.000000</td>
+<td>0.00</td>
+<td>0.000</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 10 columns</p>
+</div>
+</div>
+</div>
+<p>Next, we calculate the option PNL.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'option_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'option_price'</span>].diff()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">d2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">option_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>168.00</td>
+<td>24</td>
+<td>1</td>
+<td>0.095238</td>
+<td>2.25</td>
+<td>-0.261</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>172.57</td>
+<td>23</td>
+<td>1</td>
+<td>0.091270</td>
+<td>1.21</td>
+<td>-0.161</td>
+<td>-1.04</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>170.80</td>
+<td>22</td>
+<td>1</td>
+<td>0.087302</td>
+<td>1.44</td>
+<td>-0.190</td>
+<td>0.23</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>169.29</td>
+<td>21</td>
+<td>1</td>
+<td>0.083333</td>
+<td>1.67</td>
+<td>-0.218</td>
+<td>0.23</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>166.28</td>
+<td>20</td>
+<td>1</td>
+<td>0.079365</td>
+<td>2.33</td>
+<td>-0.289</td>
+<td>0.66</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.28</td>
+<td>4</td>
+<td>1</td>
+<td>0.015873</td>
+<td>1.98</td>
+<td>-0.472</td>
+<td>-1.05</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>157.36</td>
+<td>3</td>
+<td>1</td>
+<td>0.011905</td>
+<td>3.44</td>
+<td>-0.714</td>
+<td>1.46</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.36</td>
+<td>2</td>
+<td>1</td>
+<td>0.007937</td>
+<td>1.33</td>
+<td>-0.457</td>
+<td>-2.11</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>162.76</td>
+<td>1</td>
+<td>1</td>
+<td>0.003968</td>
+<td>0.21</td>
+<td>-0.150</td>
+<td>-1.12</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>164.10</td>
+<td>0</td>
+<td>1</td>
+<td>0.000000</td>
+<td>0.00</td>
+<td>0.000</td>
+<td>-0.21</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 11 columns</p>
+</div>
+</div>
+</div>
+<p>Delta-hedging with daily rebalancing means at the end of each day we hold a position in the underlying whose size is equal to the negative of the delta of the option position. Thus, the daily delta-hedging PNL is calculated as follows:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'delta_hedge_pnl'</span>] <span class="op">=</span> <span class="op">-</span>df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'delta'</span>].shift(<span class="dv">1</span>) <span class="op">*</span> df_path[<span class="st">'upx'</span>].diff() </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">d2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">option_pnl</th>
+<th data-quarto-table-cell-role="th">delta_hedge_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>168.00</td>
+<td>24</td>
+<td>1</td>
+<td>0.095238</td>
+<td>2.25</td>
+<td>-0.261</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>172.57</td>
+<td>23</td>
+<td>1</td>
+<td>0.091270</td>
+<td>1.21</td>
+<td>-0.161</td>
+<td>-1.04</td>
+<td>1.19277</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>170.80</td>
+<td>22</td>
+<td>1</td>
+<td>0.087302</td>
+<td>1.44</td>
+<td>-0.190</td>
+<td>0.23</td>
+<td>-0.28497</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>169.29</td>
+<td>21</td>
+<td>1</td>
+<td>0.083333</td>
+<td>1.67</td>
+<td>-0.218</td>
+<td>0.23</td>
+<td>-0.28690</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>166.28</td>
+<td>20</td>
+<td>1</td>
+<td>0.079365</td>
+<td>2.33</td>
+<td>-0.289</td>
+<td>0.66</td>
+<td>-0.65618</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.28</td>
+<td>4</td>
+<td>1</td>
+<td>0.015873</td>
+<td>1.98</td>
+<td>-0.472</td>
+<td>-1.05</td>
+<td>0.87552</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>157.36</td>
+<td>3</td>
+<td>1</td>
+<td>0.011905</td>
+<td>3.44</td>
+<td>-0.714</td>
+<td>1.46</td>
+<td>-1.37824</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.36</td>
+<td>2</td>
+<td>1</td>
+<td>0.007937</td>
+<td>1.33</td>
+<td>-0.457</td>
+<td>-2.11</td>
+<td>2.14200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>162.76</td>
+<td>1</td>
+<td>1</td>
+<td>0.003968</td>
+<td>0.21</td>
+<td>-0.150</td>
+<td>-1.12</td>
+<td>1.09680</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>164.10</td>
+<td>0</td>
+<td>1</td>
+<td>0.000000</td>
+<td>0.00</td>
+<td>0.000</td>
+<td>-0.21</td>
+<td>0.20100</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 12 columns</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Discussion Question:</strong> What is the delta-hedging position held at the end of d2x = 21. What is the trade executed at that time?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; The end-of-day delta hedge is long .714 contracts of the QQQ.  </span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; In order to get to that position we would have to buy 0.242 contracts. </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<hr>
+<p>The <code>total_pnl</code> of the delta-hedged option position is the combination of the <code>option_pnl</code> and the <code>delta_hedge_pnl</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'total_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'option_pnl'</span>] <span class="op">+</span> df_path[<span class="st">'delta_hedge_pnl'</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">underlying</th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">d2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">option_pnl</th>
+<th data-quarto-table-cell-role="th">delta_hedge_pnl</th>
+<th data-quarto-table-cell-role="th">total_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>168.00</td>
+<td>24</td>
+<td>1</td>
+<td>0.095238</td>
+<td>2.25</td>
+<td>-0.261</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>172.57</td>
+<td>23</td>
+<td>1</td>
+<td>0.091270</td>
+<td>1.21</td>
+<td>-0.161</td>
+<td>-1.04</td>
+<td>1.19277</td>
+<td>0.15277</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>170.80</td>
+<td>22</td>
+<td>1</td>
+<td>0.087302</td>
+<td>1.44</td>
+<td>-0.190</td>
+<td>0.23</td>
+<td>-0.28497</td>
+<td>-0.05497</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>169.29</td>
+<td>21</td>
+<td>1</td>
+<td>0.083333</td>
+<td>1.67</td>
+<td>-0.218</td>
+<td>0.23</td>
+<td>-0.28690</td>
+<td>-0.05690</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>166.28</td>
+<td>20</td>
+<td>1</td>
+<td>0.079365</td>
+<td>2.33</td>
+<td>-0.289</td>
+<td>0.66</td>
+<td>-0.65618</td>
+<td>0.00382</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.28</td>
+<td>4</td>
+<td>1</td>
+<td>0.015873</td>
+<td>1.98</td>
+<td>-0.472</td>
+<td>-1.05</td>
+<td>0.87552</td>
+<td>-0.17448</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>157.36</td>
+<td>3</td>
+<td>1</td>
+<td>0.011905</td>
+<td>3.44</td>
+<td>-0.714</td>
+<td>1.46</td>
+<td>-1.37824</td>
+<td>0.08176</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>160.36</td>
+<td>2</td>
+<td>1</td>
+<td>0.007937</td>
+<td>1.33</td>
+<td>-0.457</td>
+<td>-2.11</td>
+<td>2.14200</td>
+<td>0.03200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>162.76</td>
+<td>1</td>
+<td>1</td>
+<td>0.003968</td>
+<td>0.21</td>
+<td>-0.150</td>
+<td>-1.12</td>
+<td>1.09680</td>
+<td>-0.02320</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>QQQ</td>
+<td>p</td>
+<td>160</td>
+<td>0.2636</td>
+<td>164.10</td>
+<td>0</td>
+<td>1</td>
+<td>0.000000</td>
+<td>0.00</td>
+<td>0.000</td>
+<td>-0.21</td>
+<td>0.20100</td>
+<td>-0.00900</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 13 columns</p>
+</div>
+</div>
+</div>
+<p>As we can see, the total PNL of the delta-hedged option position is close to zero, but not exactly zero.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'total_pnl'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.18382999999999813</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Copy and past the above code into the space below, and then modify it to calculate the PNL for <em>selling</em> this option for 2.25 and then delta-hedging it over this same scenario.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># creating the DataFrame</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>df_path_test <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        {<span class="st">'underlying'</span>:<span class="st">'QQQ'</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">'cp'</span>:<span class="st">'p'</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>         <span class="st">'strike'</span>:<span class="dv">160</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>         <span class="st">'volatility'</span>:<span class="fl">0.2636</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>         <span class="st">'upx'</span>:single_path, </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>         <span class="st">'d2x'</span>:<span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">24</span>, <span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>)),</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>         <span class="st">'buy_sell'</span>:<span class="op">-</span><span class="dv">1</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        }       </span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    .assign(t2x <span class="op">=</span> <span class="kw">lambda</span> df: df.d2x <span class="op">/</span> <span class="dv">252</span>)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating prices, greeks, and PNLs</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>df_path_test[<span class="st">'option_price'</span>] <span class="op">=</span> df_path_test[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_px, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>df_path_test[<span class="st">'delta'</span>] <span class="op">=</span> df_path_test[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_delta, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>df_path_test[<span class="st">'option_pnl'</span>] <span class="op">=</span>  df_path_test[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path_test[<span class="st">'option_price'</span>].diff()</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>df_path_test[<span class="st">'delta_hedge_pnl'</span>] <span class="op">=</span> <span class="op">-</span>df_path_test[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path_test[<span class="st">'delta'</span>].shift(<span class="dv">1</span>) <span class="op">*</span> df_path_test[<span class="st">'upx'</span>].diff()</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>df_path_test[<span class="st">'total_pnl'</span>] <span class="op">=</span> df_path_test[<span class="st">'option_pnl'</span>] <span class="op">+</span> df_path_test[<span class="st">'delta_hedge_pnl'</span>]</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating total PNL</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>df_path_test[<span class="st">'total_pnl'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>-0.18382999999999813</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="delta-hedging-multiple-simulated-underlying-price-paths" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="delta-hedging-multiple-simulated-underlying-price-paths"><span class="header-section-number">15.6</span> Delta-Hedging: Multiple Simulated Underlying Price Paths</h2>
+<p>As we saw in the above example, we came fairly close to a zero PNL from delta hedging on a daily basis, which is what the BSM framework suggests. However, this was just for a single hypothetical path, so we may have just gotten lucky. In this section, we will generate PNL data for daily delta-hedging over a variety of paths, and analyze the resulting distribution.</p>
+<p>Let’s begin by initializing our option position and scenario generation parameters.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>buy_sell <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>d2x <span class="op">=</span> <span class="dv">24</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>cp <span class="op">=</span> <span class="st">'p'</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>spot <span class="op">=</span> <span class="fl">168.</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>strike <span class="op">=</span> <span class="fl">160.</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>tenor <span class="op">=</span> np.double(d2x)<span class="op">/</span><span class="fl">252.</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>option_price <span class="op">=</span> <span class="fl">2.25</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>pricing_vol <span class="op">=</span> implied_volatility(price <span class="op">=</span> option_price, S <span class="op">=</span> spot, K <span class="op">=</span> strike, t <span class="op">=</span> tenor, r <span class="op">=</span> <span class="dv">0</span>, q <span class="op">=</span> <span class="dv">0</span>, flag <span class="op">=</span> cp)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>path_vol <span class="op">=</span> pricing_vol</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>hedge_frequency <span class="op">=</span> d2x</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> tenor <span class="op">/</span> hedge_frequency</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>num_paths <span class="op">=</span> <span class="dv">1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we initialize an array that will hold all of our paths.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>multiple_paths <span class="op">=</span> np.zeros((hedge_frequency <span class="op">+</span> <span class="dv">1</span>, num_paths))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>multiple_paths</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.]])</code></pre>
+</div>
+</div>
+<p>The first price in every path is the current spot price of the underlying.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>multiple_paths[<span class="dv">0</span>] <span class="op">=</span> spot</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>multiple_paths</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[168., 168., 168., ..., 168., 168., 168.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       ...,
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.]])</code></pre>
+</div>
+</div>
+<p>Using the convenience of broadcasting in <code>numpy.arrays</code>, we can easily calculate all of the required scenarios in a few lines of code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setting the random seed</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.random.standard_normal(num_paths) </span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    multiple_paths[t] <span class="op">=</span> multiple_paths[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> path_vol <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> path_vol <span class="op">*</span> np.sqrt(dt) <span class="op">*</span> z)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    multiple_paths[t] <span class="op">=</span> np.<span class="bu">round</span>(multiple_paths[t], <span class="dv">2</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>multiple_paths</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[168.  , 168.  , 168.  , ..., 168.  , 168.  , 168.  ],
+       [172.57, 166.28, 166.51, ..., 167.78, 168.97, 167.46],
+       [172.11, 159.67, 167.9 , ..., 165.21, 170.77, 171.34],
+       ...,
+       [159.97, 156.87, 163.42, ..., 144.66, 174.18, 169.42],
+       [161.34, 160.23, 164.69, ..., 145.86, 170.28, 170.59],
+       [164.14, 157.3 , 162.92, ..., 145.92, 176.16, 169.25]])</code></pre>
+</div>
+</div>
+<p>Just to make sure we understand our data structures, let’s pull out the first scenario and perform our delta-hedge calculations with it. After we do that, we will wrap this code in a <code>for</code>-loop in order to perform the delta-hedge calculations for all the scenarios.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># creating the DataFrame</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>df_path <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame(</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>        {<span class="st">'cp'</span>:cp,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">'strike'</span>:strike,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">'volatility'</span>:path_vol,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>         <span class="st">'upx'</span>:multiple_paths[:, <span class="dv">0</span>], </span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>         <span class="st">'t2x'</span>:np.linspace(tenor, <span class="dv">0</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>),</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>         <span class="st">'buy_sell'</span>: buy_sell,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        }       </span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating prices, greeks, and PNLs</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'option_price'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_px, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'delta'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_delta, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'option_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'option_price'</span>].diff()</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'delta_hedge_pnl'</span>] <span class="op">=</span> <span class="op">-</span>df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'delta'</span>].shift(<span class="dv">1</span>) <span class="op">*</span> df_path[<span class="st">'upx'</span>].diff()</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'total_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'option_pnl'</span>] <span class="op">+</span> df_path[<span class="st">'delta_hedge_pnl'</span>]</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="co"># viewing the path</span></span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>df_path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">option_pnl</th>
+<th data-quarto-table-cell-role="th">delta_hedge_pnl</th>
+<th data-quarto-table-cell-role="th">total_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>168.00</td>
+<td>0.095238</td>
+<td>-1</td>
+<td>2.25</td>
+<td>-0.261</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>172.57</td>
+<td>0.091270</td>
+<td>-1</td>
+<td>1.21</td>
+<td>-0.161</td>
+<td>1.04</td>
+<td>-1.19277</td>
+<td>-0.15277</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>172.11</td>
+<td>0.087302</td>
+<td>-1</td>
+<td>1.21</td>
+<td>-0.165</td>
+<td>-0.00</td>
+<td>0.07406</td>
+<td>0.07406</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>173.49</td>
+<td>0.083333</td>
+<td>-1</td>
+<td>0.93</td>
+<td>-0.135</td>
+<td>0.28</td>
+<td>-0.22770</td>
+<td>0.05230</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>173.24</td>
+<td>0.079365</td>
+<td>-1</td>
+<td>0.90</td>
+<td>-0.134</td>
+<td>0.03</td>
+<td>0.03375</td>
+<td>0.06375</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>163.76</td>
+<td>0.015873</td>
+<td>-1</td>
+<td>0.77</td>
+<td>-0.237</td>
+<td>0.55</td>
+<td>-0.38913</td>
+<td>0.16087</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>158.57</td>
+<td>0.011905</td>
+<td>-1</td>
+<td>2.63</td>
+<td>-0.617</td>
+<td>-1.86</td>
+<td>1.23003</td>
+<td>-0.62997</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>159.97</td>
+<td>0.007937</td>
+<td>-1</td>
+<td>1.51</td>
+<td>-0.499</td>
+<td>1.12</td>
+<td>-0.86380</td>
+<td>0.25620</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>161.34</td>
+<td>0.003968</td>
+<td>-1</td>
+<td>0.53</td>
+<td>-0.305</td>
+<td>0.98</td>
+<td>-0.68363</td>
+<td>0.29637</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>164.14</td>
+<td>0.000000</td>
+<td>-1</td>
+<td>0.00</td>
+<td>0.000</td>
+<td>0.53</td>
+<td>-0.85400</td>
+<td>-0.32400</td>
+</tr>
+</tbody>
+</table>
+
+<p>25 rows × 11 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s check the cumulative PNL for this scenario; clearly the PNL outcome is much farther for this scenario than the one above.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df_path[<span class="st">'total_pnl'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-1.612160000000005</code></pre>
+</div>
+</div>
+<p>We can now generalize the above code and perform the delta-hedging calculations on each scenario. We will save the calculations for each scenario to analyze.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>lst_scenarios <span class="op">=</span> []</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix_path <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, num_paths):</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># creating dataframe</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    df_path <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame(</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>            {<span class="st">'cp'</span>:cp,</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>             <span class="st">'strike'</span>:strike,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>             <span class="st">'volatility'</span>:pricing_vol,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>             <span class="st">'upx'</span>:multiple_paths[:, ix_path], </span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>             <span class="st">'t2x'</span>:np.linspace(tenor, <span class="dv">0</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>),</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>             <span class="st">'buy_sell'</span>:buy_sell</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating prices, greeks, and PNLs</span></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'option_price'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_px, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'delta'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_delta, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'option_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'option_price'</span>].diff()</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'delta_hedge_pnl'</span>] <span class="op">=</span> <span class="op">-</span>df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'delta'</span>].shift(<span class="dv">1</span>) <span class="op">*</span> df_path[<span class="st">'upx'</span>].diff()</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'total_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'option_pnl'</span>] <span class="op">+</span> df_path[<span class="st">'delta_hedge_pnl'</span>]</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'scenario'</span>] <span class="op">=</span> ix_path</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># storing df_path into a list</span></span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>    lst_scenarios.append(df_path)</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a><span class="co"># creating a single DataFrame that contains all scenarios</span></span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>df_all_paths <span class="op">=</span> pd.concat(lst_scenarios)</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a><span class="co"># viewing the DataFrame</span></span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>df_all_paths</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">cp</th>
+<th data-quarto-table-cell-role="th">strike</th>
+<th data-quarto-table-cell-role="th">volatility</th>
+<th data-quarto-table-cell-role="th">upx</th>
+<th data-quarto-table-cell-role="th">t2x</th>
+<th data-quarto-table-cell-role="th">buy_sell</th>
+<th data-quarto-table-cell-role="th">option_price</th>
+<th data-quarto-table-cell-role="th">delta</th>
+<th data-quarto-table-cell-role="th">option_pnl</th>
+<th data-quarto-table-cell-role="th">delta_hedge_pnl</th>
+<th data-quarto-table-cell-role="th">total_pnl</th>
+<th data-quarto-table-cell-role="th">scenario</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>168.00</td>
+<td>0.095238</td>
+<td>-1</td>
+<td>2.25</td>
+<td>-0.261</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>172.57</td>
+<td>0.091270</td>
+<td>-1</td>
+<td>1.21</td>
+<td>-0.161</td>
+<td>1.04</td>
+<td>-1.19277</td>
+<td>-0.15277</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>172.11</td>
+<td>0.087302</td>
+<td>-1</td>
+<td>1.21</td>
+<td>-0.165</td>
+<td>-0.00</td>
+<td>0.07406</td>
+<td>0.07406</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>173.49</td>
+<td>0.083333</td>
+<td>-1</td>
+<td>0.93</td>
+<td>-0.135</td>
+<td>0.28</td>
+<td>-0.22770</td>
+<td>0.05230</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>173.24</td>
+<td>0.079365</td>
+<td>-1</td>
+<td>0.90</td>
+<td>-0.134</td>
+<td>0.03</td>
+<td>0.03375</td>
+<td>0.06375</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>171.42</td>
+<td>0.015873</td>
+<td>-1</td>
+<td>0.04</td>
+<td>-0.018</td>
+<td>0.03</td>
+<td>0.00837</td>
+<td>0.03837</td>
+<td>999</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>173.24</td>
+<td>0.011905</td>
+<td>-1</td>
+<td>0.00</td>
+<td>-0.003</td>
+<td>0.04</td>
+<td>-0.03276</td>
+<td>0.00724</td>
+<td>999</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>169.42</td>
+<td>0.007937</td>
+<td>-1</td>
+<td>0.01</td>
+<td>-0.007</td>
+<td>-0.01</td>
+<td>0.01146</td>
+<td>0.00146</td>
+<td>999</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>170.59</td>
+<td>0.003968</td>
+<td>-1</td>
+<td>0.00</td>
+<td>-0.000</td>
+<td>0.01</td>
+<td>-0.00819</td>
+<td>0.00181</td>
+<td>999</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>p</td>
+<td>160.0</td>
+<td>0.263631</td>
+<td>169.25</td>
+<td>0.000000</td>
+<td>-1</td>
+<td>0.00</td>
+<td>0.000</td>
+<td>-0.00</td>
+<td>0.00000</td>
+<td>0.00000</td>
+<td>999</td>
+</tr>
+</tbody>
+</table>
+
+<p>25000 rows × 12 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s use a <code>.groupby()</code> to calculate the cummulative PNL for each scenario</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df_pnl <span class="op">=</span> df_all_paths.groupby([<span class="st">'scenario'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'total_pnl'</span>]].<span class="bu">sum</span>()</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>df_pnl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">scenario</th>
+<th data-quarto-table-cell-role="th">total_pnl</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>0</td>
+<td>-1.61216</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1</td>
+<td>0.40480</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2</td>
+<td>0.34073</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>3</td>
+<td>0.31858</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>4</td>
+<td>0.16595</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">995</td>
+<td>995</td>
+<td>1.75078</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">996</td>
+<td>996</td>
+<td>-0.83710</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">997</td>
+<td>997</td>
+<td>0.13385</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">998</td>
+<td>998</td>
+<td>0.54689</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">999</td>
+<td>999</td>
+<td>-1.77710</td>
+</tr>
+</tbody>
+</table>
+
+<p>1000 rows × 2 columns</p>
+</div>
+</div>
+</div>
+<p>As we can see, the average of the <code>total_pnls</code> is zero, which further demonstrates the manufacturing result of the Black-Scholes-Merton framework.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'total_pnl'</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-0.0009835299999998704</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Discussion Queston:</strong> If you sold this option for 0.25 more than fair-value, what would your average PNL be?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; Approximately $0.25</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Is the delta-hedging reducing risk? Try to verify this with a bit of data analysis.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_all_paths.groupby(<span class="st">'scenario'</span>)[<span class="st">'option_pnl'</span>].<span class="bu">sum</span>().std())</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_all_paths.groupby(<span class="st">'scenario'</span>)[<span class="st">'total_pnl'</span>].<span class="bu">sum</span>().std())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>5.006480605770481
+0.7586453989501201</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Calculate the standard deviation, minimum, and maximum of the cumulative PNLs.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Std Dev:"</span>, np.<span class="bu">round</span>(df_pnl[<span class="st">'total_pnl'</span>].std(), <span class="dv">2</span>))</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Min:   "</span>, np.<span class="bu">round</span>(df_pnl[<span class="st">'total_pnl'</span>].<span class="bu">min</span>(), <span class="dv">2</span>))</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Max:    "</span>,np.<span class="bu">round</span>(df_pnl[<span class="st">'total_pnl'</span>].<span class="bu">max</span>(), <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Std Dev: 0.76
+Min:    -2.9
+Max:     2.49</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Discussion Question:</strong> What are your thoughts on the range of possible PNL outcomes? Does option replication via discrete delta-hedging seem like a risk-free endeavor?</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; There is a wide variation of PNLs, and it is possible to have a </span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; gain or a loss that is greater than the value of the option itself.</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; Discrete delta-hedging is far from riskless.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="what-if-realized-volatility-is-different-that-pricing-volatility" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="what-if-realized-volatility-is-different-that-pricing-volatility"><span class="header-section-number">15.7</span> What If Realized Volatility is Different that Pricing Volatility?</h2>
+<p>As we can see above, if the realized volatility of the underlying during the life of the option is equal to the pricing volatility, then the daily delta-hedging trader will break even on average (however, the outcome can vary substantially depending on the particular scenario).</p>
+<p>In this section, we explore what happens when realized volatility differs from pricing volatility. In particular, we will see what happens when a trader sells an option, delta-hedges daily, but the realized volatility is 5% higher than implied.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setting simulation parameters</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>buy_sell <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>d2x <span class="op">=</span> <span class="dv">24</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>cp <span class="op">=</span> <span class="st">'p'</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>spot <span class="op">=</span> <span class="fl">168.</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>strike <span class="op">=</span> <span class="fl">160.</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>tenor <span class="op">=</span> np.double(d2x)<span class="op">/</span><span class="fl">252.</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>option_price <span class="op">=</span> <span class="fl">2.25</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>pricing_vol <span class="op">=</span> implied_volatility(price <span class="op">=</span> option_price, S <span class="op">=</span> spot, K <span class="op">=</span> strike, t <span class="op">=</span> tenor, r <span class="op">=</span> <span class="dv">0</span>, q <span class="op">=</span> <span class="dv">0</span>, flag <span class="op">=</span> cp)</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>path_vol <span class="op">=</span> pricing_vol <span class="op">+</span> <span class="fl">0.05</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>hedge_frequency <span class="op">=</span> d2x</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> tenor <span class="op">/</span> hedge_frequency</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>num_paths <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a><span class="co"># initializing paths</span></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>multiple_paths <span class="op">=</span> np.zeros((hedge_frequency <span class="op">+</span> <span class="dv">1</span>, num_paths))</span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>multiple_paths[<span class="dv">0</span>] <span class="op">=</span> spot</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="co"># setting the random seed</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1</span>)</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating paths</span></span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.random.standard_normal(num_paths) </span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a>    multiple_paths[t] <span class="op">=</span> multiple_paths[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> path_vol <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> path_vol <span class="op">*</span> np.sqrt(dt) <span class="op">*</span> z)</span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a>    multiple_paths[t] <span class="op">=</span> np.<span class="bu">round</span>(multiple_paths[t], <span class="dv">2</span>)</span>
+<span id="cb43-29"><a href="#cb43-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-30"><a href="#cb43-30" aria-hidden="true" tabindex="-1"></a><span class="co"># performing delta-hedge calculations on all the paths</span></span>
+<span id="cb43-31"><a href="#cb43-31" aria-hidden="true" tabindex="-1"></a>lst_scenarios <span class="op">=</span> []</span>
+<span id="cb43-32"><a href="#cb43-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix_path <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, num_paths):</span>
+<span id="cb43-33"><a href="#cb43-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb43-34"><a href="#cb43-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># creating the DataFrame</span></span>
+<span id="cb43-35"><a href="#cb43-35" aria-hidden="true" tabindex="-1"></a>    df_path <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame(</span>
+<span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a>            {<span class="st">'cp'</span>:cp,</span>
+<span id="cb43-38"><a href="#cb43-38" aria-hidden="true" tabindex="-1"></a>             <span class="st">'strike'</span>:strike,</span>
+<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>             <span class="st">'volatility'</span>:pricing_vol,</span>
+<span id="cb43-40"><a href="#cb43-40" aria-hidden="true" tabindex="-1"></a>             <span class="st">'upx'</span>:multiple_paths[:, ix_path], </span>
+<span id="cb43-41"><a href="#cb43-41" aria-hidden="true" tabindex="-1"></a>             <span class="st">'t2x'</span>:np.linspace(tenor, <span class="dv">0</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>),</span>
+<span id="cb43-42"><a href="#cb43-42" aria-hidden="true" tabindex="-1"></a>             <span class="st">'buy_sell'</span>:buy_sell</span>
+<span id="cb43-43"><a href="#cb43-43" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb43-44"><a href="#cb43-44" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb43-45"><a href="#cb43-45" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb43-46"><a href="#cb43-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating prices, greeks, and PNLs</span></span>
+<span id="cb43-47"><a href="#cb43-47" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'option_price'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_px, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb43-48"><a href="#cb43-48" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'delta'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_delta, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb43-49"><a href="#cb43-49" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'option_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'option_price'</span>].diff()</span>
+<span id="cb43-50"><a href="#cb43-50" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'delta_hedge_pnl'</span>] <span class="op">=</span> <span class="op">-</span>df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'delta'</span>].shift(<span class="dv">1</span>) <span class="op">*</span> df_path[<span class="st">'upx'</span>].diff()</span>
+<span id="cb43-51"><a href="#cb43-51" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'total_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'option_pnl'</span>] <span class="op">+</span> df_path[<span class="st">'delta_hedge_pnl'</span>]</span>
+<span id="cb43-52"><a href="#cb43-52" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'scenario'</span>] <span class="op">=</span> ix_path</span>
+<span id="cb43-53"><a href="#cb43-53" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb43-54"><a href="#cb43-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># storing df_path into a list</span></span>
+<span id="cb43-55"><a href="#cb43-55" aria-hidden="true" tabindex="-1"></a>    lst_scenarios.append(df_path)</span>
+<span id="cb43-56"><a href="#cb43-56" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb43-57"><a href="#cb43-57" aria-hidden="true" tabindex="-1"></a><span class="co"># creating a single DataFrame that contains all scenarios    </span></span>
+<span id="cb43-58"><a href="#cb43-58" aria-hidden="true" tabindex="-1"></a>df_all_paths <span class="op">=</span> pd.concat(lst_scenarios)</span>
+<span id="cb43-59"><a href="#cb43-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-60"><a href="#cb43-60" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating cumulative PNLs</span></span>
+<span id="cb43-61"><a href="#cb43-61" aria-hidden="true" tabindex="-1"></a>df_pnl <span class="op">=</span> df_all_paths.groupby([<span class="st">'scenario'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'total_pnl'</span>]].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As we can see, since realized is greater than implied, we lose money on average.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'total_pnl'</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>-0.8403840600000003</code></pre>
+</div>
+</div>
+<hr>
+<p><strong>Code Challenge:</strong> Use <code>bsm_vega</code> and verify that this PNL is consistent with the identity: <span class="math inline">\(vega * (implied - realzed)\)</span>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="op">-</span>bsm_vega(df_all_paths[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].iloc[<span class="dv">0</span>,:]) <span class="op">*</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>-0.8400000000000001</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="increasing-delta-hedge-frequency-reduces-pnl-variability" class="level2" data-number="15.8">
+<h2 data-number="15.8" class="anchored" data-anchor-id="increasing-delta-hedge-frequency-reduces-pnl-variability"><span class="header-section-number">15.8</span> Increasing Delta-Hedge Frequency Reduces PNL Variability</h2>
+<p>The BSM manufacturing framework states that in the limit of continuous delta-hedging, that these results become deterministic. The means that the delta-hedging outcomes are always the same for each scenario. Your final code challenge is to explore this via data analysis.</p>
+<hr>
+<p><strong>Code Challenge:</strong> Copy and paste the above code, and see what happens to the dispersion of the distribution of the delta-hedge PNL outcomes when you double and quadruple the <code>hedge_frequency</code>.</p>
+<div class="cell">
+<details>
+<summary>Solution</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setting simulation parameters</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>buy_sell <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>d2x <span class="op">=</span> <span class="dv">24</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>cp <span class="op">=</span> <span class="st">'p'</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>spot <span class="op">=</span> <span class="fl">168.</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>strike <span class="op">=</span> <span class="fl">160.</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>tenor <span class="op">=</span> np.double(d2x)<span class="op">/</span><span class="fl">252.</span> <span class="co"># I want to generalize this</span></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>option_price <span class="op">=</span> <span class="fl">2.25</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>pricing_vol <span class="op">=</span> implied_volatility(price <span class="op">=</span> option_price, S <span class="op">=</span> spot, K <span class="op">=</span> strike, t <span class="op">=</span> tenor, r <span class="op">=</span> <span class="dv">0</span>, q <span class="op">=</span> <span class="dv">0</span>, flag <span class="op">=</span> cp)</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>path_vol <span class="op">=</span> pricing_vol</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>hedge_frequency <span class="op">=</span> d2x <span class="op">*</span> <span class="dv">4</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> tenor <span class="op">/</span> hedge_frequency  <span class="co"># I want to generalize this</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>num_paths <span class="op">=</span> <span class="dv">1000</span></span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="co"># initializing paths</span></span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>multiple_paths <span class="op">=</span> np.zeros((hedge_frequency <span class="op">+</span> <span class="dv">1</span>, num_paths))</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>multiple_paths[<span class="dv">0</span>] <span class="op">=</span> spot</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a><span class="co"># setting the random seed</span></span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1</span>)</span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating paths</span></span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> np.random.standard_normal(num_paths) </span>
+<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>    multiple_paths[t] <span class="op">=</span> multiple_paths[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">*</span> np.exp((r <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> path_vol <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> dt <span class="op">+</span> path_vol <span class="op">*</span> np.sqrt(dt) <span class="op">*</span> z)</span>
+<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a>    multiple_paths[t] <span class="op">=</span> np.<span class="bu">round</span>(multiple_paths[t], <span class="dv">2</span>)</span>
+<span id="cb48-29"><a href="#cb48-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-30"><a href="#cb48-30" aria-hidden="true" tabindex="-1"></a><span class="co"># performing delta-hedge calculations on all the paths</span></span>
+<span id="cb48-31"><a href="#cb48-31" aria-hidden="true" tabindex="-1"></a>lst_scenarios <span class="op">=</span> []</span>
+<span id="cb48-32"><a href="#cb48-32" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix_path <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, num_paths):</span>
+<span id="cb48-33"><a href="#cb48-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-34"><a href="#cb48-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># creating the DataFrame</span></span>
+<span id="cb48-35"><a href="#cb48-35" aria-hidden="true" tabindex="-1"></a>    df_path <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb48-36"><a href="#cb48-36" aria-hidden="true" tabindex="-1"></a>        pd.DataFrame(</span>
+<span id="cb48-37"><a href="#cb48-37" aria-hidden="true" tabindex="-1"></a>            {<span class="st">'cp'</span>:cp,</span>
+<span id="cb48-38"><a href="#cb48-38" aria-hidden="true" tabindex="-1"></a>             <span class="st">'strike'</span>:strike,</span>
+<span id="cb48-39"><a href="#cb48-39" aria-hidden="true" tabindex="-1"></a>             <span class="st">'volatility'</span>:pricing_vol,</span>
+<span id="cb48-40"><a href="#cb48-40" aria-hidden="true" tabindex="-1"></a>             <span class="st">'upx'</span>:multiple_paths[:, ix_path], </span>
+<span id="cb48-41"><a href="#cb48-41" aria-hidden="true" tabindex="-1"></a>             <span class="st">'t2x'</span>:np.linspace(tenor, <span class="dv">0</span>, hedge_frequency <span class="op">+</span> <span class="dv">1</span>),</span>
+<span id="cb48-42"><a href="#cb48-42" aria-hidden="true" tabindex="-1"></a>             <span class="st">'buy_sell'</span>:buy_sell</span>
+<span id="cb48-43"><a href="#cb48-43" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb48-44"><a href="#cb48-44" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb48-45"><a href="#cb48-45" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-46"><a href="#cb48-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating prices, greeks, and PNLs</span></span>
+<span id="cb48-47"><a href="#cb48-47" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'option_price'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_px, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb48-48"><a href="#cb48-48" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'delta'</span>] <span class="op">=</span> df_path[[<span class="st">'cp'</span>, <span class="st">'upx'</span>, <span class="st">'strike'</span>, <span class="st">'t2x'</span>, <span class="st">'volatility'</span>]].<span class="bu">apply</span>(bsm_delta, axis <span class="op">=</span> <span class="dv">1</span>)</span>
+<span id="cb48-49"><a href="#cb48-49" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'option_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'option_price'</span>].diff()</span>
+<span id="cb48-50"><a href="#cb48-50" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'delta_hedge_pnl'</span>] <span class="op">=</span> <span class="op">-</span>df_path[<span class="st">'buy_sell'</span>] <span class="op">*</span> df_path[<span class="st">'delta'</span>].shift(<span class="dv">1</span>) <span class="op">*</span> df_path[<span class="st">'upx'</span>].diff()</span>
+<span id="cb48-51"><a href="#cb48-51" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'total_pnl'</span>] <span class="op">=</span> df_path[<span class="st">'option_pnl'</span>] <span class="op">+</span> df_path[<span class="st">'delta_hedge_pnl'</span>]</span>
+<span id="cb48-52"><a href="#cb48-52" aria-hidden="true" tabindex="-1"></a>    df_path[<span class="st">'scenario'</span>] <span class="op">=</span> ix_path</span>
+<span id="cb48-53"><a href="#cb48-53" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-54"><a href="#cb48-54" aria-hidden="true" tabindex="-1"></a>    <span class="co"># storing df_path into a list</span></span>
+<span id="cb48-55"><a href="#cb48-55" aria-hidden="true" tabindex="-1"></a>    lst_scenarios.append(df_path)</span>
+<span id="cb48-56"><a href="#cb48-56" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-57"><a href="#cb48-57" aria-hidden="true" tabindex="-1"></a><span class="co"># creating a single DataFrame that contains all scenarios    </span></span>
+<span id="cb48-58"><a href="#cb48-58" aria-hidden="true" tabindex="-1"></a>df_all_paths <span class="op">=</span> pd.concat(lst_scenarios)</span>
+<span id="cb48-59"><a href="#cb48-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-60"><a href="#cb48-60" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating cumulative PNLs</span></span>
+<span id="cb48-61"><a href="#cb48-61" aria-hidden="true" tabindex="-1"></a>df_pnl <span class="op">=</span> df_all_paths.groupby([<span class="st">'scenario'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'total_pnl'</span>]].<span class="bu">sum</span>()</span>
+<span id="cb48-62"><a href="#cb48-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-63"><a href="#cb48-63" aria-hidden="true" tabindex="-1"></a><span class="co"># calculating distrubution statistics</span></span>
+<span id="cb48-64"><a href="#cb48-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Std Dev:"</span>, np.<span class="bu">round</span>(df_pnl[<span class="st">'total_pnl'</span>].std(), <span class="dv">2</span>))</span>
+<span id="cb48-65"><a href="#cb48-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Min:   "</span>, np.<span class="bu">round</span>(df_pnl[<span class="st">'total_pnl'</span>].<span class="bu">min</span>(), <span class="dv">2</span>))</span>
+<span id="cb48-66"><a href="#cb48-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Max:    "</span>,np.<span class="bu">round</span>(df_pnl[<span class="st">'total_pnl'</span>].<span class="bu">max</span>(), <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Std Dev: 0.42
+Min:    -1.89
+Max:     1.92</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../parts/03_applications/applications.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Applications</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

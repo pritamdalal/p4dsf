@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, frame hidden, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, boxrule=0pt, interior hidden, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -7787,7 +7787,8 @@ Unable to display output for mime type(s): application/javascript, application/v
 \textbf{bokeh}}{Advanced Plotting with bokeh}}\label{advanced-plotting-with-bokeh}}
 
 In this chapter we will build on our work from a previous chapter and
-add a variety of interactions to the plots that we have created.
+add a variety of interactions to the plots that we have created with the
+\textbf{bokeh} package.
 
 \hypertarget{data-1}{%
 \section{Data}\label{data-1}}
@@ -8209,6 +8210,1166 @@ Unable to display output for mime type(s): text/html
 
 \begin{verbatim}
 Unable to display output for mime type(s): application/javascript, application/vnd.bokehjs_exec.v0+json
+\end{verbatim}
+
+\part{Applications}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{black-scholes-merton-option-replication}{%
+\chapter{Black-Scholes-Merton Option
+Replication}\label{black-scholes-merton-option-replication}}
+
+The Black-Scholes-Merton (BSM) model is one of the foundations of
+quantitative finance. Not only does it provide a theoretical pricing
+framework for options, but it also gives a practical engineering result:
+the manufacturing process a derivatives desk should employ to construct
+options for its customers. This manufacturing process gave birth to the
+entire derivatives industry.
+
+The purpose of this case study is to explore the BSM option
+manufacturing process by performing data analysis on simulated data.
+
+\hypertarget{loading-packages-6}{%
+\section{Loading Packages}\label{loading-packages-6}}
+
+Let's begin by loading the packages we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{10}
+\end{Highlighting}
+\end{Shaded}
+
+Additionally, we will also require several functions from the
+\textbf{py\_vollib} package for calculating option greeks.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ py\_vollib.black\_scholes\_merton }\ImportTok{import}\NormalTok{ black\_scholes\_merton}
+\ImportTok{from}\NormalTok{ py\_vollib.black\_scholes\_merton.greeks.analytical }\ImportTok{import}\NormalTok{ delta}
+\ImportTok{from}\NormalTok{ py\_vollib.black\_scholes\_merton.greeks.analytical }\ImportTok{import}\NormalTok{ vega}
+\ImportTok{from}\NormalTok{ py\_vollib.black\_scholes\_merton.implied\_volatility }\ImportTok{import}\NormalTok{ implied\_volatility}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{converting-py_vollib-functions}{%
+\section{\texorpdfstring{Converting \texttt{py\_vollib}
+Functions}{Converting py\_vollib Functions}}\label{converting-py_vollib-functions}}
+
+In this section, we convert several of the \textbf{py\_vollib} functions
+we imported above so that they can accept a row of a \texttt{DataFrame}
+as their argument. This will allow us to use these function with the
+\texttt{DataFrame.apply()} method, which we will use to write compact
+vectorized code. Notice that we assume a zero risk-free rate, and zero
+dividend yield throughout this tutorial, and thus those values are
+hardcoded into these functions..
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ bsm\_px(row):}
+\NormalTok{    cp }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{]}
+\NormalTok{    upx }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{]}
+\NormalTok{    strike }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{]}
+\NormalTok{    t2x }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{]}
+\NormalTok{    rf }\OperatorTok{=} \DecValTok{0}
+\NormalTok{    volatility }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]}
+\NormalTok{    q }\OperatorTok{=} \DecValTok{0}
+\NormalTok{    px }\OperatorTok{=}\NormalTok{ black\_scholes\_merton(cp, upx, strike, t2x, rf, volatility, q)}
+\NormalTok{    px }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(px, }\DecValTok{2}\NormalTok{)}
+    \ControlFlowTok{return}\NormalTok{(px)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ bsm\_delta(row):}
+\NormalTok{    cp }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{]}
+\NormalTok{    upx }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{]}
+\NormalTok{    strike }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{]}
+\NormalTok{    t2x }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{]}
+\NormalTok{    rf }\OperatorTok{=} \DecValTok{0}
+\NormalTok{    volatility }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]}
+\NormalTok{    q }\OperatorTok{=} \DecValTok{0}
+    \ControlFlowTok{if}\NormalTok{ t2x }\OperatorTok{==} \DecValTok{0}\NormalTok{:}
+        \ControlFlowTok{return}\NormalTok{(}\DecValTok{0}\NormalTok{)}
+\NormalTok{    diff }\OperatorTok{=}\NormalTok{ delta(cp, upx, strike, t2x, rf, volatility, q)}
+\NormalTok{    diff }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(diff, }\DecValTok{3}\NormalTok{)}
+    \ControlFlowTok{return}\NormalTok{(diff)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ bsm\_vega(row):}
+\NormalTok{    cp }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{]}
+\NormalTok{    upx }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{]}
+\NormalTok{    strike }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{]}
+\NormalTok{    t2x }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{]}
+\NormalTok{    rf }\OperatorTok{=} \DecValTok{0}
+\NormalTok{    volatility }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]}
+\NormalTok{    q }\OperatorTok{=} \DecValTok{0}
+    \ControlFlowTok{if}\NormalTok{ t2x }\OperatorTok{==} \DecValTok{0}\NormalTok{:}
+        \ControlFlowTok{return}\NormalTok{(}\DecValTok{0}\NormalTok{)}
+\NormalTok{    vga }\OperatorTok{=}\NormalTok{ vega(cp, upx, strike, t2x, rf, volatility, q)}
+\NormalTok{    vga }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(vga, }\DecValTok{3}\NormalTok{)}
+    \ControlFlowTok{return}\NormalTok{(vga)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{geometric-brownian-motion}{%
+\section{Geometric Brownian Motion}\label{geometric-brownian-motion}}
+
+The series of trade prices for a stock is often modeled as a series of
+random variables, which is also referred to as a \emph{stochastic
+process}. There many types of stochastic processes; some of them
+resemble actual stock price movements better than others.
+
+The Black-Scholes-Merton option pricing framework assumes that the price
+process of the underlying asset follows a \emph{geometric brownian
+motion} (GBM). This means that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The price process is continuous.
+\item
+  The log return over any period of time is normally distributed.
+\item
+  The returns during any two disjoint periods are independent.
+\end{enumerate}
+
+GBMs are one of the simplest types of processes that reasonably model
+asset price dynamics, so it's often a good place to start when learning
+about simulating stock price data.
+
+The price process of a geometric brownian motion is determined by the
+current risk-free rate \(r\) and the annualized volatility of the
+underlying \(\sigma\). Prices that are separated by \(\Delta t\) units
+of time are related by following equation:
+
+\[S_{t} =  S_{t - \Delta t} \cdot \exp\bigg(\bigg(r - \frac{1}{2}\sigma^2\bigg)\Delta t + \sigma \sqrt{\Delta t} z_{t}\bigg)\]
+
+where \(z_{t}\) is a standard normal random variable.
+
+This is called the \emph{Euler discretization} of a GBM. It will serve
+as the recipe for our price-path simulation algorithm. Note that the
+expression in the parentheses is the log-return of the stock between
+time \(t - \Delta t\) and \(t\).
+
+Although the GBM assumptions are often violated in actual prices, there
+is still enough truth in them that the Black-Scholes-Merton
+manufacturing process is practically useful. It prescribes a process
+that derivative dealers can use to construct the contracts that their
+customers are interested in. This manufacturing process is referred to
+as \emph{constructing a replicating portfolio}, which in the case of
+vanilla option is accomplished via a dynamic trading strategy of the
+underlying asset. This dynamic strategy is called \emph{delta}-hedging.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Question:} Put-call parity is a pricing identity that
+emanates from a static manufacturing (replication) strategy of a certain
+type of derivative. Describe the strategy: what kind of derivative does
+this replication strategy manufacture, and what is the resulting pricing
+identity.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\textgreater{} A forward contract can be manufactured/replicated with a }
+\CommentTok{\#\#\textgreater{} portfolio consisting of long call position plus a short put }
+\CommentTok{\#\#\textgreater{} position, both with the same strike, call it K.  Thus, the }
+\CommentTok{\#\#\textgreater{} put{-}call parity identity is: c(K, T) {-} p(K, T) = S {-} Ke\^{}({-}rT). }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{the-option-we-will-analyze}{%
+\section{The Option We Will Analyze}\label{the-option-we-will-analyze}}
+
+We want to analyze what it means for a derivatives dealer to trade an
+option and then delta-hedge the position. Let's consider an option that
+actually traded in the market place:
+
+\begin{itemize}
+\tightlist
+\item
+  underlying: QQQ
+\item
+  current date: 11/16/2018
+\item
+  expiration: 12/21/2018
+\item
+  type: put
+\item
+  strike: 160
+\item
+  upx: 168
+\item
+  days-to-expiration (d2x): 24
+\item
+  price: 2.25
+\end{itemize}
+
+From this trade price, we can calculate an implied volatility, which we
+will also refer to as the \emph{pricing volatility}. (Note that this is
+the typical flow of events, the price of an option is observed and from
+that observed price, an implied volatility is calculated.)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pricing\_vol }\OperatorTok{=}\NormalTok{ implied\_volatility(price }\OperatorTok{=} \FloatTok{2.25}\NormalTok{, S }\OperatorTok{=} \DecValTok{168}\NormalTok{, K }\OperatorTok{=} \DecValTok{160}\NormalTok{, t }\OperatorTok{=} \DecValTok{24}\OperatorTok{/}\DecValTok{252}\NormalTok{, r }\OperatorTok{=} \DecValTok{0}\NormalTok{, q }\OperatorTok{=} \DecValTok{0}\NormalTok{, flag }\OperatorTok{=} \StringTok{\textquotesingle{}p\textquotesingle{}}\NormalTok{)}
+\NormalTok{pricing\_vol }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(pricing\_vol, }\DecValTok{4}\NormalTok{)}
+\NormalTok{pricing\_vol}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.2636
+\end{verbatim}
+
+\hypertarget{delta-hedging-a-single-simulated-underlying-price-path}{%
+\section{Delta-Hedging: A Single Simulated Underlying Price
+Path}\label{delta-hedging-a-single-simulated-underlying-price-path}}
+
+It is typical that a derivatives dealer will trade the above option with
+a customer, and then hold that option option until expiration and delta
+hedge it on a daily basis.
+
+The BSM manufacturing framework states that \textbf{the dealer will
+break even if}:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  the underlying price follows a geometric brownian motion
+\item
+  the realized volatility during the life of the option is equal to the
+  implied volatility used to price the option
+\item
+  the dealer delta-hedges with frequent rebalancing (in order for the
+  result to be deterministic the delta-hedging must be continuous)
+\end{enumerate}
+
+In this section we are explore what this manufacturing process looks
+like for a particular price path of the underlying. In order to do this,
+let's simulate a single geometric brownian motion path whose realized
+volatility is equal to the pricing volatility of our QQQ option. This
+price path will consist of a series of daily prices that starts with
+168, the spot price at the time of the trade. We will rebalance the
+delta-hedge daily.
+
+The following code generates the price path.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# setting the random seed}
+\NormalTok{np.random.seed(}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# parameters of simulation}
+\NormalTok{r }\OperatorTok{=} \DecValTok{0}
+\NormalTok{path\_vol }\OperatorTok{=}\NormalTok{ pricing\_vol}
+\NormalTok{dt }\OperatorTok{=} \FloatTok{1.}\OperatorTok{/}\DecValTok{252}
+
+\CommentTok{\# initializing paths}
+\NormalTok{single\_path }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{25}\NormalTok{)}
+\NormalTok{single\_path[}\DecValTok{0}\NormalTok{] }\OperatorTok{=} \DecValTok{168}
+
+\CommentTok{\# looping through days and generating steps in the paths}
+\ControlFlowTok{for}\NormalTok{ t }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{25}\NormalTok{):}
+\NormalTok{    z }\OperatorTok{=}\NormalTok{ np.random.standard\_normal(}\DecValTok{1}\NormalTok{)}
+\NormalTok{    single\_path[t] }\OperatorTok{=}\NormalTok{ single\_path[t }\OperatorTok{{-}} \DecValTok{1}\NormalTok{] }\OperatorTok{*}\NormalTok{ np.exp((r }\OperatorTok{{-}} \FloatTok{0.5} \OperatorTok{*}\NormalTok{ path\_vol }\OperatorTok{**} \DecValTok{2}\NormalTok{) }\OperatorTok{*}\NormalTok{ dt }\OperatorTok{+}\NormalTok{ path\_vol }\OperatorTok{*}\NormalTok{ np.sqrt(dt) }\OperatorTok{*}\NormalTok{ z) }\CommentTok{\# memorize this line}
+\NormalTok{    single\_path[t] }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(single\_path[t], }\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Let's take a look at the path we generated. (Obviously, in a real-world
+situation this price path would be realized over the course of the life
+of the option.)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{single\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+array([168.  , 172.57, 170.8 , 169.29, 166.28, 168.66, 162.31, 167.06,
+       164.94, 165.79, 165.08, 169.11, 163.4 , 162.51, 161.45, 164.5 ,
+       161.5 , 161.02, 158.67, 158.76, 160.28, 157.36, 160.36, 162.76,
+       164.1 ])
+\end{verbatim}
+
+Next, let's create a \texttt{DataFrame} that will track the PNL from
+delta-hedging the option; this \texttt{DataFrame} will contain all the
+information needed to calculate the price and greeks of the option on a
+daily basis.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    pd.DataFrame(}
+\NormalTok{        \{}\StringTok{\textquotesingle{}underlying\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{,}
+         \StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}p\textquotesingle{}}\NormalTok{,}
+         \StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{:}\DecValTok{160}\NormalTok{,}
+         \StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{:}\FloatTok{0.2636}\NormalTok{,}
+         \StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{:single\_path, }
+         \StringTok{\textquotesingle{}d2x\textquotesingle{}}\NormalTok{:}\BuiltInTok{list}\NormalTok{(}\BuiltInTok{range}\NormalTok{(}\DecValTok{24}\NormalTok{, }\OperatorTok{{-}}\DecValTok{1}\NormalTok{, }\OperatorTok{{-}}\DecValTok{1}\NormalTok{)),}
+         \StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{:}\DecValTok{1}\NormalTok{,}
+\NormalTok{        \}       }
+\NormalTok{    )}
+\NormalTok{    .assign(t2x }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df.d2x }\OperatorTok{/} \DecValTok{252}\NormalTok{)}
+\NormalTok{    )}
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& underlying & cp & strike & volatility & upx & d2x & buy\_sell & t2x \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & QQQ & p & 160 & 0.2636 & 168.00 & 24 & 1 & 0.095238 \\
+1 & QQQ & p & 160 & 0.2636 & 172.57 & 23 & 1 & 0.091270 \\
+2 & QQQ & p & 160 & 0.2636 & 170.80 & 22 & 1 & 0.087302 \\
+3 & QQQ & p & 160 & 0.2636 & 169.29 & 21 & 1 & 0.083333 \\
+4 & QQQ & p & 160 & 0.2636 & 166.28 & 20 & 1 & 0.079365 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+20 & QQQ & p & 160 & 0.2636 & 160.28 & 4 & 1 & 0.015873 \\
+21 & QQQ & p & 160 & 0.2636 & 157.36 & 3 & 1 & 0.011905 \\
+22 & QQQ & p & 160 & 0.2636 & 160.36 & 2 & 1 & 0.007937 \\
+23 & QQQ & p & 160 & 0.2636 & 162.76 & 1 & 1 & 0.003968 \\
+24 & QQQ & p & 160 & 0.2636 & 164.10 & 0 & 1 & 0.000000 \\
+\end{longtable}
+
+We can now use the \texttt{bsm\_px()} function to calculate the prices
+of the option for each day in the simulation. At a derivatives dealer,
+the option value and greeks would be monitored in real-time in a
+position management system.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_px, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& underlying & cp & strike & volatility & upx & d2x & buy\_sell & t2x &
+option\_price \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & QQQ & p & 160 & 0.2636 & 168.00 & 24 & 1 & 0.095238 & 2.25 \\
+1 & QQQ & p & 160 & 0.2636 & 172.57 & 23 & 1 & 0.091270 & 1.21 \\
+2 & QQQ & p & 160 & 0.2636 & 170.80 & 22 & 1 & 0.087302 & 1.44 \\
+3 & QQQ & p & 160 & 0.2636 & 169.29 & 21 & 1 & 0.083333 & 1.67 \\
+4 & QQQ & p & 160 & 0.2636 & 166.28 & 20 & 1 & 0.079365 & 2.33 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+20 & QQQ & p & 160 & 0.2636 & 160.28 & 4 & 1 & 0.015873 & 1.98 \\
+21 & QQQ & p & 160 & 0.2636 & 157.36 & 3 & 1 & 0.011905 & 3.44 \\
+22 & QQQ & p & 160 & 0.2636 & 160.36 & 2 & 1 & 0.007937 & 1.33 \\
+23 & QQQ & p & 160 & 0.2636 & 162.76 & 1 & 1 & 0.003968 & 0.21 \\
+24 & QQQ & p & 160 & 0.2636 & 164.10 & 0 & 1 & 0.000000 & 0.00 \\
+\end{longtable}
+
+Let's calculate the deltas through time. Notice that as the price of the
+underlying goes down the (absolute) delta of the put increases, and as
+the price of the underlying goes up the delta decreases.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_delta, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllll@{}}
+\toprule\noalign{}
+& underlying & cp & strike & volatility & upx & d2x & buy\_sell & t2x &
+option\_price & delta \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & QQQ & p & 160 & 0.2636 & 168.00 & 24 & 1 & 0.095238 & 2.25 &
+-0.261 \\
+1 & QQQ & p & 160 & 0.2636 & 172.57 & 23 & 1 & 0.091270 & 1.21 &
+-0.161 \\
+2 & QQQ & p & 160 & 0.2636 & 170.80 & 22 & 1 & 0.087302 & 1.44 &
+-0.190 \\
+3 & QQQ & p & 160 & 0.2636 & 169.29 & 21 & 1 & 0.083333 & 1.67 &
+-0.218 \\
+4 & QQQ & p & 160 & 0.2636 & 166.28 & 20 & 1 & 0.079365 & 2.33 &
+-0.289 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+20 & QQQ & p & 160 & 0.2636 & 160.28 & 4 & 1 & 0.015873 & 1.98 &
+-0.472 \\
+21 & QQQ & p & 160 & 0.2636 & 157.36 & 3 & 1 & 0.011905 & 3.44 &
+-0.714 \\
+22 & QQQ & p & 160 & 0.2636 & 160.36 & 2 & 1 & 0.007937 & 1.33 &
+-0.457 \\
+23 & QQQ & p & 160 & 0.2636 & 162.76 & 1 & 1 & 0.003968 & 0.21 &
+-0.150 \\
+24 & QQQ & p & 160 & 0.2636 & 164.10 & 0 & 1 & 0.000000 & 0.00 &
+0.000 \\
+\end{longtable}
+
+Next, we calculate the option PNL.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllll@{}}
+\toprule\noalign{}
+& underlying & cp & strike & volatility & upx & d2x & buy\_sell & t2x &
+option\_price & delta & option\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & QQQ & p & 160 & 0.2636 & 168.00 & 24 & 1 & 0.095238 & 2.25 & -0.261
+& NaN \\
+1 & QQQ & p & 160 & 0.2636 & 172.57 & 23 & 1 & 0.091270 & 1.21 & -0.161
+& -1.04 \\
+2 & QQQ & p & 160 & 0.2636 & 170.80 & 22 & 1 & 0.087302 & 1.44 & -0.190
+& 0.23 \\
+3 & QQQ & p & 160 & 0.2636 & 169.29 & 21 & 1 & 0.083333 & 1.67 & -0.218
+& 0.23 \\
+4 & QQQ & p & 160 & 0.2636 & 166.28 & 20 & 1 & 0.079365 & 2.33 & -0.289
+& 0.66 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+20 & QQQ & p & 160 & 0.2636 & 160.28 & 4 & 1 & 0.015873 & 1.98 & -0.472
+& -1.05 \\
+21 & QQQ & p & 160 & 0.2636 & 157.36 & 3 & 1 & 0.011905 & 3.44 & -0.714
+& 1.46 \\
+22 & QQQ & p & 160 & 0.2636 & 160.36 & 2 & 1 & 0.007937 & 1.33 & -0.457
+& -2.11 \\
+23 & QQQ & p & 160 & 0.2636 & 162.76 & 1 & 1 & 0.003968 & 0.21 & -0.150
+& -1.12 \\
+24 & QQQ & p & 160 & 0.2636 & 164.10 & 0 & 1 & 0.000000 & 0.00 & 0.000 &
+-0.21 \\
+\end{longtable}
+
+Delta-hedging with daily rebalancing means at the end of each day we
+hold a position in the underlying whose size is equal to the negative of
+the delta of the option position. Thus, the daily delta-hedging PNL is
+calculated as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{].diff() }
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& underlying & cp & strike & volatility & upx & d2x & buy\_sell & t2x &
+option\_price & delta & option\_pnl & delta\_hedge\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & QQQ & p & 160 & 0.2636 & 168.00 & 24 & 1 & 0.095238 & 2.25 & -0.261
+& NaN & NaN \\
+1 & QQQ & p & 160 & 0.2636 & 172.57 & 23 & 1 & 0.091270 & 1.21 & -0.161
+& -1.04 & 1.19277 \\
+2 & QQQ & p & 160 & 0.2636 & 170.80 & 22 & 1 & 0.087302 & 1.44 & -0.190
+& 0.23 & -0.28497 \\
+3 & QQQ & p & 160 & 0.2636 & 169.29 & 21 & 1 & 0.083333 & 1.67 & -0.218
+& 0.23 & -0.28690 \\
+4 & QQQ & p & 160 & 0.2636 & 166.28 & 20 & 1 & 0.079365 & 2.33 & -0.289
+& 0.66 & -0.65618 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... \\
+20 & QQQ & p & 160 & 0.2636 & 160.28 & 4 & 1 & 0.015873 & 1.98 & -0.472
+& -1.05 & 0.87552 \\
+21 & QQQ & p & 160 & 0.2636 & 157.36 & 3 & 1 & 0.011905 & 3.44 & -0.714
+& 1.46 & -1.37824 \\
+22 & QQQ & p & 160 & 0.2636 & 160.36 & 2 & 1 & 0.007937 & 1.33 & -0.457
+& -2.11 & 2.14200 \\
+23 & QQQ & p & 160 & 0.2636 & 162.76 & 1 & 1 & 0.003968 & 0.21 & -0.150
+& -1.12 & 1.09680 \\
+24 & QQQ & p & 160 & 0.2636 & 164.10 & 0 & 1 & 0.000000 & 0.00 & 0.000 &
+-0.21 & 0.20100 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Question:} What is the delta-hedging position held at
+the end of d2x = 21. What is the trade executed at that time?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\textgreater{} The end{-}of{-}day delta hedge is long .714 contracts of the QQQ.  }
+\CommentTok{\#\#\textgreater{} In order to get to that position we would have to buy 0.242 contracts. }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+The \texttt{total\_pnl} of the delta-hedged option position is the
+combination of the \texttt{option\_pnl} and the
+\texttt{delta\_hedge\_pnl}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllllll@{}}
+\toprule\noalign{}
+& underlying & cp & strike & volatility & upx & d2x & buy\_sell & t2x &
+option\_price & delta & option\_pnl & delta\_hedge\_pnl & total\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & QQQ & p & 160 & 0.2636 & 168.00 & 24 & 1 & 0.095238 & 2.25 & -0.261
+& NaN & NaN & NaN \\
+1 & QQQ & p & 160 & 0.2636 & 172.57 & 23 & 1 & 0.091270 & 1.21 & -0.161
+& -1.04 & 1.19277 & 0.15277 \\
+2 & QQQ & p & 160 & 0.2636 & 170.80 & 22 & 1 & 0.087302 & 1.44 & -0.190
+& 0.23 & -0.28497 & -0.05497 \\
+3 & QQQ & p & 160 & 0.2636 & 169.29 & 21 & 1 & 0.083333 & 1.67 & -0.218
+& 0.23 & -0.28690 & -0.05690 \\
+4 & QQQ & p & 160 & 0.2636 & 166.28 & 20 & 1 & 0.079365 & 2.33 & -0.289
+& 0.66 & -0.65618 & 0.00382 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... & ... \\
+20 & QQQ & p & 160 & 0.2636 & 160.28 & 4 & 1 & 0.015873 & 1.98 & -0.472
+& -1.05 & 0.87552 & -0.17448 \\
+21 & QQQ & p & 160 & 0.2636 & 157.36 & 3 & 1 & 0.011905 & 3.44 & -0.714
+& 1.46 & -1.37824 & 0.08176 \\
+22 & QQQ & p & 160 & 0.2636 & 160.36 & 2 & 1 & 0.007937 & 1.33 & -0.457
+& -2.11 & 2.14200 & 0.03200 \\
+23 & QQQ & p & 160 & 0.2636 & 162.76 & 1 & 1 & 0.003968 & 0.21 & -0.150
+& -1.12 & 1.09680 & -0.02320 \\
+24 & QQQ & p & 160 & 0.2636 & 164.10 & 0 & 1 & 0.000000 & 0.00 & 0.000 &
+-0.21 & 0.20100 & -0.00900 \\
+\end{longtable}
+
+As we can see, the total PNL of the delta-hedged option position is
+close to zero, but not exactly zero.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.18382999999999813
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Copy and past the above code into the space
+below, and then modify it to calculate the PNL for \emph{selling} this
+option for 2.25 and then delta-hedging it over this same scenario.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# creating the DataFrame}
+\NormalTok{df\_path\_test }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    pd.DataFrame(}
+\NormalTok{        \{}\StringTok{\textquotesingle{}underlying\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}QQQ\textquotesingle{}}\NormalTok{,}
+         \StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}p\textquotesingle{}}\NormalTok{,}
+         \StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{:}\DecValTok{160}\NormalTok{,}
+         \StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{:}\FloatTok{0.2636}\NormalTok{,}
+         \StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{:single\_path, }
+         \StringTok{\textquotesingle{}d2x\textquotesingle{}}\NormalTok{:}\BuiltInTok{list}\NormalTok{(}\BuiltInTok{range}\NormalTok{(}\DecValTok{24}\NormalTok{, }\OperatorTok{{-}}\DecValTok{1}\NormalTok{, }\OperatorTok{{-}}\DecValTok{1}\NormalTok{)),}
+         \StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{:}\OperatorTok{{-}}\DecValTok{1}\NormalTok{,}
+\NormalTok{        \}       }
+\NormalTok{    )}
+\NormalTok{    .assign(t2x }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df.d2x }\OperatorTok{/} \DecValTok{252}\NormalTok{)}
+\NormalTok{    )}
+
+\CommentTok{\# calculating prices, greeks, and PNLs}
+\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path\_test[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_px, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path\_test[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_delta, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{  df\_path\_test[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path\_test[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path\_test[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ df\_path\_test[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path\_test[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_path\_test[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{]}
+
+\CommentTok{\# calculating total PNL}
+\NormalTok{df\_path\_test[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-0.18382999999999813
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{delta-hedging-multiple-simulated-underlying-price-paths}{%
+\section{Delta-Hedging: Multiple Simulated Underlying Price
+Paths}\label{delta-hedging-multiple-simulated-underlying-price-paths}}
+
+As we saw in the above example, we came fairly close to a zero PNL from
+delta hedging on a daily basis, which is what the BSM framework
+suggests. However, this was just for a single hypothetical path, so we
+may have just gotten lucky. In this section, we will generate PNL data
+for daily delta-hedging over a variety of paths, and analyze the
+resulting distribution.
+
+Let's begin by initializing our option position and scenario generation
+parameters.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{buy\_sell }\OperatorTok{=} \OperatorTok{{-}}\DecValTok{1}
+\NormalTok{d2x }\OperatorTok{=} \DecValTok{24}
+\NormalTok{cp }\OperatorTok{=} \StringTok{\textquotesingle{}p\textquotesingle{}}
+\NormalTok{spot }\OperatorTok{=} \FloatTok{168.}
+\NormalTok{strike }\OperatorTok{=} \FloatTok{160.}
+\NormalTok{tenor }\OperatorTok{=}\NormalTok{ np.double(d2x)}\OperatorTok{/}\FloatTok{252.}
+\NormalTok{option\_price }\OperatorTok{=} \FloatTok{2.25}
+\NormalTok{pricing\_vol }\OperatorTok{=}\NormalTok{ implied\_volatility(price }\OperatorTok{=}\NormalTok{ option\_price, S }\OperatorTok{=}\NormalTok{ spot, K }\OperatorTok{=}\NormalTok{ strike, t }\OperatorTok{=}\NormalTok{ tenor, r }\OperatorTok{=} \DecValTok{0}\NormalTok{, q }\OperatorTok{=} \DecValTok{0}\NormalTok{, flag }\OperatorTok{=}\NormalTok{ cp)}
+\NormalTok{path\_vol }\OperatorTok{=}\NormalTok{ pricing\_vol}
+\NormalTok{hedge\_frequency }\OperatorTok{=}\NormalTok{ d2x}
+\NormalTok{dt }\OperatorTok{=}\NormalTok{ tenor }\OperatorTok{/}\NormalTok{ hedge\_frequency}
+\NormalTok{r }\OperatorTok{=} \DecValTok{0}
+\NormalTok{num\_paths }\OperatorTok{=} \DecValTok{1000}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we initialize an array that will hold all of our paths.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{multiple\_paths }\OperatorTok{=}\NormalTok{ np.zeros((hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{, num\_paths))}
+\NormalTok{multiple\_paths}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+array([[0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       ...,
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.],
+       [0., 0., 0., ..., 0., 0., 0.]])
+\end{verbatim}
+
+The first price in every path is the current spot price of the
+underlying.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{multiple\_paths[}\DecValTok{0}\NormalTok{] }\OperatorTok{=}\NormalTok{ spot}
+\NormalTok{multiple\_paths}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+array([[168., 168., 168., ..., 168., 168., 168.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       ...,
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.],
+       [  0.,   0.,   0., ...,   0.,   0.,   0.]])
+\end{verbatim}
+
+Using the convenience of broadcasting in \texttt{numpy.arrays}, we can
+easily calculate all of the required scenarios in a few lines of code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# setting the random seed}
+\NormalTok{np.random.seed(}\DecValTok{1}\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ t }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{):}
+\NormalTok{    z }\OperatorTok{=}\NormalTok{ np.random.standard\_normal(num\_paths) }
+\NormalTok{    multiple\_paths[t] }\OperatorTok{=}\NormalTok{ multiple\_paths[t }\OperatorTok{{-}} \DecValTok{1}\NormalTok{] }\OperatorTok{*}\NormalTok{ np.exp((r }\OperatorTok{{-}} \FloatTok{0.5} \OperatorTok{*}\NormalTok{ path\_vol }\OperatorTok{**} \DecValTok{2}\NormalTok{) }\OperatorTok{*}\NormalTok{ dt }\OperatorTok{+}\NormalTok{ path\_vol }\OperatorTok{*}\NormalTok{ np.sqrt(dt) }\OperatorTok{*}\NormalTok{ z)}
+\NormalTok{    multiple\_paths[t] }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(multiple\_paths[t], }\DecValTok{2}\NormalTok{)}
+    
+\NormalTok{multiple\_paths}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+array([[168.  , 168.  , 168.  , ..., 168.  , 168.  , 168.  ],
+       [172.57, 166.28, 166.51, ..., 167.78, 168.97, 167.46],
+       [172.11, 159.67, 167.9 , ..., 165.21, 170.77, 171.34],
+       ...,
+       [159.97, 156.87, 163.42, ..., 144.66, 174.18, 169.42],
+       [161.34, 160.23, 164.69, ..., 145.86, 170.28, 170.59],
+       [164.14, 157.3 , 162.92, ..., 145.92, 176.16, 169.25]])
+\end{verbatim}
+
+Just to make sure we understand our data structures, let's pull out the
+first scenario and perform our delta-hedge calculations with it. After
+we do that, we will wrap this code in a \texttt{for}-loop in order to
+perform the delta-hedge calculations for all the scenarios.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# creating the DataFrame}
+\NormalTok{df\_path }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    pd.DataFrame(}
+\NormalTok{        \{}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{:cp,}
+         \StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{:strike,}
+         \StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{:path\_vol,}
+         \StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{:multiple\_paths[:, }\DecValTok{0}\NormalTok{], }
+         \StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{:np.linspace(tenor, }\DecValTok{0}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{),}
+         \StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{: buy\_sell,}
+\NormalTok{        \}       }
+\NormalTok{    )}
+
+\CommentTok{\# calculating prices, greeks, and PNLs}
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_px, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_delta, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{]}
+
+\CommentTok{\# viewing the path}
+\NormalTok{df\_path}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllll@{}}
+\toprule\noalign{}
+& cp & strike & volatility & upx & t2x & buy\_sell & option\_price &
+delta & option\_pnl & delta\_hedge\_pnl & total\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & p & 160.0 & 0.263631 & 168.00 & 0.095238 & -1 & 2.25 & -0.261 & NaN
+& NaN & NaN \\
+1 & p & 160.0 & 0.263631 & 172.57 & 0.091270 & -1 & 1.21 & -0.161 & 1.04
+& -1.19277 & -0.15277 \\
+2 & p & 160.0 & 0.263631 & 172.11 & 0.087302 & -1 & 1.21 & -0.165 &
+-0.00 & 0.07406 & 0.07406 \\
+3 & p & 160.0 & 0.263631 & 173.49 & 0.083333 & -1 & 0.93 & -0.135 & 0.28
+& -0.22770 & 0.05230 \\
+4 & p & 160.0 & 0.263631 & 173.24 & 0.079365 & -1 & 0.90 & -0.134 & 0.03
+& 0.03375 & 0.06375 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+20 & p & 160.0 & 0.263631 & 163.76 & 0.015873 & -1 & 0.77 & -0.237 &
+0.55 & -0.38913 & 0.16087 \\
+21 & p & 160.0 & 0.263631 & 158.57 & 0.011905 & -1 & 2.63 & -0.617 &
+-1.86 & 1.23003 & -0.62997 \\
+22 & p & 160.0 & 0.263631 & 159.97 & 0.007937 & -1 & 1.51 & -0.499 &
+1.12 & -0.86380 & 0.25620 \\
+23 & p & 160.0 & 0.263631 & 161.34 & 0.003968 & -1 & 0.53 & -0.305 &
+0.98 & -0.68363 & 0.29637 \\
+24 & p & 160.0 & 0.263631 & 164.14 & 0.000000 & -1 & 0.00 & 0.000 & 0.53
+& -0.85400 & -0.32400 \\
+\end{longtable}
+
+Let's check the cumulative PNL for this scenario; clearly the PNL
+outcome is much farther for this scenario than the one above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-1.612160000000005
+\end{verbatim}
+
+We can now generalize the above code and perform the delta-hedging
+calculations on each scenario. We will save the calculations for each
+scenario to analyze.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lst\_scenarios }\OperatorTok{=}\NormalTok{ []}
+\ControlFlowTok{for}\NormalTok{ ix\_path }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{0}\NormalTok{, num\_paths):}
+    
+    \CommentTok{\# creating dataframe}
+\NormalTok{    df\_path }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{        pd.DataFrame(}
+\NormalTok{            \{}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{:cp,}
+             \StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{:strike,}
+             \StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{:pricing\_vol,}
+             \StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{:multiple\_paths[:, ix\_path], }
+             \StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{:np.linspace(tenor, }\DecValTok{0}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{),}
+             \StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{:buy\_sell}
+\NormalTok{            \}}
+\NormalTok{        )}
+    
+    \CommentTok{\# calculating prices, greeks, and PNLs}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_px, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_delta, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{]}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ ix\_path}
+    
+    \CommentTok{\# storing df\_path into a list}
+\NormalTok{    lst\_scenarios.append(df\_path)}
+
+\CommentTok{\# creating a single DataFrame that contains all scenarios}
+\NormalTok{df\_all\_paths }\OperatorTok{=}\NormalTok{ pd.concat(lst\_scenarios)}
+
+\CommentTok{\# viewing the DataFrame}
+\NormalTok{df\_all\_paths}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& cp & strike & volatility & upx & t2x & buy\_sell & option\_price &
+delta & option\_pnl & delta\_hedge\_pnl & total\_pnl & scenario \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & p & 160.0 & 0.263631 & 168.00 & 0.095238 & -1 & 2.25 & -0.261 & NaN
+& NaN & NaN & 0 \\
+1 & p & 160.0 & 0.263631 & 172.57 & 0.091270 & -1 & 1.21 & -0.161 & 1.04
+& -1.19277 & -0.15277 & 0 \\
+2 & p & 160.0 & 0.263631 & 172.11 & 0.087302 & -1 & 1.21 & -0.165 &
+-0.00 & 0.07406 & 0.07406 & 0 \\
+3 & p & 160.0 & 0.263631 & 173.49 & 0.083333 & -1 & 0.93 & -0.135 & 0.28
+& -0.22770 & 0.05230 & 0 \\
+4 & p & 160.0 & 0.263631 & 173.24 & 0.079365 & -1 & 0.90 & -0.134 & 0.03
+& 0.03375 & 0.06375 & 0 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... \\
+20 & p & 160.0 & 0.263631 & 171.42 & 0.015873 & -1 & 0.04 & -0.018 &
+0.03 & 0.00837 & 0.03837 & 999 \\
+21 & p & 160.0 & 0.263631 & 173.24 & 0.011905 & -1 & 0.00 & -0.003 &
+0.04 & -0.03276 & 0.00724 & 999 \\
+22 & p & 160.0 & 0.263631 & 169.42 & 0.007937 & -1 & 0.01 & -0.007 &
+-0.01 & 0.01146 & 0.00146 & 999 \\
+23 & p & 160.0 & 0.263631 & 170.59 & 0.003968 & -1 & 0.00 & -0.000 &
+0.01 & -0.00819 & 0.00181 & 999 \\
+24 & p & 160.0 & 0.263631 & 169.25 & 0.000000 & -1 & 0.00 & 0.000 &
+-0.00 & 0.00000 & 0.00000 & 999 \\
+\end{longtable}
+
+Let's use a \texttt{.groupby()} to calculate the cummulative PNL for
+each scenario
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl }\OperatorTok{=}\NormalTok{ df\_all\_paths.groupby([}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{]].}\BuiltInTok{sum}\NormalTok{()}
+\NormalTok{df\_pnl}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& scenario & total\_pnl \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & -1.61216 \\
+1 & 1 & 0.40480 \\
+2 & 2 & 0.34073 \\
+3 & 3 & 0.31858 \\
+4 & 4 & 0.16595 \\
+... & ... & ... \\
+995 & 995 & 1.75078 \\
+996 & 996 & -0.83710 \\
+997 & 997 & 0.13385 \\
+998 & 998 & 0.54689 \\
+999 & 999 & -1.77710 \\
+\end{longtable}
+
+As we can see, the average of the \texttt{total\_pnls} is zero, which
+further demonstrates the manufacturing result of the
+Black-Scholes-Merton framework.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].mean()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-0.0009835299999998704
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Queston:} If you sold this option for 0.25 more than
+fair-value, what would your average PNL be?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\textgreater{} Approximately $0.25}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Is the delta-hedging reducing risk? Try to
+verify this with a bit of data analysis.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(df\_all\_paths.groupby(}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{)[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{().std())}
+\BuiltInTok{print}\NormalTok{(df\_all\_paths.groupby(}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{)[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{sum}\NormalTok{().std())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+5.006480605770481
+0.7586453989501201
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Calculate the standard deviation, minimum, and
+maximum of the cumulative PNLs.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Std Dev:"}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].std(), }\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Min:   "}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{(), }\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Max:    "}\NormalTok{,np.}\BuiltInTok{round}\NormalTok{(df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{max}\NormalTok{(), }\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Std Dev: 0.76
+Min:    -2.9
+Max:     2.49
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Discussion Question:} What are your thoughts on the range of
+possible PNL outcomes? Does option replication via discrete
+delta-hedging seem like a risk-free endeavor?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\#\textgreater{} There is a wide variation of PNLs, and it is possible to have a }
+\CommentTok{\#\#\textgreater{} gain or a loss that is greater than the value of the option itself.}
+\CommentTok{\#\#\textgreater{} Discrete delta{-}hedging is far from riskless.}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{what-if-realized-volatility-is-different-that-pricing-volatility}{%
+\section{What If Realized Volatility is Different that Pricing
+Volatility?}\label{what-if-realized-volatility-is-different-that-pricing-volatility}}
+
+As we can see above, if the realized volatility of the underlying during
+the life of the option is equal to the pricing volatility, then the
+daily delta-hedging trader will break even on average (however, the
+outcome can vary substantially depending on the particular scenario).
+
+In this section, we explore what happens when realized volatility
+differs from pricing volatility. In particular, we will see what happens
+when a trader sells an option, delta-hedges daily, but the realized
+volatility is 5\% higher than implied.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# setting simulation parameters}
+\NormalTok{buy\_sell }\OperatorTok{=} \OperatorTok{{-}}\DecValTok{1}
+\NormalTok{d2x }\OperatorTok{=} \DecValTok{24}
+\NormalTok{cp }\OperatorTok{=} \StringTok{\textquotesingle{}p\textquotesingle{}}
+\NormalTok{spot }\OperatorTok{=} \FloatTok{168.}
+\NormalTok{strike }\OperatorTok{=} \FloatTok{160.}
+\NormalTok{tenor }\OperatorTok{=}\NormalTok{ np.double(d2x)}\OperatorTok{/}\FloatTok{252.}
+\NormalTok{option\_price }\OperatorTok{=} \FloatTok{2.25}
+\NormalTok{pricing\_vol }\OperatorTok{=}\NormalTok{ implied\_volatility(price }\OperatorTok{=}\NormalTok{ option\_price, S }\OperatorTok{=}\NormalTok{ spot, K }\OperatorTok{=}\NormalTok{ strike, t }\OperatorTok{=}\NormalTok{ tenor, r }\OperatorTok{=} \DecValTok{0}\NormalTok{, q }\OperatorTok{=} \DecValTok{0}\NormalTok{, flag }\OperatorTok{=}\NormalTok{ cp)}
+\NormalTok{path\_vol }\OperatorTok{=}\NormalTok{ pricing\_vol }\OperatorTok{+} \FloatTok{0.05}
+\NormalTok{hedge\_frequency }\OperatorTok{=}\NormalTok{ d2x}
+\NormalTok{dt }\OperatorTok{=}\NormalTok{ tenor }\OperatorTok{/}\NormalTok{ hedge\_frequency}
+\NormalTok{r }\OperatorTok{=} \DecValTok{0}
+\NormalTok{num\_paths }\OperatorTok{=} \DecValTok{1000}
+
+
+\CommentTok{\# initializing paths}
+\NormalTok{multiple\_paths }\OperatorTok{=}\NormalTok{ np.zeros((hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{, num\_paths))}
+\NormalTok{multiple\_paths[}\DecValTok{0}\NormalTok{] }\OperatorTok{=}\NormalTok{ spot}
+
+\CommentTok{\# setting the random seed}
+\NormalTok{np.random.seed(}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# calculating paths}
+\ControlFlowTok{for}\NormalTok{ t }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{):}
+\NormalTok{    z }\OperatorTok{=}\NormalTok{ np.random.standard\_normal(num\_paths) }
+\NormalTok{    multiple\_paths[t] }\OperatorTok{=}\NormalTok{ multiple\_paths[t }\OperatorTok{{-}} \DecValTok{1}\NormalTok{] }\OperatorTok{*}\NormalTok{ np.exp((r }\OperatorTok{{-}} \FloatTok{0.5} \OperatorTok{*}\NormalTok{ path\_vol }\OperatorTok{**} \DecValTok{2}\NormalTok{) }\OperatorTok{*}\NormalTok{ dt }\OperatorTok{+}\NormalTok{ path\_vol }\OperatorTok{*}\NormalTok{ np.sqrt(dt) }\OperatorTok{*}\NormalTok{ z)}
+\NormalTok{    multiple\_paths[t] }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(multiple\_paths[t], }\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# performing delta{-}hedge calculations on all the paths}
+\NormalTok{lst\_scenarios }\OperatorTok{=}\NormalTok{ []}
+\ControlFlowTok{for}\NormalTok{ ix\_path }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{0}\NormalTok{, num\_paths):}
+    
+    \CommentTok{\# creating the DataFrame}
+\NormalTok{    df\_path }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{        pd.DataFrame(}
+\NormalTok{            \{}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{:cp,}
+             \StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{:strike,}
+             \StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{:pricing\_vol,}
+             \StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{:multiple\_paths[:, ix\_path], }
+             \StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{:np.linspace(tenor, }\DecValTok{0}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{),}
+             \StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{:buy\_sell}
+\NormalTok{            \}}
+\NormalTok{        )}
+    
+    \CommentTok{\# calculating prices, greeks, and PNLs}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_px, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_delta, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{]}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ ix\_path}
+    
+    \CommentTok{\# storing df\_path into a list}
+\NormalTok{    lst\_scenarios.append(df\_path)}
+    
+\CommentTok{\# creating a single DataFrame that contains all scenarios    }
+\NormalTok{df\_all\_paths }\OperatorTok{=}\NormalTok{ pd.concat(lst\_scenarios)}
+
+\CommentTok{\# calculating cumulative PNLs}
+\NormalTok{df\_pnl }\OperatorTok{=}\NormalTok{ df\_all\_paths.groupby([}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{]].}\BuiltInTok{sum}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+As we can see, since realized is greater than implied, we lose money on
+average.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].mean()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-0.8403840600000003
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Use \texttt{bsm\_vega} and verify that this PNL
+is consistent with the identity: \(vega * (implied - realzed)\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{{-}}\NormalTok{bsm\_vega(df\_all\_paths[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].iloc[}\DecValTok{0}\NormalTok{,:]) }\OperatorTok{*} \DecValTok{5}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+-0.8400000000000001
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{increasing-delta-hedge-frequency-reduces-pnl-variability}{%
+\section{Increasing Delta-Hedge Frequency Reduces PNL
+Variability}\label{increasing-delta-hedge-frequency-reduces-pnl-variability}}
+
+The BSM manufacturing framework states that in the limit of continuous
+delta-hedging, that these results become deterministic. The means that
+the delta-hedging outcomes are always the same for each scenario. Your
+final code challenge is to explore this via data analysis.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Copy and paste the above code, and see what
+happens to the dispersion of the distribution of the delta-hedge PNL
+outcomes when you double and quadruple the \texttt{hedge\_frequency}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# setting simulation parameters}
+\NormalTok{buy\_sell }\OperatorTok{=} \OperatorTok{{-}}\DecValTok{1}
+\NormalTok{d2x }\OperatorTok{=} \DecValTok{24}
+\NormalTok{cp }\OperatorTok{=} \StringTok{\textquotesingle{}p\textquotesingle{}}
+\NormalTok{spot }\OperatorTok{=} \FloatTok{168.}
+\NormalTok{strike }\OperatorTok{=} \FloatTok{160.}
+\NormalTok{tenor }\OperatorTok{=}\NormalTok{ np.double(d2x)}\OperatorTok{/}\FloatTok{252.} \CommentTok{\# I want to generalize this}
+\NormalTok{option\_price }\OperatorTok{=} \FloatTok{2.25}
+\NormalTok{pricing\_vol }\OperatorTok{=}\NormalTok{ implied\_volatility(price }\OperatorTok{=}\NormalTok{ option\_price, S }\OperatorTok{=}\NormalTok{ spot, K }\OperatorTok{=}\NormalTok{ strike, t }\OperatorTok{=}\NormalTok{ tenor, r }\OperatorTok{=} \DecValTok{0}\NormalTok{, q }\OperatorTok{=} \DecValTok{0}\NormalTok{, flag }\OperatorTok{=}\NormalTok{ cp)}
+\NormalTok{path\_vol }\OperatorTok{=}\NormalTok{ pricing\_vol}
+\NormalTok{hedge\_frequency }\OperatorTok{=}\NormalTok{ d2x }\OperatorTok{*} \DecValTok{4}
+\NormalTok{dt }\OperatorTok{=}\NormalTok{ tenor }\OperatorTok{/}\NormalTok{ hedge\_frequency  }\CommentTok{\# I want to generalize this}
+\NormalTok{r }\OperatorTok{=} \DecValTok{0}
+\NormalTok{num\_paths }\OperatorTok{=} \DecValTok{1000}
+
+
+\CommentTok{\# initializing paths}
+\NormalTok{multiple\_paths }\OperatorTok{=}\NormalTok{ np.zeros((hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{, num\_paths))}
+\NormalTok{multiple\_paths[}\DecValTok{0}\NormalTok{] }\OperatorTok{=}\NormalTok{ spot}
+
+\CommentTok{\# setting the random seed}
+\NormalTok{np.random.seed(}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# calculating paths}
+\ControlFlowTok{for}\NormalTok{ t }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{1}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{):}
+\NormalTok{    z }\OperatorTok{=}\NormalTok{ np.random.standard\_normal(num\_paths) }
+\NormalTok{    multiple\_paths[t] }\OperatorTok{=}\NormalTok{ multiple\_paths[t }\OperatorTok{{-}} \DecValTok{1}\NormalTok{] }\OperatorTok{*}\NormalTok{ np.exp((r }\OperatorTok{{-}} \FloatTok{0.5} \OperatorTok{*}\NormalTok{ path\_vol }\OperatorTok{**} \DecValTok{2}\NormalTok{) }\OperatorTok{*}\NormalTok{ dt }\OperatorTok{+}\NormalTok{ path\_vol }\OperatorTok{*}\NormalTok{ np.sqrt(dt) }\OperatorTok{*}\NormalTok{ z)}
+\NormalTok{    multiple\_paths[t] }\OperatorTok{=}\NormalTok{ np.}\BuiltInTok{round}\NormalTok{(multiple\_paths[t], }\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# performing delta{-}hedge calculations on all the paths}
+\NormalTok{lst\_scenarios }\OperatorTok{=}\NormalTok{ []}
+\ControlFlowTok{for}\NormalTok{ ix\_path }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{0}\NormalTok{, num\_paths):}
+    
+    \CommentTok{\# creating the DataFrame}
+\NormalTok{    df\_path }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{        pd.DataFrame(}
+\NormalTok{            \{}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{:cp,}
+             \StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{:strike,}
+             \StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{:pricing\_vol,}
+             \StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{:multiple\_paths[:, ix\_path], }
+             \StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{:np.linspace(tenor, }\DecValTok{0}\NormalTok{, hedge\_frequency }\OperatorTok{+} \DecValTok{1}\NormalTok{),}
+             \StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{:buy\_sell}
+\NormalTok{            \}}
+\NormalTok{        )}
+    
+    \CommentTok{\# calculating prices, greeks, and PNLs}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_px, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[[}\StringTok{\textquotesingle{}cp\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}strike\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}t2x\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\textquotesingle{}}\NormalTok{]].}\BuiltInTok{apply}\NormalTok{(bsm\_delta, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_price\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{{-}}\NormalTok{df\_path[}\StringTok{\textquotesingle{}buy\_sell\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{*}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}upx\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}option\_pnl\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_path[}\StringTok{\textquotesingle{}delta\_hedge\_pnl\textquotesingle{}}\NormalTok{]}
+\NormalTok{    df\_path[}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ ix\_path}
+    
+    \CommentTok{\# storing df\_path into a list}
+\NormalTok{    lst\_scenarios.append(df\_path)}
+    
+\CommentTok{\# creating a single DataFrame that contains all scenarios    }
+\NormalTok{df\_all\_paths }\OperatorTok{=}\NormalTok{ pd.concat(lst\_scenarios)}
+
+\CommentTok{\# calculating cumulative PNLs}
+\NormalTok{df\_pnl }\OperatorTok{=}\NormalTok{ df\_all\_paths.groupby([}\StringTok{\textquotesingle{}scenario\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{]].}\BuiltInTok{sum}\NormalTok{()}
+
+\CommentTok{\# calculating distrubution statistics}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Std Dev:"}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].std(), }\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Min:   "}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{(), }\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"Max:    "}\NormalTok{,np.}\BuiltInTok{round}\NormalTok{(df\_pnl[}\StringTok{\textquotesingle{}total\_pnl\textquotesingle{}}\NormalTok{].}\BuiltInTok{max}\NormalTok{(), }\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Std Dev: 0.42
+Min:    -1.89
+Max:     1.92
 \end{verbatim}
 
 \bookmarksetup{startatroot}
