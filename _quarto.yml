@@ -21,6 +21,7 @@ book:
       chapters:
       - chapters/09_pandas_line_graphs/pandas_line_graphs.ipynb
       - chapters/10_pandas_bar_charts/pandas_bar_charts.ipynb
+      - chapters/11_pandas_scatter_plots/pandas_scatter_plots.ipynb
     - references.qmd
 
 bibliography: references.bib

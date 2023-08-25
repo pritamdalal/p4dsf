@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -6596,6 +6596,239 @@ table? Explain why.
 
 \emph{Python for Data Analysis (McKinney)} - Section 8.2 - Plotting
 Functions in \textbf{pandas}
+
+\hypertarget{scatter-plots-with-pandas}{%
+\chapter{\texorpdfstring{Scatter Plots with
+\textbf{pandas}}{Scatter Plots with pandas}}\label{scatter-plots-with-pandas}}
+
+The purpose of this chapter is to demonstrate the \textbf{pandas}
+built-in functionality for creating scatter plots.
+
+The financial task we will accomplish is demonstrating SPY's
+\emph{implied leverage effect}: when the market suffers losses, implied
+volatility increases; when the market experiences gains, implied
+volatility decreases.
+
+Our measure of SPY implied volatility will be the VIX index. To verify
+the above relationship, we will plot SPY daily returns against daily
+changes in the VIX for 2016Q1-2021Q2.
+
+\hypertarget{loading-packages-4}{%
+\section{Loading Packages}\label{loading-packages-4}}
+
+Let's begin by loading the packages we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\OperatorTok{\%}\NormalTok{matplotlib inline}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-9}{%
+\section{Reading-In Data}\label{reading-in-data-9}}
+
+Next, let's use \textbf{pandas\_datareader} to read in the SPY and VIX
+data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo([}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\^{}VIX\textquotesingle{}}\NormalTok{], start}\OperatorTok{=}\StringTok{\textquotesingle{}2016{-}01{-}01\textquotesingle{}}\NormalTok{, end}\OperatorTok{=}\StringTok{\textquotesingle{}2021{-}06{-}30\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.}\BuiltInTok{round}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  2 of 2 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+&
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Adj Close} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Close} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+High} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Low} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}}{%
+Open} &
+\multicolumn{2}{>{\raggedright\arraybackslash}p{(\columnwidth - 24\tabcolsep) * \real{0.0000} + 2\tabcolsep}@{}}{%
+Volume} \\
+& SPY & \^{}VIX & SPY & \^{}VIX & SPY & \^{}VIX & SPY & \^{}VIX & SPY &
+\^{}VIX & SPY & \^{}VIX \\
+Date & & & & & & & & & & & & \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2016-01-04 & 175.91 & 20.70 & 201.02 & 20.70 & 201.03 & 23.36 & 198.59 &
+20.67 & 200.49 & 22.48 & 222353500 & 0 \\
+2016-01-05 & 176.21 & 19.34 & 201.36 & 19.34 & 201.90 & 21.06 & 200.05 &
+19.25 & 201.40 & 20.75 & 110845800 & 0 \\
+2016-01-06 & 173.98 & 20.59 & 198.82 & 20.59 & 200.06 & 21.86 & 197.60 &
+19.80 & 198.34 & 21.67 & 152112600 & 0 \\
+2016-01-07 & 169.81 & 24.99 & 194.05 & 24.99 & 197.44 & 25.86 & 193.59 &
+22.40 & 195.33 & 23.22 & 213436100 & 0 \\
+2016-01-08 & 167.95 & 27.01 & 191.92 & 27.01 & 195.85 & 27.08 & 191.58 &
+22.48 & 195.19 & 22.96 & 209817200 & 0 \\
+\end{longtable}
+
+The following code cleans up the data by isolating the the
+\texttt{Close} prices, resetting the index, and then changing the column
+names
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}Close\textquotesingle{}}\NormalTok{].reset\_index()}
+\NormalTok{df\_spy.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}\^{}VIX\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{\}, inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& date & spy & vix \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 20.70 \\
+1 & 2016-01-05 & 201.36 & 19.34 \\
+2 & 2016-01-06 & 198.82 & 20.59 \\
+3 & 2016-01-07 & 194.05 & 24.99 \\
+4 & 2016-01-08 & 191.92 & 27.01 \\
+\end{longtable}
+
+\hypertarget{adding-returns-and-vix-changes-to-df_spy}{%
+\section{\texorpdfstring{Adding Returns and VIX Changes to
+\texttt{df\_spy}}{Adding Returns and VIX Changes to df\_spy}}\label{adding-returns-and-vix-changes-to-df_spy}}
+
+Let's add a \texttt{return} column to \texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{] }\OperatorTok{/}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}spy\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{) }\OperatorTok{{-}} \DecValTok{1}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& date & spy & vix & return \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 20.70 & NaN \\
+1 & 2016-01-05 & 201.36 & 19.34 & 0.001691 \\
+2 & 2016-01-06 & 198.82 & 20.59 & -0.012614 \\
+3 & 2016-01-07 & 194.05 & 24.99 & -0.023992 \\
+4 & 2016-01-08 & 191.92 & 27.01 & -0.010977 \\
+\end{longtable}
+
+Next, let's calculate the daily change in the VIX, and put it in a new
+column called \texttt{vix\_chg}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\_chng\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{].diff()}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+& date & spy & vix & return & vix\_chng \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 20.70 & NaN & NaN \\
+1 & 2016-01-05 & 201.36 & 19.34 & 0.001691 & -1.36 \\
+2 & 2016-01-06 & 198.82 & 20.59 & -0.012614 & 1.25 \\
+3 & 2016-01-07 & 194.05 & 24.99 & -0.023992 & 4.40 \\
+4 & 2016-01-08 & 191.92 & 27.01 & -0.010977 & 2.02 \\
+\end{longtable}
+
+The \texttt{return} column in \texttt{df\_spy} is expressed as a
+decimal, so let's change the \texttt{vix} and \texttt{vix\_chng} columns
+of \texttt{df\_vix} to also be expressed as decimals.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}vix\textquotesingle{}}\NormalTok{] }\OperatorTok{/} \DecValTok{100}
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}vix\_chng\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}vix\_chng\textquotesingle{}}\NormalTok{] }\OperatorTok{/} \DecValTok{100}
+\NormalTok{df\_spy.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+& date & spy & vix & return & vix\_chng \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016-01-04 & 201.02 & 0.2070 & NaN & NaN \\
+1 & 2016-01-05 & 201.36 & 0.1934 & 0.001691 & -0.0136 \\
+2 & 2016-01-06 & 198.82 & 0.2059 & -0.012614 & 0.0125 \\
+3 & 2016-01-07 & 194.05 & 0.2499 & -0.023992 & 0.0440 \\
+4 & 2016-01-08 & 191.92 & 0.2701 & -0.010977 & 0.0202 \\
+\end{longtable}
+
+\hypertarget{scatter-plot}{%
+\section{Scatter Plot}\label{scatter-plot}}
+
+Now that we have our data wrangled, we are in position to use the
+\texttt{DataFrame.plot.scatter()} method to plot daily SPY return
+against daily changes in the VIX.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.plot.scatter(}\StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vix\_chng\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/11_pandas_scatter_plots/pandas_scatter_plots_files/figure-pdf/cell-8-output-1.png}
+
+}
+
+\end{figure}
+
+The following code improves the aesthetics of our plot:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy.plot.scatter(}
+\NormalTok{    x }\OperatorTok{=} \StringTok{\textquotesingle{}return\textquotesingle{}}\NormalTok{,}
+\NormalTok{    y }\OperatorTok{=} \StringTok{\textquotesingle{}vix\_chng\textquotesingle{}}\NormalTok{,}
+\NormalTok{    grid}\OperatorTok{=}\VariableTok{True}\NormalTok{ ,  }
+\NormalTok{    c}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{,}
+\NormalTok{    alpha}\OperatorTok{=}\FloatTok{0.75}\NormalTok{,}
+\NormalTok{    s}\OperatorTok{=}\DecValTok{10}\NormalTok{,  }\CommentTok{\# changing the size of the dots}
+\NormalTok{    figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\NormalTok{    title}\OperatorTok{=}\StringTok{\textquotesingle{}SPY Return vs VIX Changes (2016Q1{-}2021Q2: daily)\textquotesingle{}}\NormalTok{,}
+\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/11_pandas_scatter_plots/pandas_scatter_plots_files/figure-pdf/cell-9-output-1.png}
+
+}
+
+\end{figure}
 
 \bookmarksetup{startatroot}
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Analysis in Finance - 9&nbsp; Line Graphs with pandas</title>
+<title>Python for Data Analysis in Finance - 11&nbsp; Scatter Plots with pandas</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" rel="next">
-<link href="../../parts/02_part_visualization/part_visualization.html" rel="prev">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -111,7 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/02_part_visualization/part_visualization.html">Visualization</a></li><li class="breadcrumb-item"><a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with **pandas**</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/02_part_visualization/part_visualization.html">Visualization</a></li><li class="breadcrumb-item"><a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with **pandas**</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -212,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span></a>
   </div>
 </li>
@@ -224,7 +224,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></span></a>
   </div>
 </li>
@@ -246,15 +246,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#load-packages" id="toc-load-packages" class="nav-link active" data-scroll-target="#load-packages"><span class="header-section-number">9.1</span> Load Packages</a></li>
-  <li><a href="#ipython-magic-commands" id="toc-ipython-magic-commands" class="nav-link" data-scroll-target="#ipython-magic-commands"><span class="header-section-number">9.2</span> <code>IPython</code> Magic Commands</a></li>
-  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">9.3</span> Reading In Data</a></li>
-  <li><a href="#creating-a-basic-price-plot" id="toc-creating-a-basic-price-plot" class="nav-link" data-scroll-target="#creating-a-basic-price-plot"><span class="header-section-number">9.4</span> Creating a Basic Price Plot</a></li>
-  <li><a href="#improving-our-graph" id="toc-improving-our-graph" class="nav-link" data-scroll-target="#improving-our-graph"><span class="header-section-number">9.5</span> Improving Our Graph</a></li>
-  <li><a href="#subplot-of-price-and-returns" id="toc-subplot-of-price-and-returns" class="nav-link" data-scroll-target="#subplot-of-price-and-returns"><span class="header-section-number">9.6</span> Subplot of Price and Returns</a></li>
-  <li><a href="#realized-volatility" id="toc-realized-volatility" class="nav-link" data-scroll-target="#realized-volatility"><span class="header-section-number">9.7</span> Realized Volatility</a></li>
-  <li><a href="#implied-volatility---the-vix-index" id="toc-implied-volatility---the-vix-index" class="nav-link" data-scroll-target="#implied-volatility---the-vix-index"><span class="header-section-number">9.8</span> Implied Volatility - The VIX Index</a></li>
-  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">9.9</span> Further Reading</a></li>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">11.1</span> Loading Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">11.2</span> Reading-In Data</a></li>
+  <li><a href="#adding-returns-and-vix-changes-to-df_spy" id="toc-adding-returns-and-vix-changes-to-df_spy" class="nav-link" data-scroll-target="#adding-returns-and-vix-changes-to-df_spy"><span class="header-section-number">11.3</span> Adding Returns and VIX Changes to <code>df_spy</code></a></li>
+  <li><a href="#scatter-plot" id="toc-scatter-plot" class="nav-link" data-scroll-target="#scatter-plot"><span class="header-section-number">11.4</span> Scatter Plot</a></li>
   </ul>
 </nav>
     </div>
@@ -263,7 +258,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></h1>
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></h1>
 </div>
 
 
@@ -278,43 +273,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>The purpose of this chapter is to demonstrate the use of line graphs in finance. In particular, we use line graphs to plot various volatility-related time series. Our analysis objective is to observe the leverage effect: when stock markets suffer losses there is greater volatility. In order to do this we utilize the built-in visualization capabilities of <strong>pandas</strong>; these capabilities are built on top of the <strong>matplotlib</strong> package.</p>
-<p>The API for <strong>matplotlib</strong> is fairly low level, which means you have to specify a lot of different things even for simply graphs. In practice this can be cumbersome, especially for quick and dirty plotting. Many constituents of the Python visualization ecosystem seek to simplify the creation of <em>standard</em> graphs, and this is true of the <strong>pandas</strong> visualization functionality.</p>
-<section id="load-packages" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="load-packages"><span class="header-section-number">9.1</span> Load Packages</h2>
-<p>Let’s begin by loading the packages that we will need.</p>
+<p>The purpose of this chapter is to demonstrate the <strong>pandas</strong> built-in functionality for creating scatter plots.</p>
+<p>The financial task we will accomplish is demonstrating SPY’s <em>implied leverage effect</em>: when the market suffers losses, implied volatility increases; when the market experiences gains, implied volatility decreases.</p>
+<p>Our measure of SPY implied volatility will be the VIX index. To verify the above relationship, we will plot SPY daily returns against daily changes in the VIX for 2016Q1-2021Q2.</p>
+<section id="loading-packages" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">11.1</span> Loading Packages</h2>
+<p>Let’s begin by loading the packages we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ipython-magic-commands" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="ipython-magic-commands"><span class="header-section-number">9.2</span> <code>IPython</code> Magic Commands</h2>
-<p>Now that we are (implictly) using <strong>matplotlib</strong>, we will have occasion to use our first <code>IPython</code> magic command. These magic commands are often referred to as simply <em>magics</em>.</p>
-<p>The following line of code tells Jupyter to print graphs as output just below the code cell - in the same way that other ouput is printed to the screen.</p>
+<section id="reading-in-data" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">11.2</span> Reading-In Data</h2>
+<p>Next, let’s use <strong>pandas_datareader</strong> to read in the SPY and VIX data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Magics are convenience functions that <code>IPython</code> adds to base <code>Python</code> to make a variety of analysis tasks easier.</p>
-<p>Another example is <code>%timeit</code> that performs time tests on code.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit L <span class="op">=</span> [n <span class="op">**</span> <span class="dv">2</span> <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>203 µs ± 8.65 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
-</div>
-</div>
-<p>You can read more about magics in Section 1.3 of <em>Python Data Science Handbook</em>. The primary magic command that we will utilize is <code>%matplotlib inline</code>.</p>
-</section>
-<section id="reading-in-data" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">9.3</span> Reading In Data</h2>
-<p>Let’s now use <strong>pandas_datareader</strong> to read-in <code>SPY</code> and <code>VIX</code> data for 2016Q1 through 2021Q2.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo([<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo([<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[*********************100%***********************]  2 of 2 completed</code></pre>
 </div>
@@ -448,8 +428,192 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The following code cleans up the data by isolating the the <code>Close</code> prices, resetting the index, and then changing the column names</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="st">'Close'</span>].reset_index()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="st">'Close'</span>].reset_index()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">spy</th>
+<th data-quarto-table-cell-role="th">vix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2016-01-04</td>
+<td>201.02</td>
+<td>20.70</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2016-01-05</td>
+<td>201.36</td>
+<td>19.34</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2016-01-06</td>
+<td>198.82</td>
+<td>20.59</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2016-01-07</td>
+<td>194.05</td>
+<td>24.99</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2016-01-08</td>
+<td>191.92</td>
+<td>27.01</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="adding-returns-and-vix-changes-to-df_spy" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="adding-returns-and-vix-changes-to-df_spy"><span class="header-section-number">11.3</span> Adding Returns and VIX Changes to <code>df_spy</code></h2>
+<p>Let’s add a <code>return</code> column to <code>df_spy</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>] <span class="op">=</span> df_spy[<span class="st">'spy'</span>] <span class="op">/</span> df_spy[<span class="st">'spy'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">spy</th>
+<th data-quarto-table-cell-role="th">vix</th>
+<th data-quarto-table-cell-role="th">return</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2016-01-04</td>
+<td>201.02</td>
+<td>20.70</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2016-01-05</td>
+<td>201.36</td>
+<td>19.34</td>
+<td>0.001691</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2016-01-06</td>
+<td>198.82</td>
+<td>20.59</td>
+<td>-0.012614</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2016-01-07</td>
+<td>194.05</td>
+<td>24.99</td>
+<td>-0.023992</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2016-01-08</td>
+<td>191.92</td>
+<td>27.01</td>
+<td>-0.010977</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Next, let’s calculate the daily change in the VIX, and put it in a new column called <code>vix_chg</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix_chng'</span>] <span class="op">=</span> df_spy[<span class="st">'vix'</span>].diff()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">spy</th>
+<th data-quarto-table-cell-role="th">vix</th>
+<th data-quarto-table-cell-role="th">return</th>
+<th data-quarto-table-cell-role="th">vix_chng</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2016-01-04</td>
+<td>201.02</td>
+<td>20.70</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2016-01-05</td>
+<td>201.36</td>
+<td>19.34</td>
+<td>0.001691</td>
+<td>-1.36</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2016-01-06</td>
+<td>198.82</td>
+<td>20.59</td>
+<td>-0.012614</td>
+<td>1.25</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2016-01-07</td>
+<td>194.05</td>
+<td>24.99</td>
+<td>-0.023992</td>
+<td>4.40</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2016-01-08</td>
+<td>191.92</td>
+<td>27.01</td>
+<td>-0.010977</td>
+<td>2.02</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The <code>return</code> column in <code>df_spy</code> is expressed as a decimal, so let’s change the <code>vix</code> and <code>vix_chng</code> columns of <code>df_vix</code> to also be expressed as decimals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix'</span>] <span class="op">=</span> df_spy[<span class="st">'vix'</span>] <span class="op">/</span> <span class="dv">100</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix_chng'</span>] <span class="op">=</span> df_spy[<span class="st">'vix_chng'</span>] <span class="op">/</span> <span class="dv">100</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -462,137 +626,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">spy</th>
 <th data-quarto-table-cell-role="th">vix</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2016-01-04</td>
-<td>201.02</td>
-<td>20.70</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2016-01-05</td>
-<td>201.36</td>
-<td>19.34</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2016-01-06</td>
-<td>198.82</td>
-<td>20.59</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2016-01-07</td>
-<td>194.05</td>
-<td>24.99</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2016-01-08</td>
-<td>191.92</td>
-<td>27.01</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</section>
-<section id="creating-a-basic-price-plot" class="level2" data-number="9.4">
-<h2 data-number="9.4" class="anchored" data-anchor-id="creating-a-basic-price-plot"><span class="header-section-number">9.4</span> Creating a Basic Price Plot</h2>
-<p><strong>pandas</strong> was created by Wes McKinney when he was a quantitative analyst at the hedge fund called AQR. One of McKinney’s goals for <strong>pandas</strong> was to facilitate the analysis of financial time series. For example, plotting stock prices and returns over time can be done very easily.</p>
-<p>The following single line of code produces a line graph consisting of the close prices of SPY over time.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'spy'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<p>Note that <code>.plot()</code> is a <code>DataFrame</code> method.</p>
-<p>Now, for the purposes of exploratory data analysis (EDA), this plot may be all that we need. However, if we needed to share this graph in a publication or presentation, there are a variety of shortcomings that we would need address by utilizing various arguments of the <code>.plot()</code> method.</p>
-</section>
-<section id="improving-our-graph" class="level2" data-number="9.5">
-<h2 data-number="9.5" class="anchored" data-anchor-id="improving-our-graph"><span class="header-section-number">9.5</span> Improving Our Graph</h2>
-<p>As a first improvement, let’s add a title to our graph, and add some grid lines to make it a little easier to read.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.<span class="op">\</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    plot(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> <span class="st">'spy'</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        title <span class="op">=</span> <span class="st">'SPY: 2016Q1-2021Q2'</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        grid <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<p>In order to add custom labels to the x-axis and y-axis we will have to work with the <strong>matplotlib</strong> API. Don’t worry about the details too much right now, just copy this code if you need to relabel your axes.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_spy.<span class="op">\</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'spy'</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            title <span class="op">=</span> <span class="st">'SPY: 2016Q1-2021Q2'</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            grid <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Trade Date'</span>)<span class="op">;</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Close Price'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<hr>
-<p><strong>Coding Challenge:</strong> Copy the code above and then see what the effect is of adding these arguments to <code>.plot()</code>:</p>
-<pre><code>1. figsize = (10, 5)
-2. style = 'k--'
-3. alpha = 0.5</code></pre>
-<div class="cell">
-<details>
-<summary>Solution</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_spy.<span class="op">\</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'spy'</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            title <span class="op">=</span> <span class="st">'SPY: 2016Q1-2021Q2'</span>,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            grid <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            figsize <span class="op">=</span> (<span class="dv">10</span>, <span class="dv">5</span>),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            style <span class="op">=</span> <span class="st">'k--'</span>,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Trade Date'</span>)<span class="op">;</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Close Price'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<hr>
-<p>For the remainder of the chapter we will utilize graphs as we would for EDA, so we won’t concern ourselves with titles and labels.</p>
-<p>However, whenever graphs are being used to communicate results with a broader audience, they should be properly labeled.</p>
-</section>
-<section id="subplot-of-price-and-returns" class="level2" data-number="9.6">
-<h2 data-number="9.6" class="anchored" data-anchor-id="subplot-of-price-and-returns"><span class="header-section-number">9.6</span> Subplot of Price and Returns</h2>
-<p>In this section, we will plot prices and returns as subplots on the same x-axis. This dual plot will be our first observation of the <em>leverage effect</em>: when the stock market suffers losses there is greater volatility.</p>
-<p>Let’s begin by adding a <code>return</code> column to <code>df_spy</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>] <span class="op">=</span> df_spy[<span class="st">'spy'</span>] <span class="op">/</span> df_spy[<span class="st">'spy'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">spy</th>
-<th data-quarto-table-cell-role="th">vix</th>
 <th data-quarto-table-cell-role="th">return</th>
+<th data-quarto-table-cell-role="th">vix_chng</th>
 </tr>
 </thead>
 <tbody>
@@ -600,96 +635,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td data-quarto-table-cell-role="th">0</td>
 <td>2016-01-04</td>
 <td>201.02</td>
-<td>20.70</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2016-01-05</td>
-<td>201.36</td>
-<td>19.34</td>
-<td>0.001691</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2016-01-06</td>
-<td>198.82</td>
-<td>20.59</td>
-<td>-0.012614</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2016-01-07</td>
-<td>194.05</td>
-<td>24.99</td>
-<td>-0.023992</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2016-01-08</td>
-<td>191.92</td>
-<td>27.01</td>
-<td>-0.010977</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<p>Now we can use the <code>subplots</code> argument of <code>.plot()</code> to plot both the prices and returns simulatneously.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'spy'</span>, <span class="st">'return'</span>], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, grid<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>),)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<p>It is easy to confirm visually that when the market goes down, the magnitude of the proximate returns is large, i.e.&nbsp;there is greater volatility. Similarly, during bull markets, returns tend to be smaller in magnitude.</p>
-</section>
-<section id="realized-volatility" class="level2" data-number="9.7">
-<h2 data-number="9.7" class="anchored" data-anchor-id="realized-volatility"><span class="header-section-number">9.7</span> Realized Volatility</h2>
-<p>Plotting the realized volatility - i.e.&nbsp;the rolling standard deviation - is another way to observe the leverage effect.</p>
-<p>In order to execute rolling calculations in <strong>pandas</strong> we will use the <code>DataFrame.rolling()</code> method.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">6</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>0            NaN
-1            NaN
-2            NaN
-          ...   
-1379    0.118643
-1380    0.118678
-1381    0.117790
-Name: return, Length: 1382, dtype: float64</code></pre>
-</div>
-</div>
-<p>Note that the argument of <code>.rolling()</code> is the window size, which we have set to two months.</p>
-<p>Let’s add this rolling realized volatility calculation to <code>df_spy</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'realized_vol'</span>] <span class="op">=</span> df_spy[<span class="st">'return'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">spy</th>
-<th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">return</th>
-<th data-quarto-table-cell-role="th">realized_vol</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2016-01-04</td>
-<td>201.02</td>
-<td>20.70</td>
+<td>0.2070</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
@@ -697,33 +643,33 @@ Name: return, Length: 1382, dtype: float64</code></pre>
 <td data-quarto-table-cell-role="th">1</td>
 <td>2016-01-05</td>
 <td>201.36</td>
-<td>19.34</td>
+<td>0.1934</td>
 <td>0.001691</td>
-<td>NaN</td>
+<td>-0.0136</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2016-01-06</td>
 <td>198.82</td>
-<td>20.59</td>
+<td>0.2059</td>
 <td>-0.012614</td>
-<td>NaN</td>
+<td>0.0125</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2016-01-07</td>
 <td>194.05</td>
-<td>24.99</td>
+<td>0.2499</td>
 <td>-0.023992</td>
-<td>NaN</td>
+<td>0.0440</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2016-01-08</td>
 <td>191.92</td>
-<td>27.01</td>
+<td>0.2701</td>
 <td>-0.010977</td>
-<td>NaN</td>
+<td>0.0202</td>
 </tr>
 </tbody>
 </table>
@@ -731,35 +677,32 @@ Name: return, Length: 1382, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<p>Again, we can use the <code>subplot</code> argument of <code>.plot()</code> to plot all three time series.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'spy'</span>, <span class="st">'return'</span>, <span class="st">'realized_vol'</span>,], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, grid<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">12</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-15-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<p>Notice that when there is a market downturn, there is a spike in the realized volatility graph.</p>
 </section>
-<section id="implied-volatility---the-vix-index" class="level2" data-number="9.8">
-<h2 data-number="9.8" class="anchored" data-anchor-id="implied-volatility---the-vix-index"><span class="header-section-number">9.8</span> Implied Volatility - The VIX Index</h2>
-<p>During times of market stress, options all become more expensive. One measure of the relative cheapness or expensiveness of options is <em>implied volatility</em>. When options become more expensive, implied volatility rises.</p>
-<p>One of the complexities of implied volatility measurements is that even for a single underlying they differ depending on strike and expiration. However, all implied volatility measurements tend to rise and fall together.</p>
-<p>The VIX index is a single number that summarizes the general level of option implied volatility for options on the S&amp;P500. The S&amp;P500 represents a large number of the most important stocks in America. Moreover, S&amp;P500 options are the most actively traded options in the world. For these reasons, the VIX is a good barometer for overall implied volatility level in the stock market.</p>
-<p>Let’s plot <code>vix</code> along side the other volatility measures in the same graph.</p>
+<section id="scatter-plot" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="scatter-plot"><span class="header-section-number">11.4</span> Scatter Plot</h2>
+<p>Now that we have our data wrangled, we are in position to use the <code>DataFrame.plot.scatter()</code> method to plot daily SPY return against daily changes in the VIX.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'spy'</span>, <span class="st">'return'</span>, <span class="st">'realized_vol'</span>, <span class="st">'vix'</span>,], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, grid<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">16</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot.scatter(<span class="st">'return'</span>, <span class="st">'vix_chng'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<p><img src="pandas_line_graphs_files/figure-html/cell-16-output-1.png" class="img-fluid"></p>
+<p><img src="pandas_scatter_plots_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<p>This plot demonstrates typical behavior of stock market returns and volatility: when there is a market downturn, there is a spike in both implied volatility and realized volatility.</p>
-</section>
-<section id="further-reading" class="level2" data-number="9.9">
-<h2 data-number="9.9" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">9.9</span> Further Reading</h2>
-<p><em>Python Data Science Handbook (VanderPlas)</em> - Section 1.3 - Python Magic Commands</p>
-<p><em>Python for Finance (Hilpisch)</em> - Section 6.2 - Financial Data</p>
-<p><em>Python for Data Analysis (McKinney)</em> - Section 8.1 - A Brief <strong>matplotlib</strong> API Primer</p>
-<p><em>Python for Data Analysis (McKinney)</em> - Section 8.2 - Plotting Functions in <strong>pandas</strong></p>
+<p>The following code improves the aesthetics of our plot:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot.scatter(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="st">'return'</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="st">'vix_chng'</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    grid<span class="op">=</span><span class="va">True</span> ,  </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span><span class="st">'k'</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.75</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">10</span>,  <span class="co"># changing the size of the dots</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'SPY Return vs VIX Changes (2016Q1-2021Q2: daily)'</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="pandas_scatter_plots_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
+</div>
+</div>
 
 
 </section>
@@ -1000,13 +943,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../parts/02_part_visualization/part_visualization.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Visualization</span>
+      <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
