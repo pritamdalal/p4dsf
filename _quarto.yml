@@ -37,6 +37,7 @@ book:
       chapters:
       - chapters/21_simple_linear_regression/simple_linear_regression.ipynb
       - chapters/22_categorical_linear_regression/categorical_linear_regression.ipynb
+      - chapters/23_ridge_lasso_regression/ridge_lasso_regression.ipynb
     - references.qmd
 
 bibliography: references.bib

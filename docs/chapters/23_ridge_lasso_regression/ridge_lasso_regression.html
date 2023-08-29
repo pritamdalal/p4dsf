@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 22&nbsp; Linear Regression with Categorical Variables</title>
+<title>Python for Data Science in Finance - 23&nbsp; Ridge and Lasso Regression</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" rel="next">
-<link href="../../chapters/21_simple_linear_regression/simple_linear_regression.html" rel="prev">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -314,13 +314,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></span></a>
   </div>
 </li>
@@ -342,14 +342,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">22.1</span> Loading Packages</a></li>
-  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">22.2</span> Reading-In Data</a></li>
-  <li><a href="#categorical-feature-with-two-levels" id="toc-categorical-feature-with-two-levels" class="nav-link" data-scroll-target="#categorical-feature-with-two-levels"><span class="header-section-number">22.3</span> Categorical Feature with Two Levels</a>
+  <li><a href="#import-packages" id="toc-import-packages" class="nav-link active" data-scroll-target="#import-packages"><span class="header-section-number">23.1</span> Import Packages</a></li>
+  <li><a href="#read-in-data" id="toc-read-in-data" class="nav-link" data-scroll-target="#read-in-data"><span class="header-section-number">23.2</span> Read-In Data</a></li>
+  <li><a href="#wrangling-data" id="toc-wrangling-data" class="nav-link" data-scroll-target="#wrangling-data"><span class="header-section-number">23.3</span> Wrangling Data</a></li>
+  <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression"><span class="header-section-number">23.4</span> Ridge Regression</a>
   <ul class="collapse">
-  <li><a href="#using-sklearn" id="toc-using-sklearn" class="nav-link" data-scroll-target="#using-sklearn"><span class="header-section-number">22.3.1</span> Using <strong>sklearn</strong></a></li>
-  <li><a href="#using-statsmodels" id="toc-using-statsmodels" class="nav-link" data-scroll-target="#using-statsmodels"><span class="header-section-number">22.3.2</span> Using <strong>statsmodels</strong></a></li>
+  <li><a href="#fitting-a-ridge-for-a-single-value-of-alpha" id="toc-fitting-a-ridge-for-a-single-value-of-alpha" class="nav-link" data-scroll-target="#fitting-a-ridge-for-a-single-value-of-alpha"><span class="header-section-number">23.4.1</span> Fitting a Ridge for a Single Value of <code>alpha</code></a></li>
+  <li><a href="#fitting-a-ridge-for-multiple-values-of-alpha" id="toc-fitting-a-ridge-for-multiple-values-of-alpha" class="nav-link" data-scroll-target="#fitting-a-ridge-for-multiple-values-of-alpha"><span class="header-section-number">23.4.2</span> Fitting A Ridge for Multiple Values of <code>alpha</code></a></li>
   </ul></li>
-  <li><a href="#categorical-feature-with-multiple-levels" id="toc-categorical-feature-with-multiple-levels" class="nav-link" data-scroll-target="#categorical-feature-with-multiple-levels"><span class="header-section-number">22.4</span> Categorical Feature with Multiple Levels</a></li>
+  <li><a href="#lasso" id="toc-lasso" class="nav-link" data-scroll-target="#lasso"><span class="header-section-number">23.5</span> Lasso</a></li>
   </ul>
 </nav>
     </div>
@@ -358,7 +359,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></h1>
+<h1 class="title"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></h1>
 </div>
 
 
@@ -373,22 +374,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>Our previous work with linear regression involved cases where all the features were numeric (continuous). In this tutorial, we consider linear regression with categorical (discrete) features. This material is based on section 3.3.1 (pp 83-87) of <em>Introduction to Statistical Learning 2e</em>.</p>
-<section id="loading-packages" class="level2" data-number="22.1">
-<h2 data-number="22.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">22.1</span> Loading Packages</h2>
-<p>Let’s begin by loading the packages that we will need. Notice that in addition to <strong>sklearn</strong> we are also using <strong>statsmodels</strong>, which is a popular package that includes many classical statistical techniques.</p>
+<p>In this chapter we explore two variants of linear regression: ridge and lasso. Both of these are shrinkage methods, meaning that they shrink regression coefficients to zero. This has the effect of trading a little bit of bias for a reduction in variance. This can improve model stability and fit.</p>
+<p>This tutorial is based on section 6.2 of <em>Introduction to Statistical Learning 2e</em>.</p>
+<section id="import-packages" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="import-packages"><span class="header-section-number">23.1</span> Import Packages</h2>
+<p>Let’s begin by importing the packages that we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="reading-in-data" class="level2" data-number="22.2">
-<h2 data-number="22.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">22.2</span> Reading-In Data</h2>
+<section id="read-in-data" class="level2" data-number="23.2">
+<h2 data-number="23.2" class="anchored" data-anchor-id="read-in-data"><span class="header-section-number">23.2</span> Read-In Data</h2>
 <p>Next, we’ll read-in the data that we will be working with; it is the <code>Credit</code> data set from the <strong>ISLR2</strong> R package that can be downloaded from CRAN.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_credit <span class="op">=</span> pd.read_csv(<span class="st">'credit.csv'</span>)</span>
@@ -577,132 +575,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>The label is <code>balance</code> - average credit card debt for each individual</p>
-<p>There are several quantitative features: - <code>age</code> - in years - <code>cards</code> - number of credit cards - <code>education</code> - years of education - <code>income</code> - in thousands of dollars - <code>limit</code> - credit limit - <code>rating</code> credit rating (FICO)</p>
-<p>In addition to these quantitative variables, we also have four qualitative variables: - <code>own</code> - home ownership - <code>student</code> - are they a student or not - <code>status</code> - are they married or not - <code>region</code> - geographic location (East, West, or South)</p>
-<p>We can examine the pairwise relationships between the quantitative variables with the <code>seaborn.pairplot()</code> function.</p>
+</section>
+<section id="wrangling-data" class="level2" data-number="23.3">
+<h2 data-number="23.3" class="anchored" data-anchor-id="wrangling-data"><span class="header-section-number">23.3</span> Wrangling Data</h2>
+<p>Our next task is to preform some wrangling on our data.</p>
+<p>We begin by creating dummy variables for all our categorial features.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sns.pairplot(df_credit, height<span class="op">=</span><span class="fl">1.25</span>, plot_kws<span class="op">=</span>{<span class="st">"s"</span>: <span class="dv">15</span>})<span class="op">;</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="categorical_linear_regression_files/figure-html/cell-4-output-1.png" class="img-fluid"></p>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_X <span class="op">=</span> pd.get_dummies(df_credit.drop(<span class="st">'balance'</span>, axis<span class="op">=</span><span class="dv">1</span>), drop_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_y <span class="op">=</span> df_credit[[<span class="st">'balance'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>When performing shrinkage methods, it is best to normalize the features.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> scale</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>X_s <span class="op">=</span> scale(df_X, with_mean<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="categorical-feature-with-two-levels" class="level2" data-number="22.3">
-<h2 data-number="22.3" class="anchored" data-anchor-id="categorical-feature-with-two-levels"><span class="header-section-number">22.3</span> Categorical Feature with Two Levels</h2>
-<p>Suppose that we wish to investigate diﬀerences in credit card balance between those who own a house and those who don’t, ignoring the other variables. If a qualitative feature only has two possible values (also called <em>levels</em>), then incorporating it into a regression model is simple. We simply create an indicator or <em>dummy variable</em> that takes on two possible numerical values. In particular, our dummy variable takes a value of zero for those who <em>don’t</em> own a house, and a value of one for those who <em>do</em> own a house. This technique is called one-hot encoding.</p>
-<p>We can use <code>pandas.get_dummies()</code> to perform one-hot encoding.</p>
+<section id="ridge-regression" class="level2" data-number="23.4">
+<h2 data-number="23.4" class="anchored" data-anchor-id="ridge-regression"><span class="header-section-number">23.4</span> Ridge Regression</h2>
+<p>We are now ready to fit a ridge regression so let’s import the <code>Ridge</code> constructor.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_X <span class="op">=</span> df_credit[[<span class="st">'own'</span>]]</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_X <span class="op">=</span> pd.get_dummies(df_X, drop_first<span class="op">=</span><span class="va">True</span>, dtype<span class="op">=</span><span class="st">'float'</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_X.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Ridge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="fitting-a-ridge-for-a-single-value-of-alpha" class="level3" data-number="23.4.1">
+<h3 data-number="23.4.1" class="anchored" data-anchor-id="fitting-a-ridge-for-a-single-value-of-alpha"><span class="header-section-number">23.4.1</span> Fitting a Ridge for a Single Value of <code>alpha</code></h3>
+<p>We begin by fitting a ridge with a single value of <code>alpha</code>, which is the parameter that controls the amount of shrinkage to zero. Higher values correspond to more shrinkage. An <code>alpha</code> value of zero corresponds to the standard least squares model.</p>
+<p>Let’s start with <code>alpha</code> = 1.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Ridge(alpha<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>model.fit(X_s, df_y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">own_Yes</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>0.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>0.0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>1.0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>0.0</td>
-</tr>
-</tbody>
-</table>
-
+<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>Ridge(alpha=1)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">Ridge</label><div class="sk-toggleable__content"><pre>Ridge(alpha=1)</pre></div></div></div></div></div>
 </div>
 </div>
-</div>
-<p>Let’s isolate our labels into their own <code>DataFrame</code>.</p>
+<p>Next, let’s display the coefficients in a <code>DataFrame</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_y <span class="op">=</span> df_credit[[<span class="st">'balance'</span>]]</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_y.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">balance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>333</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>903</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>580</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>964</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>331</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<section id="using-sklearn" class="level3" data-number="22.3.1">
-<h3 data-number="22.3.1" class="anchored" data-anchor-id="using-sklearn"><span class="header-section-number">22.3.1</span> Using <strong>sklearn</strong></h3>
-<p>We’ll first perform a linear regression using <strong>sklearn</strong>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>model.fit(df_X, df_y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
-</div>
-</div>
-<p>We can examine the intercept and coefficient as follows.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.coef_)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(model.intercept_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[[19.73312308]]
-[509.80310881]</code></pre>
-</div>
-</div>
-<p>Let’s make these values easier to read by putting them into a <code>DataFrame</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_coef <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> {<span class="st">'coefficient'</span>: <span class="bu">list</span>(model.intercept_) <span class="op">+</span> <span class="bu">list</span>(np.ravel(model.coef_))},</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    index <span class="op">=</span> [<span class="st">'intercept'</span>] <span class="op">+</span> <span class="bu">list</span>(df_X.columns.values), </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_coef <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> {<span class="st">'coefficient'</span>: <span class="bu">list</span>(model.intercept_) <span class="op">+</span> <span class="bu">list</span>(np.ravel(model.coef_))},</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    index <span class="op">=</span> [<span class="st">'intercept'</span>] <span class="op">+</span> <span class="bu">list</span>(df_X.columns.values), </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -717,11 +628,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">intercept</td>
-<td>509.803109</td>
+<td>-487.398207</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">income</td>
+<td>-271.271818</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">limit</td>
+<td>367.168796</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">rating</td>
+<td>245.258668</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">cards</td>
+<td>21.330598</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">age</td>
+<td>-10.896509</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">education</td>
+<td>-3.013622</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">own_Yes</td>
-<td>19.733123</td>
+<td>-5.222885</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">student_Yes</td>
+<td>126.864176</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">married_Yes</td>
+<td>-4.718335</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">region_South</td>
+<td>5.083115</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">region_West</td>
+<td>7.600739</td>
 </tr>
 </tbody>
 </table>
@@ -729,53 +680,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>Notice that effect size of <code>income</code>, <code>limit</code>, <code>rating</code>, and <code>student_Yes</code> are by far the largest. So we will focus on analyzing those in our subsequet analysis when we vary <code>alpha</code>.</p>
 </section>
-<section id="using-statsmodels" class="level3" data-number="22.3.2">
-<h3 data-number="22.3.2" class="anchored" data-anchor-id="using-statsmodels"><span class="header-section-number">22.3.2</span> Using <strong>statsmodels</strong></h3>
-<p>Next, let’s perform the same the same linear regression using <code>statsmodels</code> which will allow us to check for statistical significance by examining <span class="math inline">\(p\)</span>-values.</p>
+<section id="fitting-a-ridge-for-multiple-values-of-alpha" class="level3" data-number="23.4.2">
+<h3 data-number="23.4.2" class="anchored" data-anchor-id="fitting-a-ridge-for-multiple-values-of-alpha"><span class="header-section-number">23.4.2</span> Fitting A Ridge for Multiple Values of <code>alpha</code></h3>
+<p>We are now going fit our ridge model for various values of <code>alpha</code> and examine the coefficients and <span class="math inline">\(R^2\)</span>.</p>
+<p>This code loops through <code>alpha</code> values, stores various values in <code>lists</code>, and then puts it all together nicely into a <code>DataFrame</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_X_sm <span class="op">=</span> sm.add_constant(df_X)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ls <span class="op">=</span> sm.OLS(df_y, df_X_sm).fit()</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ls.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                balance   R-squared:                       0.000
-Model:                            OLS   Adj. R-squared:                 -0.002
-Method:                 Least Squares   F-statistic:                    0.1836
-Date:                Tue, 29 Aug 2023   Prob (F-statistic):              0.669
-Time:                        13:35:04   Log-Likelihood:                -3019.3
-No. Observations:                 400   AIC:                             6043.
-Df Residuals:                     398   BIC:                             6051.
-Df Model:                           1                                         
-Covariance Type:            nonrobust                                         
-==============================================================================
-                 coef    std err          t      P&gt;|t|      [0.025      0.975]
-------------------------------------------------------------------------------
-const        509.8031     33.128     15.389      0.000     444.675     574.931
-own_Yes       19.7331     46.051      0.429      0.669     -70.801     110.267
-==============================================================================
-Omnibus:                       28.438   Durbin-Watson:                   1.940
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):               27.346
-Skew:                           0.583   Prob(JB):                     1.15e-06
-Kurtosis:                       2.471   Cond. No.                         2.66
-==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
-</div>
-</div>
-<p>Here is how to interpret these results: - A non-home owner has an average balance of $509.80 - A home owner has an average balance of 509.80 + 19.73 = $529.53 - However, notice that the <span class="math inline">\(p\)</span>-value of <code>own_Yes</code> is quite high which suggests that there is no statistical evidence of a diﬀerence in average credit card balance based on house ownership.</p>
-</section>
-</section>
-<section id="categorical-feature-with-multiple-levels" class="level2" data-number="22.4">
-<h2 data-number="22.4" class="anchored" data-anchor-id="categorical-feature-with-multiple-levels"><span class="header-section-number">22.4</span> Categorical Feature with Multiple Levels</h2>
-<p>In this section we consider regression on a categorical feature that has multiple levels. When a qualitative feature has more than two levels, a single dummy variable cannot represent all possible values. In this situation we can create additional dummy variables. There will always be one fewer dummy variable than the number of levels.</p>
-<p>To explore this technique, let’s use the <code>region</code> feature and create dummy variables using the <code>pandas.get_dummies()</code> function.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_X <span class="op">=</span> df_credit[[<span class="st">'region'</span>]]</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_X <span class="op">=</span> pd.get_dummies(df_X, drop_first<span class="op">=</span><span class="va">True</span>, dtype<span class="op">=</span><span class="st">'float'</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>df_X.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>, <span class="dv">100000</span>, <span class="dv">1000000</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>income_coef <span class="op">=</span> []</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>limit_coef <span class="op">=</span> []</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>rating_coef <span class="op">=</span> []</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>student_yes_coef <span class="op">=</span> []</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>r_squared <span class="op">=</span> []</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix <span class="kw">in</span> alpha:</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> Ridge(alpha<span class="op">=</span>ix)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    model.fit(X_s, df_y)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    coef <span class="op">=</span> np.ravel(model.coef_)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    income_coef.append(coef[<span class="dv">0</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    limit_coef.append(coef[<span class="dv">1</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    rating_coef.append(coef[<span class="dv">2</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    student_yes_coef.append(coef[<span class="dv">7</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    r_squared.append(model.score(X_s, df_y))</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>df_coefficient <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">'alpha'</span>:alpha,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'income'</span>:income_coef,</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">'limit'</span>:limit_coef,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">'rating'</span>:rating_coef,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">'student_Yes'</span>:student_yes_coef,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">'r_squared'</span>:r_squared,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>df_coefficient</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -784,35 +721,104 @@ Notes:
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">region_South</th>
-<th data-quarto-table-cell-role="th">region_West</th>
+<th data-quarto-table-cell-role="th">alpha</th>
+<th data-quarto-table-cell-role="th">income</th>
+<th data-quarto-table-cell-role="th">limit</th>
+<th data-quarto-table-cell-role="th">rating</th>
+<th data-quarto-table-cell-role="th">student_Yes</th>
+<th data-quarto-table-cell-role="th">r_squared</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>1.0</td>
-<td>0.0</td>
+<td>0.001</td>
+<td>-274.67</td>
+<td>439.94</td>
+<td>175.78</td>
+<td>127.72</td>
+<td>0.955102</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>0.0</td>
-<td>1.0</td>
+<td>0.010</td>
+<td>-274.64</td>
+<td>438.55</td>
+<td>177.14</td>
+<td>127.71</td>
+<td>0.955102</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>0.0</td>
-<td>1.0</td>
+<td>0.100</td>
+<td>-274.34</td>
+<td>426.09</td>
+<td>189.33</td>
+<td>127.60</td>
+<td>0.955097</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>0.0</td>
-<td>1.0</td>
+<td>1.000</td>
+<td>-271.27</td>
+<td>367.17</td>
+<td>245.26</td>
+<td>126.86</td>
+<td>0.954974</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>1.0</td>
-<td>0.0</td>
+<td>10.000</td>
+<td>-242.12</td>
+<td>301.99</td>
+<td>281.05</td>
+<td>122.99</td>
+<td>0.952659</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>100.000</td>
+<td>-94.60</td>
+<td>211.39</td>
+<td>209.60</td>
+<td>97.64</td>
+<td>0.882671</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>1000.000</td>
+<td>22.93</td>
+<td>84.08</td>
+<td>84.22</td>
+<td>34.01</td>
+<td>0.550125</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>10000.000</td>
+<td>7.31</td>
+<td>14.44</td>
+<td>14.47</td>
+<td>4.57</td>
+<td>0.123256</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>100000.000</td>
+<td>0.84</td>
+<td>1.57</td>
+<td>1.57</td>
+<td>0.47</td>
+<td>0.014014</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1000000.000</td>
+<td>0.09</td>
+<td>0.16</td>
+<td>0.16</td>
+<td>0.05</td>
+<td>0.001421</td>
 </tr>
 </tbody>
 </table>
@@ -820,22 +826,63 @@ Notes:
 </div>
 </div>
 </div>
-<p>Next, let’s use <strong>sklearn</strong> to perform a linear regression with the dummy variables.</p>
+<p>Notice that the <span class="math inline">\(R^2\)</span> decreases monotonically.</p>
+<p>Let’s now plot the coefficient values for various values of <code>alpha</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LinearRegression()</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>model.fit(df_X, df_y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_coefficient.<span class="op">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'alpha'</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> [<span class="st">'income'</span>, <span class="st">'limit'</span>, <span class="st">'rating'</span>, <span class="st">'student_Yes'</span>],</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            title <span class="op">=</span> <span class="st">'Coefficient Values for Various alpha'</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>            grid <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            alpha <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            figsize <span class="op">=</span> (<span class="dv">9</span>, <span class="dv">5</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            logx<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            )<span class="op">;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'alpha'</span>)<span class="op">;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'coefficient'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
+<p><img src="ridge_lasso_regression_files/figure-html/cell-10-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<p>We can examine the coefficients in a <code>DataFrame</code> as follows:</p>
+<p>As you can see for large values of <code>alpha</code> the coefficients are close to zero, however they never quite reach zero.</p>
+</section>
+</section>
+<section id="lasso" class="level2" data-number="23.5">
+<h2 data-number="23.5" class="anchored" data-anchor-id="lasso"><span class="header-section-number">23.5</span> Lasso</h2>
+<p>Let’s now repeat the same analysis for lasso regression. We begin by calculating coefficients and <span class="math inline">\(R^2\)</span> for various values of <code>alpha</code>, and then display them in a <code>DataFrame</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_coef <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> {<span class="st">'coefficient'</span>: <span class="bu">list</span>(model.intercept_) <span class="op">+</span> <span class="bu">list</span>(np.ravel(model.coef_))},</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    index <span class="op">=</span> [<span class="st">'intercept'</span>] <span class="op">+</span> <span class="bu">list</span>(df_X.columns.values), </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>df_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Lasso</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="op">=</span> [<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>, <span class="dv">10000</span>, <span class="dv">100000</span>, <span class="dv">1000000</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>income_coef <span class="op">=</span> []</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>limit_coef <span class="op">=</span> []</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>rating_coef <span class="op">=</span> []</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>student_yes_coef <span class="op">=</span> []</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>r_squared <span class="op">=</span> []</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix <span class="kw">in</span> alpha:</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> Lasso(alpha<span class="op">=</span>ix)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    model.fit(X_s, df_y)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    coef <span class="op">=</span> np.ravel(model.coef_)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    income_coef.append(coef[<span class="dv">0</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    limit_coef.append(coef[<span class="dv">1</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    rating_coef.append(coef[<span class="dv">2</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    student_yes_coef.append(coef[<span class="dv">7</span>].<span class="bu">round</span>(<span class="dv">2</span>))</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    r_squared.append(model.score(X_s, df_y))</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>df_coefficient <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'alpha'</span>:alpha,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">'income'</span>:income_coef,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">'limit'</span>:limit_coef,</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">'rating'</span>:rating_coef,</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">'student_Yes'</span>:student_yes_coef,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">'r_squared'</span>:r_squared,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>df_coefficient</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/pritam/.local/lib/python3.10/site-packages/sklearn/linear_model/_coordinate_descent.py:631: ConvergenceWarning: Objective did not converge. You might want to increase the number of iterations, check the scale of the features or consider increasing regularisation. Duality gap: 1.516e+06, tolerance: 8.434e+03
+  model = cd_fast.enet_coordinate_descent(</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -844,21 +891,104 @@ Notes:
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">coefficient</th>
+<th data-quarto-table-cell-role="th">alpha</th>
+<th data-quarto-table-cell-role="th">income</th>
+<th data-quarto-table-cell-role="th">limit</th>
+<th data-quarto-table-cell-role="th">rating</th>
+<th data-quarto-table-cell-role="th">student_Yes</th>
+<th data-quarto-table-cell-role="th">r_squared</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">intercept</td>
-<td>531.000000</td>
+<td data-quarto-table-cell-role="th">0</td>
+<td>0.001</td>
+<td>-274.67</td>
+<td>442.55</td>
+<td>173.18</td>
+<td>127.74</td>
+<td>0.955101</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">region_South</td>
-<td>-12.502513</td>
+<td data-quarto-table-cell-role="th">1</td>
+<td>0.010</td>
+<td>-274.64</td>
+<td>444.80</td>
+<td>170.89</td>
+<td>127.74</td>
+<td>0.955101</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">region_West</td>
-<td>-18.686275</td>
+<td data-quarto-table-cell-role="th">2</td>
+<td>0.100</td>
+<td>-274.23</td>
+<td>449.54</td>
+<td>165.72</td>
+<td>127.67</td>
+<td>0.955099</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1.000</td>
+<td>-270.07</td>
+<td>439.92</td>
+<td>171.01</td>
+<td>126.60</td>
+<td>0.955006</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>10.000</td>
+<td>-228.48</td>
+<td>335.30</td>
+<td>233.09</td>
+<td>116.13</td>
+<td>0.948874</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>100.000</td>
+<td>-0.00</td>
+<td>23.36</td>
+<td>273.31</td>
+<td>19.63</td>
+<td>0.718970</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>1000.000</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>10000.000</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>100000.000</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>1000000.000</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.000000</td>
 </tr>
 </tbody>
 </table>
@@ -866,47 +996,25 @@ Notes:
 </div>
 </div>
 </div>
-<p>Finally, we’ll use <code>statsmodels</code> to perform the same regression so that we can examine the <span class="math inline">\(p\)</span>-values.</p>
+<p>Once again, <span class="math inline">\(R^2\)</span> decreases monotonically.</p>
+<p>Finally, let’s plot the coefficients for various values of <code>alpha</code>. Notice that unlike ridge, with lasso the coefficients get squashed to zero.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_X_sm <span class="op">=</span> sm.add_constant(df_X)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>ls <span class="op">=</span> sm.OLS(df_y, df_X_sm).fit()</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(ls.summary())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                            OLS Regression Results                            
-==============================================================================
-Dep. Variable:                balance   R-squared:                       0.000
-Model:                            OLS   Adj. R-squared:                 -0.005
-Method:                 Least Squares   F-statistic:                   0.04344
-Date:                Tue, 29 Aug 2023   Prob (F-statistic):              0.957
-Time:                        13:37:01   Log-Likelihood:                -3019.3
-No. Observations:                 400   AIC:                             6045.
-Df Residuals:                     397   BIC:                             6057.
-Df Model:                           2                                         
-Covariance Type:            nonrobust                                         
-================================================================================
-                   coef    std err          t      P&gt;|t|      [0.025      0.975]
---------------------------------------------------------------------------------
-const          531.0000     46.319     11.464      0.000     439.939     622.061
-region_South   -12.5025     56.681     -0.221      0.826    -123.935      98.930
-region_West    -18.6863     65.021     -0.287      0.774    -146.515     109.142
-==============================================================================
-Omnibus:                       28.829   Durbin-Watson:                   1.946
-Prob(Omnibus):                  0.000   Jarque-Bera (JB):               27.395
-Skew:                           0.581   Prob(JB):                     1.13e-06
-Kurtosis:                       2.460   Cond. No.                         4.39
-==============================================================================
-
-Notes:
-[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.</code></pre>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_coefficient.<span class="op">\</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'alpha'</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> [<span class="st">'income'</span>, <span class="st">'limit'</span>, <span class="st">'rating'</span>, <span class="st">'student_Yes'</span>],</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            title <span class="op">=</span> <span class="st">'Coefficient Values for Various alpha'</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            grid <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            alpha <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            figsize <span class="op">=</span> (<span class="dv">9</span>, <span class="dv">5</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            logx<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            )<span class="op">;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'alpha'</span>)<span class="op">;</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'coefficient'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="ridge_lasso_regression_files/figure-html/cell-12-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<p>Here is how to interpret these results:</p>
-<ul>
-<li><p>The average balance of a cardholder that lives in the <code>East</code> is $531.00.</p></li>
-<li><p>A cardholder in the <code>South</code> has an average balance of 531.00 - 12.50 = $518.50</p></li>
-<li><p>A cardholder in the <code>West</code> has an average balance of 531.00 - 18.67 = $512.33</p></li>
-<li><p>The the <span class="math inline">\(p\)</span>-values of both <code>region_South</code> and <code>region_West</code> are quite high which suggests that there is no statistical evidence of a diﬀerence in average credit card balance based on region.</p></li>
-</ul>
 
 
 </section>
@@ -1147,13 +1255,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../chapters/21_simple_linear_regression/simple_linear_regression.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Simple Linear Regression</span></span>
+      <a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
