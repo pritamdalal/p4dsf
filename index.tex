@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -12049,6 +12049,639 @@ And finally, let's calculate the bias and efficiency.
 \emph{Volatility Modeling and Trading} - Artur Sepp 2016
 
 \url{https://arch.readthedocs.io/en/latest/univariate/univariate_volatility_forecasting.html}
+
+\hypertarget{exploration-of-the-feed-grains-database}{%
+\chapter{Exploration of the Feed Grains
+Database}\label{exploration-of-the-feed-grains-database}}
+
+The purpose of this chapter is to get our hands dirty with the
+\href{https://www.ers.usda.gov/data-products/feed-grains-database/feed-grains-yearbook-tables.aspx\#26780}{Feed
+Grains database} maintained by the USDA ERS.
+
+We use this data to reproduce several of the graphs in from Mindy
+Mallory's book \href{http://mindymallory.com/PriceAnalysis/}{\emph{Price
+Analysis}} - in particular from Chapters 12 (Forecasting Production), 13
+(Forecasting Use of Corn), and 15 (Ending Stocks and Price).
+
+The focus of this analysis is on corn.
+
+\hypertarget{import-pacakges}{%
+\section{Import Pacakges}\label{import-pacakges}}
+
+Let's begin by loading the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-in-data}{%
+\section{Read-In Data}\label{read-in-data}}
+
+Next, let's read-in our data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_feed\_grains }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}../data/FeedGrains.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_feed\_grains}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllllllllllllll@{}}
+\toprule\noalign{}
+& SC\_Group\_ID & SC\_Group\_Desc & SC\_GroupCommod\_ID &
+SC\_GroupCommod\_Desc & SC\_Geography\_ID & SortOrder &
+SC\_GeographyIndented\_Desc & SC\_Commodity\_ID & SC\_Commodity\_Desc &
+SC\_Attribute\_ID & SC\_Attribute\_Desc & SC\_Unit\_ID & SC\_Unit\_Desc
+& Year\_ID & SC\_Frequency\_ID & SC\_Frequency\_Desc & Timeperiod\_ID &
+Timeperiod\_Desc & Amount \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2 & Supply and use & 9.0 & Barley & 1 & 0.80 & United States & 1 &
+Barley & 1 & Planted acreage & 2 & Million acres & 1926 & 3 & Annual &
+69 & Commodity Market Year & 8.796000 \\
+1 & 2 & Supply and use & 9.0 & Barley & 1 & 0.80 & United States & 1 &
+Barley & 1 & Planted acreage & 2 & Million acres & 1927 & 3 & Annual &
+69 & Commodity Market Year & 9.513000 \\
+2 & 2 & Supply and use & 9.0 & Barley & 1 & 0.80 & United States & 1 &
+Barley & 1 & Planted acreage & 2 & Million acres & 1928 & 3 & Annual &
+69 & Commodity Market Year & 12.828000 \\
+3 & 2 & Supply and use & 9.0 & Barley & 1 & 0.80 & United States & 1 &
+Barley & 1 & Planted acreage & 2 & Million acres & 1929 & 3 & Annual &
+69 & Commodity Market Year & 14.703000 \\
+4 & 2 & Supply and use & 9.0 & Barley & 1 & 0.80 & United States & 1 &
+Barley & 1 & Planted acreage & 2 & Million acres & 1930 & 3 & Annual &
+69 & Commodity Market Year & 13.581000 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... & ... & ... & ... & ... & ... & ... & ... \\
+496558 & 3 & Exports and imports & 17.0 & Oats & 300 & 1.02 & Caribbean
+Basin (CBERA) & 79 & Oats products & 24 & Exports, from U.S. to
+specified destination & 7 & 1,000 metric tons & 2022 & 1 & Monthly & 12
+& Dec & 0.063158 \\
+496559 & 3 & Exports and imports & 17.0 & Oats & 300 & 1.02 & Caribbean
+Basin (CBERA) & 79 & Oats products & 24 & Exports, from U.S. to
+specified destination & 7 & 1,000 metric tons & 2022 & 3 & Annual & 19 &
+MY Jun-May & 0.442165 \\
+496560 & 3 & Exports and imports & 17.0 & Oats & 300 & 1.02 & Caribbean
+Basin (CBERA) & 79 & Oats products & 24 & Exports, from U.S. to
+specified destination & 7 & 1,000 metric tons & 2023 & 1 & Monthly & 1 &
+Jan & 0.051325 \\
+496561 & 3 & Exports and imports & 17.0 & Oats & 300 & 1.02 & Caribbean
+Basin (CBERA) & 79 & Oats products & 24 & Exports, from U.S. to
+specified destination & 7 & 1,000 metric tons & 2023 & 1 & Monthly & 2 &
+Feb & 0.036997 \\
+496562 & 3 & Exports and imports & 17.0 & Oats & 300 & 1.02 & Caribbean
+Basin (CBERA) & 79 & Oats products & 24 & Exports, from U.S. to
+specified destination & 7 & 1,000 metric tons & 2023 & 1 & Monthly & 3 &
+Mar & 0.022716 \\
+\end{longtable}
+
+\hypertarget{production}{%
+\section{Production}\label{production}}
+
+Let's grab all the attributes that are related to production side of the
+WASDE balance sheet analysis. We have to do this in two separate parts
+because the \texttt{Timeperiod\_Desc} is different for some of the
+attributes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{attributes }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}Harvested acreage\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Yield per harvested acre\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Planted acreage\textquotesingle{}}\NormalTok{,}
+       \StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Production\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Imports\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Total Supply\textquotesingle{}}\NormalTok{]}
+
+\NormalTok{df\_tidy\_corn }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{(}
+\NormalTok{df\_feed\_grains}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}SC\_Commodity\_Desc == "Corn"\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}SC\_GeographyIndented\_Desc == "United States"\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}SC\_Attribute\_Desc == @attributes\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}Timeperiod\_Desc == "Commodity Market Year"\textquotesingle{}}\NormalTok{)}
+\NormalTok{    [[}\StringTok{\textquotesingle{}SC\_Commodity\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_GeographyIndented\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_Attribute\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Timeperiod\_Desc\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Amount\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_Unit\_Desc\textquotesingle{}}\NormalTok{]]}
+\NormalTok{)}
+\NormalTok{df\_tidy\_corn}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& SC\_Commodity\_Desc & SC\_GeographyIndented\_Desc &
+SC\_Attribute\_Desc & Timeperiod\_Desc & Year\_ID & Amount &
+SC\_Unit\_Desc \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+13840 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1866 & 30.017 & Million acres \\
+13841 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1867 & 32.116 & Million acres \\
+13842 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1868 & 35.116 & Million acres \\
+13843 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1869 & 35.833 & Million acres \\
+13844 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1870 & 38.388 & Million acres \\
+... & ... & ... & ... & ... & ... & ... & ... \\
+15962 & Corn & United States & Prices received by farmers & Commodity
+Market Year & 2019 & 3.560 & Dollars per bushel \\
+15979 & Corn & United States & Prices received by farmers & Commodity
+Market Year & 2020 & 4.530 & Dollars per bushel \\
+15996 & Corn & United States & Prices received by farmers & Commodity
+Market Year & 2021 & 6.000 & Dollars per bushel \\
+16007 & Corn & United States & Prices received by farmers & Commodity
+Market Year & 2022 & 6.600 & Dollars per bushel \\
+16014 & Corn & United States & Prices received by farmers & Commodity
+Market Year & 2023 & 4.800 & Dollars per bushel \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{attributes }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}Imports, market year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Beginning stocks\textquotesingle{}}\NormalTok{]}
+
+\NormalTok{df\_imports\_stocks }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_feed\_grains}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}SC\_Commodity\_Desc == "Corn"\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}SC\_GeographyIndented\_Desc == "United States"\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}SC\_Attribute\_Desc == @attributes\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}Timeperiod\_Desc.str.contains("MY")\textquotesingle{}}\NormalTok{)}
+\NormalTok{        [[}\StringTok{\textquotesingle{}SC\_Commodity\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_GeographyIndented\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_Attribute\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Timeperiod\_Desc\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Amount\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_Unit\_Desc\textquotesingle{}}\NormalTok{]]}
+\NormalTok{    )}
+
+\NormalTok{df\_tidy\_corn }\OperatorTok{=}\NormalTok{ pd.concat([df\_tidy\_corn, df\_imports\_stocks])}
+\NormalTok{df\_tidy\_corn}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& SC\_Commodity\_Desc & SC\_GeographyIndented\_Desc &
+SC\_Attribute\_Desc & Timeperiod\_Desc & Year\_ID & Amount &
+SC\_Unit\_Desc \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+13840 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1866 & 30.017 & Million acres \\
+13841 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1867 & 32.116 & Million acres \\
+13842 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1868 & 35.116 & Million acres \\
+13843 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1869 & 35.833 & Million acres \\
+13844 & Corn & United States & Harvested acreage & Commodity Market Year
+& 1870 & 38.388 & Million acres \\
+... & ... & ... & ... & ... & ... & ... & ... \\
+16416 & Corn & United States & Imports, market year & MY Sep-Aug & 2019
+& 41.885 & Million bushels \\
+16421 & Corn & United States & Imports, market year & MY Sep-Aug & 2020
+& 24.233 & Million bushels \\
+16516 & Corn & United States & Imports, market year & MY Sep-Aug & 2021
+& 24.227 & Million bushels \\
+16519 & Corn & United States & Imports, market year & MY Sep-Aug & 2022
+& 40.000 & Million bushels \\
+16520 & Corn & United States & Imports, market year & MY Sep-Aug & 2023
+& 25.000 & Million bushels \\
+\end{longtable}
+
+Our analysis will be easier if we pivot our tidy data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_supply }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{(}
+\NormalTok{df\_tidy\_corn}
+\NormalTok{    .pivot(index}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, columns}\OperatorTok{=}\StringTok{\textquotesingle{}SC\_Attribute\_Desc\textquotesingle{}}\NormalTok{, values}\OperatorTok{=}\StringTok{\textquotesingle{}Amount\textquotesingle{}}\NormalTok{)}
+\NormalTok{    .reset\_index()}
+\NormalTok{    [[}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Beginning stocks\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Planted acreage\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Harvested acreage\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Yield per harvested acre\textquotesingle{}}\NormalTok{, }
+      \StringTok{\textquotesingle{}Production\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Imports, market year\textquotesingle{}}\NormalTok{]]}
+\NormalTok{    .assign(total\_supply }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df[}\StringTok{\textquotesingle{}Beginning stocks\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df[}\StringTok{\textquotesingle{}Production\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df[}\StringTok{\textquotesingle{}Imports, market year\textquotesingle{}}\NormalTok{])}
+\NormalTok{)}
+\NormalTok{df\_supply.columns.name }\OperatorTok{=} \VariableTok{None}
+\NormalTok{df\_supply}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& Year\_ID & Beginning stocks & Planted acreage & Harvested acreage &
+Yield per harvested acre & Production & Prices received by farmers &
+Imports, market year & total\_supply \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 1866 & NaN & NaN & 30.017 & 24.3000 & 730.814 & 0.657 & NaN & NaN \\
+1 & 1867 & NaN & NaN & 32.116 & 24.7000 & 793.905 & 0.781 & NaN & NaN \\
+2 & 1868 & NaN & NaN & 35.116 & 26.2000 & 919.590 & 0.617 & NaN & NaN \\
+3 & 1869 & NaN & NaN & 35.833 & 21.8000 & 782.084 & 0.725 & NaN & NaN \\
+4 & 1870 & NaN & NaN & 38.388 & 29.3000 & 1124.775 & 0.521 & NaN &
+NaN \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+153 & 2019 & 2220.749 & 89.745 & 81.337 & 167.5000 & 13619.928 & 3.560 &
+41.885 & 15882.562 \\
+154 & 2020 & 1919.462 & 90.652 & 82.313 & 171.4000 & 14111.449 & 4.530 &
+24.233 & 16055.144 \\
+155 & 2021 & 1234.512 & 93.252 & 85.318 & 176.7000 & 15073.820 & 6.000 &
+24.227 & 16332.559 \\
+156 & 2022 & 1376.890 & 88.579 & 79.207 & 173.3397 & 13729.719 & 6.600 &
+40.000 & 15146.609 \\
+157 & 2023 & 1416.609 & 91.996 & 84.100 & 181.5101 & 15265.000 & 4.800 &
+25.000 & 16706.609 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# recreating graph in 12.1.1 Forecasting Harvested Acres}
+\NormalTok{(}
+\NormalTok{df\_supply}
+\NormalTok{    .assign(difference }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df[}\StringTok{\textquotesingle{}Planted acreage\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ df[}\StringTok{\textquotesingle{}Harvested acreage\textquotesingle{}}\NormalTok{])}
+\NormalTok{    .query(}\StringTok{\textquotesingle{}Year\_ID \textgreater{} 1999\textquotesingle{}}\NormalTok{)}
+\NormalTok{).plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Harvested acreage\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Planted acreage\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}difference\textquotesingle{}}\NormalTok{], grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-7-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# recreating graph in 12.2 Forecasting Yield}
+\NormalTok{df\_supply.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Yield per harvested acre\textquotesingle{}}\NormalTok{], grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-8-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# recreating graph in 12.2 Forecasting Yield}
+\NormalTok{df\_supply.query(}\StringTok{\textquotesingle{}Year\_ID \textgreater{} 1950\textquotesingle{}}\NormalTok{).plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Yield per harvested acre\textquotesingle{}}\NormalTok{], grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-9-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# recreating graph in 12.2 Forecasting Yield}
+\NormalTok{df\_supply.query(}\StringTok{\textquotesingle{}Year\_ID \textgreater{} 1980\textquotesingle{}}\NormalTok{).plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}Yield per harvested acre\textquotesingle{}}\NormalTok{], grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-10-output-1.png}
+
+}
+
+\end{figure}
+
+\hypertarget{consumption}{%
+\section{Consumption}\label{consumption}}
+
+Let's now switch our attention to the demand side. We begin by grabbing
+all the demand related attributes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{attributes }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}Food, alcohol, and industrial use\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Feed and residual use\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Seed use\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Exports, market year\textquotesingle{}}\NormalTok{]}
+
+\NormalTok{df\_demand\_tidy }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_feed\_grains}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}SC\_Commodity\_Desc == "Corn"\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}SC\_GeographyIndented\_Desc == "United States"\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}SC\_Attribute\_Desc == @attributes\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}Timeperiod\_Desc.str.contains("MY")\textquotesingle{}}\NormalTok{)}
+\NormalTok{        [[}\StringTok{\textquotesingle{}SC\_Commodity\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_GeographyIndented\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_Attribute\_Desc\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Timeperiod\_Desc\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Amount\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SC\_Unit\_Desc\textquotesingle{}}\NormalTok{]]}
+\NormalTok{    )}
+\NormalTok{df\_demand\_tidy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& SC\_Commodity\_Desc & SC\_GeographyIndented\_Desc &
+SC\_Attribute\_Desc & Timeperiod\_Desc & Year\_ID & Amount &
+SC\_Unit\_Desc \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+16525 & Corn & United States & Exports, market year & MY Sep-Aug & 1975
+& 1664.494 & Million bushels \\
+16530 & Corn & United States & Exports, market year & MY Sep-Aug & 1976
+& 1645.119 & Million bushels \\
+16535 & Corn & United States & Exports, market year & MY Sep-Aug & 1977
+& 1896.396 & Million bushels \\
+16540 & Corn & United States & Exports, market year & MY Sep-Aug & 1978
+& 2113.117 & Million bushels \\
+16633 & Corn & United States & Exports, market year & MY Sep-Aug & 1979
+& 2401.517 & Million bushels \\
+... & ... & ... & ... & ... & ... & ... & ... \\
+18601 & Corn & United States & Food, alcohol, and industrial use & MY
+Sep-Aug & 2019 & 6256.213 & Million bushels \\
+18606 & Corn & United States & Food, alcohol, and industrial use & MY
+Sep-Aug & 2020 & 6435.942 & Million bushels \\
+18611 & Corn & United States & Food, alcohol, and industrial use & MY
+Sep-Aug & 2021 & 6734.439 & Million bushels \\
+18614 & Corn & United States & Food, alcohol, and industrial use & MY
+Sep-Aug & 2022 & 6649.000 & Million bushels \\
+18615 & Corn & United States & Food, alcohol, and industrial use & MY
+Sep-Aug & 2023 & 6704.000 & Million bushels \\
+\end{longtable}
+
+Now let's pivot our tidy data to make it a bit more usable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_demand }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_demand\_tidy}
+\NormalTok{        .pivot(index}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, columns}\OperatorTok{=}\StringTok{\textquotesingle{}SC\_Attribute\_Desc\textquotesingle{}}\NormalTok{, values}\OperatorTok{=}\StringTok{\textquotesingle{}Amount\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .reset\_index()}
+\NormalTok{        [[}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Food, alcohol, and industrial use\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Feed and residual use\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Seed use\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Exports, market year\textquotesingle{}}\NormalTok{]]}
+\NormalTok{        .assign(total\_demand }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df[}\StringTok{\textquotesingle{}Food, alcohol, and industrial use\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df[}\StringTok{\textquotesingle{}Feed and residual use\textquotesingle{}}\NormalTok{] }\OperatorTok{+} 
+\NormalTok{                df[}\StringTok{\textquotesingle{}Seed use\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df[}\StringTok{\textquotesingle{}Exports, market year\textquotesingle{}}\NormalTok{])}
+\NormalTok{    )}
+\NormalTok{df\_demand.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+SC\_Attribute\_Desc & Year\_ID & Food, alcohol, and industrial use &
+Feed and residual use & Seed use & Exports, market year &
+total\_demand \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 1975 & 500.7 & 3581.760 & 20.1 & 1664.494 & 5767.054 \\
+1 & 1976 & 522.1 & 3601.881 & 20.1 & 1645.119 & 5789.200 \\
+2 & 1977 & 561.5 & 3729.743 & 19.5 & 1896.396 & 6207.139 \\
+3 & 1978 & 588.5 & 4274.362 & 19.5 & 2113.117 & 6995.479 \\
+4 & 1979 & 619.5 & 4563.043 & 20.0 & 2401.517 & 7604.060 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 13.1 Food, alcohol, and industrial use}
+\NormalTok{df\_demand.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}Food, alcohol, and industrial use\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-13-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 13.1 Food, alcohol, and industrial use as proportion of total demand}
+\NormalTok{(}
+\NormalTok{df\_demand.}
+\NormalTok{    assign(prop }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df[}\StringTok{\textquotesingle{}Food, alcohol, and industrial use\textquotesingle{}}\NormalTok{] }\OperatorTok{/}\NormalTok{ df[}\StringTok{\textquotesingle{}total\_demand\textquotesingle{}}\NormalTok{])}
+\NormalTok{).plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}prop\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-14-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 13.2 Exports}
+\NormalTok{df\_demand.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}Exports, market year\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-15-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 13.2 Exports as a proportion of total demand}
+\NormalTok{(}
+\NormalTok{df\_demand.}
+\NormalTok{    assign(prop }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df[}\StringTok{\textquotesingle{}Exports, market year\textquotesingle{}}\NormalTok{] }\OperatorTok{/}\NormalTok{ df[}\StringTok{\textquotesingle{}total\_demand\textquotesingle{}}\NormalTok{])}
+\NormalTok{).plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}prop\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-16-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 13.3 Feed and residuals}
+\NormalTok{df\_demand.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}Feed and residual use\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-17-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# 13.3 Feed and residuals as a proportion of total demand}
+\NormalTok{(}
+\NormalTok{df\_demand.}
+\NormalTok{    assign(prop }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: df[}\StringTok{\textquotesingle{}Feed and residual use\textquotesingle{}}\NormalTok{] }\OperatorTok{/}\NormalTok{ df[}\StringTok{\textquotesingle{}total\_demand\textquotesingle{}}\NormalTok{])}
+\NormalTok{).plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}prop\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/20_feed_grains_database/feed_grains_database_files/figure-pdf/cell-18-output-1.png}
+
+}
+
+\end{figure}
+
+\hypertarget{ending-stocks-and-price}{%
+\section{Ending Stocks and Price}\label{ending-stocks-and-price}}
+
+Let's now analyze the relationship between price and ending stocks. This
+is done in Chapter 15 (Ending Stocks and Price).
+
+We begin by examining a scatter plot of stocks-to-use vs prices received
+by farmers. I would guess there would be a negative relationship here
+and that is the case.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# corn stocks{-}to{-}use and prices received by farmers}
+\NormalTok{df\_surplus }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_supply[[}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}total\_supply\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{]]}
+\NormalTok{        .merge(df\_demand[[}\StringTok{\textquotesingle{}Year\_ID\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}total\_demand\textquotesingle{}}\NormalTok{]], how}\OperatorTok{=}\StringTok{\textquotesingle{}inner\textquotesingle{}}\NormalTok{)}
+\NormalTok{        .assign(stocks\_ratio }\OperatorTok{=} \KeywordTok{lambda}\NormalTok{ df: (df[}\StringTok{\textquotesingle{}total\_supply\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ df[}\StringTok{\textquotesingle{}total\_demand\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ df[}\StringTok{\textquotesingle{}total\_demand\textquotesingle{}}\NormalTok{])}
+\NormalTok{df\_surplus.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}stocks\_ratio\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{, kind}\OperatorTok{=}\StringTok{\textquotesingle{}scatter\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+SyntaxError: '(' was never closed (2394339635.py, line 3)
+\end{verbatim}
+
+Let's run a regression on this data set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ sklearn.linear\_model }\ImportTok{import}\NormalTok{ LinearRegression}
+\NormalTok{df\_X }\OperatorTok{=}\NormalTok{ df\_surplus.dropna()[[}\StringTok{\textquotesingle{}stocks\_ratio\textquotesingle{}}\NormalTok{]]}
+\NormalTok{df\_y }\OperatorTok{=}\NormalTok{ df\_surplus.dropna()[[}\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{]]}
+\NormalTok{model }\OperatorTok{=}\NormalTok{ LinearRegression()}
+\NormalTok{model.fit(df\_X, df\_y)}
+\end{Highlighting}
+\end{Shaded}
+
+As we see we get an \(R^2\) of 0.22 which isn't bad in the world of
+finance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model.score(df\_X, df\_y)}
+\end{Highlighting}
+\end{Shaded}
+
+For every percent increase in stocks-to-use ratio there is about a
+\$0.05 reduction in the price received by farmers.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model.coef\_ }\OperatorTok{/} \DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{analyzing-pre-2006}{%
+\subsection{Analyzing Pre-2006}\label{analyzing-pre-2006}}
+
+Mallory suggests breaking down the analysis into pre-2006 and post-2006
+because that's when the ethanol mandates came into play.
+
+We begin with pre-2006.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_surplus\_pre\_2006 }\OperatorTok{=}\NormalTok{ df\_surplus.query(}\StringTok{\textquotesingle{}Year\_ID \textless{} 2006\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_surplus\_pre\_2006.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}stocks\_ratio\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{, kind}\OperatorTok{=}\StringTok{\textquotesingle{}scatter\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+Let's fit a regression to the pre-2006 data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ sklearn.linear\_model }\ImportTok{import}\NormalTok{ LinearRegression}
+\NormalTok{df\_X }\OperatorTok{=}\NormalTok{ df\_surplus\_pre\_2006.dropna()[[}\StringTok{\textquotesingle{}stocks\_ratio\textquotesingle{}}\NormalTok{]]}
+\NormalTok{df\_y }\OperatorTok{=}\NormalTok{ df\_surplus\_pre\_2006.dropna()[[}\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{]]}
+\NormalTok{model }\OperatorTok{=}\NormalTok{ LinearRegression()}
+\NormalTok{model.fit(df\_X, df\_y)}
+\end{Highlighting}
+\end{Shaded}
+
+It doesn't seem to help our \(R^2\), but it does significantly change
+our coefficient, which is good to know.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model.score(df\_X, df\_y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model.coef\_ }\OperatorTok{/} \DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{analyzing-post-2006}{%
+\subsection{Analyzing post-2006}\label{analyzing-post-2006}}
+
+Now let's do the post-2006 analysis.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_surplus\_post\_2006 }\OperatorTok{=}\NormalTok{ df\_surplus.query(}\StringTok{\textquotesingle{}Year\_ID \textgreater{}= 2006\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_surplus\_post\_2006.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}stocks\_ratio\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{, kind}\OperatorTok{=}\StringTok{\textquotesingle{}scatter\textquotesingle{}}\NormalTok{, grid}\OperatorTok{=}\VariableTok{True}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+Let's now fit a regression to the post-2006 data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ sklearn.linear\_model }\ImportTok{import}\NormalTok{ LinearRegression}
+\NormalTok{df\_X }\OperatorTok{=}\NormalTok{ df\_surplus\_post\_2006.dropna()[[}\StringTok{\textquotesingle{}stocks\_ratio\textquotesingle{}}\NormalTok{]]}
+\NormalTok{df\_y }\OperatorTok{=}\NormalTok{ df\_surplus\_post\_2006.dropna()[[}\StringTok{\textquotesingle{}Prices received by farmers\textquotesingle{}}\NormalTok{]]}
+\NormalTok{model }\OperatorTok{=}\NormalTok{ LinearRegression()}
+\NormalTok{model.fit(df\_X, df\_y)}
+\end{Highlighting}
+\end{Shaded}
+
+Our \(R^2\) improves and the negative relationship is much more
+pronounced.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model.score(df\_X, df\_y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model.coef\_ }\OperatorTok{/} \DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
 
 \bookmarksetup{startatroot}
 

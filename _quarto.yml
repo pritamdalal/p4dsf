@@ -32,6 +32,7 @@ book:
       - chapters/17_regression_mutual_fund/regression_mutual_fund.ipynb
       - chapters/18_close_to_close/close_to_close.ipynb
       - chapters/19_garch/garch.ipynb
+      - chapters/20_feed_grains_database/feed_grains_database.ipynb
     - references.qmd
 
 bibliography: references.bib
@@ -39,8 +40,3 @@ bibliography: references.bib
 format:
   html:
     theme: cosmo
-  pdf:
-    documentclass: scrreprt
-
-
-
