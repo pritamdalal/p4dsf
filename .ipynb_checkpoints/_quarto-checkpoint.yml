@@ -33,6 +33,9 @@ book:
       - chapters/18_close_to_close/close_to_close.ipynb
       - chapters/19_garch/garch.ipynb
       - chapters/20_feed_grains_database/feed_grains_database.ipynb
+    - part: parts/04_classical_machine_learning/classical_machine_learning.ipynb
+      chapters:
+      - chapters/21_simple_linear_regression/simple_linear_regression.ipynb
     - references.qmd
 
 bibliography: references.bib
