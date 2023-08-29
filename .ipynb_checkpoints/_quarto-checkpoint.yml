@@ -38,6 +38,7 @@ book:
       - chapters/21_simple_linear_regression/simple_linear_regression.ipynb
       - chapters/22_categorical_linear_regression/categorical_linear_regression.ipynb
       - chapters/23_ridge_lasso_regression/ridge_lasso_regression.ipynb
+      - chapters/24_k_nearest_neighbors_cross_validation/k_nearest_neighbors_cross_validation.ipynb
     - references.qmd
 
 bibliography: references.bib
