@@ -203,7 +203,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Python for Data Analysis in Finance},
+  pdftitle={Python for Data Science in Finance},
   pdfauthor={Pritam Dalal},
   colorlinks=true,
   linkcolor={blue},
@@ -212,13 +212,13 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-\title{Python for Data Analysis in Finance}
+\title{Python for Data Science in Finance}
 \author{Pritam Dalal}
 \date{}
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, enhanced, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -9372,6 +9372,1413 @@ Min:    -1.89
 Max:     1.92
 \end{verbatim}
 
+\hypertarget{trend-following}{%
+\chapter{Trend Following}\label{trend-following}}
+
+This chapter demonstrates a simple trend-following strategy using Yahoo
+Finance data. The methodology is inspired by the Meb Faber's paper
+\emph{A Quantitative Approach to Tactical Asset Allocation}.
+
+The basic workflow to use this notebook is to set the parameters in the
+\textbf{Setting Parameters} section and then to run the
+\texttt{Restart\ Kernel\ and\ Run\ All\ Cells...} command in the
+\texttt{Kernel} dropdown menu.
+
+The strategy we implement is quite straight forward. On each trading
+day, we check if the current price is above or below the trailing simple
+moving average (SMA) of the prices (the number of days in the moving
+average is a parameter). If the current price is above the SMA we go
+long the asset, if it is below the SMA we hold no position. We compare
+this simple strategy to the buying and holding the asset, i.e.~always
+being long the asset.
+
+One major difference between our strategy and the one that is used in
+the aforementioned paper is that in our strategy, positions are
+recalculated on a daily basis. In the paper, positions are recalculated
+at the end of each month, and then held fixed for the duration of the
+following month. This will yield some differences in our results and the
+results in the paper.
+
+At the end of this chapter we analyze a particular case study in which
+we try to recreate Figure 9 from Faber's paper.
+
+\hypertarget{importing-packages-4}{%
+\section{Importing Packages}\label{importing-packages-4}}
+
+Let's begin by importing the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ datetime }\ImportTok{as}\NormalTok{ dt}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{setting-parameters}{%
+\section{Setting Parameters}\label{setting-parameters}}
+
+Next we set the parameters of our analysis. The parameter
+\texttt{sma\_days} determines the number of days used in the trailing
+simple moving average.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ticker }\OperatorTok{=} \StringTok{\textquotesingle{}\^{}SP500TR\textquotesingle{}}
+\NormalTok{start\_date }\OperatorTok{=} \StringTok{\textquotesingle{}1989{-}12{-}29\textquotesingle{}}
+\NormalTok{end\_date }\OperatorTok{=} \StringTok{\textquotesingle{}2012{-}01{-}01\textquotesingle{}}
+\NormalTok{sma\_days }\OperatorTok{=} \DecValTok{200}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-10}{%
+\section{Reading-In Data}\label{reading-in-data-10}}
+
+We now read-in our data from Yahoo Finance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_asset }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo(ticker)}
+\NormalTok{df\_asset.reset\_index(inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\NormalTok{df\_asset.columns }\OperatorTok{=}\NormalTok{ df\_asset.columns.}\BuiltInTok{str}\NormalTok{.lower().}\BuiltInTok{str}\NormalTok{.replace(}\StringTok{\textquotesingle{} \textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}\_\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_asset }\OperatorTok{=}\NormalTok{ df\_asset[[}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]].copy()}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}sma\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{].rolling(sma\_days).mean()}
+\NormalTok{df\_asset }\OperatorTok{=}\NormalTok{ df\_asset.query(}\StringTok{\textquotesingle{}date \textgreater{}= @start\_date and date \textless{}= @end\_date\textquotesingle{}}\NormalTok{).copy()}
+\NormalTok{df\_asset.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}sma\textquotesingle{}}\NormalTok{], grid}\OperatorTok{=}\VariableTok{True}\NormalTok{, title}\OperatorTok{=}\StringTok{\textquotesingle{}Adjusted Close and Moving Average Through Time\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  1 of 1 completed
+\end{verbatim}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/16_trend_following/trend_following_files/figure-pdf/cell-4-output-2.png}
+
+}
+
+\end{figure}
+
+\hypertarget{determining-position-based-on-trend}{%
+\section{Determining Position Based on
+Trend}\label{determining-position-based-on-trend}}
+
+Here we define the function that will help to determine our daily
+position in the asset.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ calc\_position(row):}
+\NormalTok{    adj\_close }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]}
+\NormalTok{    sma }\OperatorTok{=}\NormalTok{ row[}\StringTok{\textquotesingle{}sma\textquotesingle{}}\NormalTok{]}
+
+\NormalTok{    position }\OperatorTok{=} \DecValTok{0}
+    \ControlFlowTok{if}\NormalTok{ sma }\OperatorTok{\textless{}}\NormalTok{ adj\_close:}
+\NormalTok{        position }\OperatorTok{=} \DecValTok{1}
+
+    \ControlFlowTok{return}\NormalTok{ position}
+\end{Highlighting}
+\end{Shaded}
+
+Let's now use the \texttt{DataFrame.apply()} method to calculate all the
+positions through time.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}trend\_position\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset.}\BuiltInTok{apply}\NormalTok{(calc\_position, axis }\OperatorTok{=} \DecValTok{1}\NormalTok{)}
+\NormalTok{df\_asset}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& date & adj\_close & sma & trend\_position \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+504 & 1989-12-29 & 379.410004 & 351.375200 & 1 \\
+505 & 1990-01-02 & 386.160004 & 351.776050 & 1 \\
+506 & 1990-01-03 & 385.170013 & 352.186400 & 1 \\
+507 & 1990-01-04 & 382.019989 & 352.573600 & 1 \\
+508 & 1990-01-05 & 378.299988 & 352.946600 & 1 \\
+... & ... & ... & ... & ... \\
+6047 & 2011-12-23 & 2171.500000 & 2141.526601 & 1 \\
+6048 & 2011-12-27 & 2171.709961 & 2141.442350 & 1 \\
+6049 & 2011-12-28 & 2145.090088 & 2141.347501 & 1 \\
+6050 & 2011-12-29 & 2168.120117 & 2141.578401 & 1 \\
+6051 & 2011-12-30 & 2158.939941 & 2141.620952 & 1 \\
+\end{longtable}
+
+\hypertarget{calculating-returns-equity-curves-and-drawdowns}{%
+\section{Calculating Returns, Equity Curves, and
+Drawdowns}\label{calculating-returns-equity-curves-and-drawdowns}}
+
+We now have all the data the we need to calculate daily returns, the
+equity curves, and drawdowns of the two strategies.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# returns}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_return\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{].pct\_change()}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}trend\_return\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_return\textquotesingle{}}\NormalTok{] }\OperatorTok{*}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}trend\_position\textquotesingle{}}\NormalTok{].shift(}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# growth factors}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_factor\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{1} \OperatorTok{+}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_return\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}trend\_factor\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \DecValTok{1} \OperatorTok{+}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}trend\_return\textquotesingle{}}\NormalTok{]}
+
+\CommentTok{\# equity curves}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_equity\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_factor\textquotesingle{}}\NormalTok{].cumprod()}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}trend\_equity\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}trend\_factor\textquotesingle{}}\NormalTok{].cumprod()}
+
+\CommentTok{\# maximum cumulative equity}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_max\_equity\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_equity\textquotesingle{}}\NormalTok{].cummax()}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}trend\_max\_equity\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}trend\_equity\textquotesingle{}}\NormalTok{].cummax()}
+
+\CommentTok{\# draw{-}down}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_drawdown\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ (df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_equity\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_max\_equity\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_max\_equity\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_asset[}\StringTok{\textquotesingle{}trend\_drawdown\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ (df\_asset[}\StringTok{\textquotesingle{}trend\_equity\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}trend\_max\_equity\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ df\_asset[}\StringTok{\textquotesingle{}trend\_max\_equity\textquotesingle{}}\NormalTok{]}
+
+\CommentTok{\# graphing equity curves}
+\NormalTok{df\_asset.plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}buy\_hold\_equity\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}trend\_equity\textquotesingle{}}\NormalTok{], grid}\OperatorTok{=}\VariableTok{True}\NormalTok{, title}\OperatorTok{=}\StringTok{\textquotesingle{}Equity Graph\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/16_trend_following/trend_following_files/figure-pdf/cell-7-output-1.png}
+
+}
+
+\end{figure}
+
+\hypertarget{return-characteristics}{%
+\section{Return Characteristics}\label{return-characteristics}}
+
+Finally, we calculate some basic performance metrics.
+
+\textbf{Annualized Return}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}buy{-}hold return: \textquotesingle{}}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_equity\textquotesingle{}}\NormalTok{].iloc[}\OperatorTok{{-}}\DecValTok{1}\NormalTok{] }\OperatorTok{**}\NormalTok{ (}\DecValTok{252} \OperatorTok{/}\NormalTok{ (}\BuiltInTok{len}\NormalTok{(df\_asset) }\OperatorTok{{-}} \DecValTok{1}\NormalTok{)) }\OperatorTok{{-}} \DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{) }\OperatorTok{*} \DecValTok{100}\NormalTok{, }\StringTok{\textquotesingle{}\%\textquotesingle{}}\NormalTok{)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}trend return:    \textquotesingle{}}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(df\_asset[}\StringTok{\textquotesingle{}trend\_equity\textquotesingle{}}\NormalTok{].iloc[}\OperatorTok{{-}}\DecValTok{1}\NormalTok{] }\OperatorTok{**}\NormalTok{ (}\DecValTok{252} \OperatorTok{/}\NormalTok{ (}\BuiltInTok{len}\NormalTok{(df\_asset) }\OperatorTok{{-}} \DecValTok{1}\NormalTok{)) }\OperatorTok{{-}} \DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{) }\OperatorTok{*} \DecValTok{100}\NormalTok{, }\StringTok{\textquotesingle{}\%\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+buy-hold return:  8.200000000000001 %
+trend return:     7.199999999999999 %
+\end{verbatim}
+
+\textbf{Sharpe-Ratio}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}buy{-}hold sharpe{-}ratio: \textquotesingle{}}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{((np.mean(df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_return\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ np.std(df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_return\textquotesingle{}}\NormalTok{])) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{), }\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}trend sharpe{-}ratio:    \textquotesingle{}}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{((np.mean(df\_asset[}\StringTok{\textquotesingle{}trend\_return\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ np.std(df\_asset[}\StringTok{\textquotesingle{}trend\_return\textquotesingle{}}\NormalTok{])) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{), }\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+buy-hold sharpe-ratio:  0.51
+trend sharpe-ratio:     0.66
+\end{verbatim}
+
+\textbf{Maximum Drawdown}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}buy{-}hold max{-}drawdown: \textquotesingle{}}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(np.}\BuiltInTok{min}\NormalTok{(df\_asset[}\StringTok{\textquotesingle{}buy\_hold\_drawdown\textquotesingle{}}\NormalTok{]), }\DecValTok{2}\NormalTok{))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}trend max{-}drawdown:    \textquotesingle{}}\NormalTok{, np.}\BuiltInTok{round}\NormalTok{(np.}\BuiltInTok{min}\NormalTok{(df\_asset[}\StringTok{\textquotesingle{}trend\_drawdown\textquotesingle{}}\NormalTok{]), }\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+buy-hold max-drawdown:  -0.55
+trend max-drawdown:     -0.24
+\end{verbatim}
+
+\hypertarget{case-study-sp500-1990-2012}{%
+\section{Case Study: S\&P500
+1990-2012}\label{case-study-sp500-1990-2012}}
+
+Let's now take a look at a particular case study of the S\&P500 in the
+period of 1990-2012. We will use the Total Returns futures to represent
+an investment in the S\&P500. In order to get the result we describe,
+rerun this notebook with the following inputs:
+
+\texttt{ticker\ =\ \textquotesingle{}\^{}SP500TR\textquotesingle{}}
+
+\texttt{start\_date\ =\ \textquotesingle{}1989-12-29\textquotesingle{}}
+
+\texttt{end\_date\ =\ \textquotesingle{}2012-01-01\textquotesingle{}}
+
+\texttt{sma\_days\ =\ 200}
+
+We first compare our equity graph above to Faber's equity graph which we
+present below:
+
+\includegraphics{chapters/16_trend_following/images/meb_faber_equity_graph.png}
+
+As we can see in Faber's analysis, trend-following slightly outperforms
+the buy-and-hold strategy, while in our analysis the trend-following
+strategy underperforms. This difference is likely due to the difference
+in rebalance frequency. Our strategy rebalances daily (which is probably
+too much) while Faber's rebalances monthly.
+
+Analyzing our results more closely, we see that buy-and-hold has an
+annualized return of 8.2\%, while trend-following has an annualized
+return of 7.2\%. There is, however, significantly less downside risk
+with trend-following, as the strategy tends to sit-out bear markets
+(e.g.~2000 and 2008). This results in a max-drawdown of -24\% for trend
+following, while buy-and-hold had a max-drawdown of -55\% during the
+2008 financial crisis. This reduced downside risk can also be seen in
+the Sharpe-ratio, a metric by which trend-following (0.66) outperforms
+buy-and-hold (0.51).
+
+\hypertarget{regression-mutual-fund-analysis}{%
+\chapter{Regression: Mutual Fund
+Analysis}\label{regression-mutual-fund-analysis}}
+
+In this chapter, we will use the skills that we have learned so far to
+analyze some mutual fund data. In particular, we have end of day NAVs
+from two different funds, called \texttt{fund\_1} and \texttt{fund\_2},
+as well as benchmark index, called \texttt{benchmark}. The data spans
+from 2016Q1 to 2019Q3.
+
+In our analysis we will do the following:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Calculate daily price returns for the benchmark and each of the two
+  funds (ignoring dividends)
+\item
+  Calculate a rolling 250-day return for each fund and the benchmark,
+  visualize the results.
+\item
+  Calculate a rolling 250-day volatility for each fund and the
+  benchmark, visualize the results.
+\item
+  For each calendar quarter in the data set, calculate the excess return
+  for each fund (vs the benchmark) and visualize this.
+\item
+  Create a correlation matrix of the three return histories (funds \&
+  benchmark) using daily returns of the 2 most recent years.
+\item
+  Regress each of the two funds vs the benchmark and calculate beta,
+  alpha, and \(R^2\) using the most recent 2 years of data.
+\item
+  Visualize the two sets of linear regression results.
+\end{enumerate}
+
+\hypertarget{loading-packages-7}{%
+\section{Loading Packages}\label{loading-packages-7}}
+
+Let's begin by importing the packages that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\OperatorTok{\%}\NormalTok{matplotlib inline}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reading-in-data-11}{%
+\section{Reading-In Data}\label{reading-in-data-11}}
+
+Next, we'll read-in the data, rename the columns, and convert the
+\texttt{trade\_date} column to \texttt{datetime}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# reading{-}in data}
+\NormalTok{df\_px\_raw }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}mutual\_fund\_data.csv\textquotesingle{}}\NormalTok{)}
+\CommentTok{\# renaming columns}
+\NormalTok{df\_px\_raw.rename(}
+\NormalTok{    columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}BM\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Fund\_1\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Fund\_2\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{\}}
+\NormalTok{    , inplace}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\CommentTok{\# converting data{-}type of trade\_date}
+\NormalTok{df\_px\_raw[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ pd.to\_datetime(df\_px\_raw[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{])}
+
+\NormalTok{df\_px\_raw.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& trade\_date & benchmark & fund\_1 & fund\_2 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2015-12-31 & 203.8700 & 108.29 & 254.04 \\
+1 & 2016-01-01 & 203.8700 & 108.29 & 254.04 \\
+2 & 2016-01-04 & 201.0192 & 106.61 & 250.82 \\
+3 & 2016-01-05 & 201.3600 & 106.10 & 250.90 \\
+4 & 2016-01-06 & 198.8200 & 104.66 & 247.36 \\
+\end{longtable}
+
+\hypertarget{visualizing-raw-price-data}{%
+\section{Visualizing Raw Price Data}\label{visualizing-raw-price-data}}
+
+The \textbf{pandas} package was created by Wes McKinney when he was a
+quant at the hedge fund AQR. Because of this, \textbf{pandas} was built
+with a lot of functionality that is particularly useful for working with
+financial timeseries. This includes some rudimentary plotting
+functionality, which is built on top of the package \textbf{matplotlib}.
+
+Let's quickly plot the price series for our three funds using the
+\texttt{DataFrame.plot()} method.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px\_raw.plot(}
+\NormalTok{    x}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }
+\NormalTok{    y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{],}
+\NormalTok{    figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{,}\DecValTok{5}\NormalTok{),}
+\NormalTok{    title}\OperatorTok{=}\StringTok{\textquotesingle{}Daily Fund Prices: 2016Q1{-}2019Q3\textquotesingle{}}\NormalTok{,}
+\NormalTok{    grid }\OperatorTok{=} \VariableTok{True}
+\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-4-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Copy and paste the code above and try setting
+\texttt{subplots=True}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px\_raw.plot(}
+\NormalTok{    x}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }
+\NormalTok{    y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{],}
+\NormalTok{    figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{8}\NormalTok{,}\DecValTok{8}\NormalTok{),}
+\NormalTok{    title}\OperatorTok{=}\StringTok{\textquotesingle{}Fund Prices: 2016Q1{-}2019Q3\textquotesingle{}}\NormalTok{,}
+\NormalTok{    grid }\OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{    subplots }\OperatorTok{=} \VariableTok{True}\NormalTok{,}
+\NormalTok{)}\OperatorTok{;}
+\NormalTok{plt.subplots\_adjust(top}\OperatorTok{=}\FloatTok{0.94}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-5-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{tidying-the-data}{%
+\section{Tidying the Data}\label{tidying-the-data}}
+
+Our data, in its current form, is not \emph{tidy}. In order for data to
+be tidy, each row should be a single observation. Currently, each row of
+\texttt{df\_px\_raw} is three price observations - one for each of the
+three funds - which will not allow for easy use of the
+\texttt{.groupby()} function.
+
+We can use the \texttt{pandas.melt()} method to tidy our data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    pd.melt(}
+\NormalTok{        df\_px\_raw, }
+\NormalTok{        id\_vars }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{],}
+\NormalTok{        value\_vars }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{], }
+\NormalTok{        var\_name }\OperatorTok{=} \StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }
+\NormalTok{        value\_name }\OperatorTok{=} \StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{,}
+\NormalTok{    )}
+
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& trade\_date & symbol & close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2015-12-31 & benchmark & 203.8700 \\
+1 & 2016-01-01 & benchmark & 203.8700 \\
+2 & 2016-01-04 & benchmark & 201.0192 \\
+3 & 2016-01-05 & benchmark & 201.3600 \\
+4 & 2016-01-06 & benchmark & 198.8200 \\
+\end{longtable}
+
+Our analysis will involve calculating quarterly statistics, so let's add
+columns \texttt{year}, \texttt{quarter}, and \texttt{month}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_px[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].dt.year}
+\NormalTok{df\_px[}\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_px[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].dt.quarter}
+\NormalTok{df\_px[}\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_px[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].dt.month}
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& trade\_date & symbol & close & year & quarter & month \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2015-12-31 & benchmark & 203.8700 & 2015 & 4 & 12 \\
+1 & 2016-01-01 & benchmark & 203.8700 & 2016 & 1 & 1 \\
+2 & 2016-01-04 & benchmark & 201.0192 & 2016 & 1 & 1 \\
+3 & 2016-01-05 & benchmark & 201.3600 & 2016 & 1 & 1 \\
+4 & 2016-01-06 & benchmark & 198.8200 & 2016 & 1 & 1 \\
+\end{longtable}
+
+Let's also rearrange columns to make our table a little more human
+readable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px }\OperatorTok{=}\NormalTok{ df\_px[[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}month\textquotesingle{}}\NormalTok{,  }\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{,]]}
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.8700 \\
+1 & benchmark & 2016-01-01 & 2016 & 1 & 1 & 203.8700 \\
+2 & benchmark & 2016-01-04 & 2016 & 1 & 1 & 201.0192 \\
+3 & benchmark & 2016-01-05 & 2016 & 1 & 1 & 201.3600 \\
+4 & benchmark & 2016-01-06 & 2016 & 1 & 1 & 198.8200 \\
+\end{longtable}
+
+\hypertarget{visualizing-the-tidy-price-data-with-seaborn}{%
+\section{\texorpdfstring{Visualizing the Tidy Price Data with
+\textbf{seaborn}}{Visualizing the Tidy Price Data with seaborn}}\label{visualizing-the-tidy-price-data-with-seaborn}}
+
+Let's now import the \textbf{seaborn} package, which a popular
+visualization package that is also built on top of \textbf{matplotlib}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ seaborn }\ImportTok{as}\NormalTok{ sns}
+\NormalTok{sns.}\BuiltInTok{set}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+In the code below, we use \texttt{sns.relplot()} to graph the three fund
+price series using our data in its tidy form. Notice that by setting
+\texttt{hue=\textquotesingle{}symbol\textquotesingle{}}, the
+\texttt{sns.relplot()} function knows to graph the \texttt{close} prices
+for each of the three \texttt{symbols} separately and with three
+different colors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{sns.relplot(}
+\NormalTok{    data }\OperatorTok{=}\NormalTok{ df\_px, kind }\OperatorTok{=} \StringTok{\textquotesingle{}line\textquotesingle{}}\NormalTok{,}
+\NormalTok{    x }\OperatorTok{=} \StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, y }\OperatorTok{=} \StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{, hue }\OperatorTok{=} \StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{,}
+\NormalTok{    aspect }\OperatorTok{=} \FloatTok{1.5}\NormalTok{,}
+\NormalTok{)}\OperatorTok{;}
+
+\CommentTok{\# creating and tweaking the title}
+\NormalTok{g.fig.suptitle(}\StringTok{\textquotesingle{}Daily Fund Close Prices: 2016Q1{-}2019Q3\textquotesingle{}}\NormalTok{)}
+\NormalTok{plt.subplots\_adjust(top}\OperatorTok{=}\FloatTok{0.93}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-10-output-1.png}
+
+}
+
+\end{figure}
+
+\hypertarget{calculating-daily-returns-1}{%
+\section{Calculating Daily Returns
+(\#1)}\label{calculating-daily-returns-1}}
+
+Notice that our data does not contain daily returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.8700 \\
+1 & benchmark & 2016-01-01 & 2016 & 1 & 1 & 203.8700 \\
+2 & benchmark & 2016-01-04 & 2016 & 1 & 1 & 201.0192 \\
+3 & benchmark & 2016-01-05 & 2016 & 1 & 1 & 201.3600 \\
+4 & benchmark & 2016-01-06 & 2016 & 1 & 1 & 198.8200 \\
+\end{longtable}
+
+Now that our data is tidy, we can easily obtain daily log-returns using
+a grouped calculation.
+
+We use log-returns because, they are very close in value to simple
+returns, and multi-day log-returns are easily calculated as sums of
+single-day returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px[}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    np.log(df\_px[}\StringTok{\textquotesingle{}close\textquotesingle{}}\NormalTok{]).groupby(df\_px[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{]).diff() }\CommentTok{\#log returns}
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close & daily\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.8700 & NaN \\
+1 & benchmark & 2016-01-01 & 2016 & 1 & 1 & 203.8700 & 0.000000 \\
+2 & benchmark & 2016-01-04 & 2016 & 1 & 1 & 201.0192 & -0.014082 \\
+3 & benchmark & 2016-01-05 & 2016 & 1 & 1 & 201.3600 & 0.001694 \\
+4 & benchmark & 2016-01-06 & 2016 & 1 & 1 & 198.8200 & -0.012694 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Verify that all the log-returns on the first
+date in the data set are \texttt{NaN}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px[df\_px[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{==}\NormalTok{ np.}\BuiltInTok{min}\NormalTok{(df\_px[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{])]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close & daily\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.87 & NaN \\
+978 & fund\_1 & 2015-12-31 & 2015 & 4 & 12 & 108.29 & NaN \\
+1956 & fund\_2 & 2015-12-31 & 2015 & 4 & 12 & 254.04 & NaN \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{rolling-252-day-return-2}{%
+\section{Rolling 252-day Return (\#2)}\label{rolling-252-day-return-2}}
+
+Now that we have daily log-returns, we can easily calculate a rolling
+252-day return by using the \texttt{.rolling()} method.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px[}\StringTok{\textquotesingle{}ret\_252\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_px[}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{].groupby(df\_px[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{]).rolling(}\DecValTok{252}\NormalTok{).}\BuiltInTok{sum}\NormalTok{().values}
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close & daily\_ret &
+ret\_252 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.8700 & NaN & NaN \\
+1 & benchmark & 2016-01-01 & 2016 & 1 & 1 & 203.8700 & 0.000000 & NaN \\
+2 & benchmark & 2016-01-04 & 2016 & 1 & 1 & 201.0192 & -0.014082 &
+NaN \\
+3 & benchmark & 2016-01-05 & 2016 & 1 & 1 & 201.3600 & 0.001694 & NaN \\
+4 & benchmark & 2016-01-06 & 2016 & 1 & 1 & 198.8200 & -0.012694 &
+NaN \\
+\end{longtable}
+
+Next we'll use \texttt{sns.FacetGrid()} to graph three separate subplots
+of the rolling returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g }\OperatorTok{=}\NormalTok{ sns.FacetGrid(df\_px, col}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, aspect}\OperatorTok{=}\FloatTok{1.25}\NormalTok{, height}\OperatorTok{=}\DecValTok{3}\NormalTok{,)}
+\NormalTok{g.}\BuiltInTok{map}\NormalTok{(plt.plot, }\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}ret\_252\textquotesingle{}}\NormalTok{, alpha}\OperatorTok{=}\FloatTok{0.7}\NormalTok{,)}
+\NormalTok{g.add\_legend()}\OperatorTok{;}
+\NormalTok{g.set\_xticklabels(rotation}\OperatorTok{=}\DecValTok{35}\NormalTok{, horizontalalignment}\OperatorTok{=}\StringTok{\textquotesingle{}right\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-15-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Copy and paste the code above, and try changing
+\texttt{col=\textquotesingle{}symbol\textquotesingle{}} to
+\texttt{row=\textquotesingle{}symbol\textquotesingle{}}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g }\OperatorTok{=}\NormalTok{ sns.FacetGrid(df\_px, row}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, aspect}\OperatorTok{=}\FloatTok{1.25}\NormalTok{, height}\OperatorTok{=}\DecValTok{3}\NormalTok{)}
+\NormalTok{g.}\BuiltInTok{map}\NormalTok{(plt.plot, }\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}ret\_252\textquotesingle{}}\NormalTok{, alpha}\OperatorTok{=}\FloatTok{0.7}\NormalTok{, )}
+\NormalTok{g.add\_legend()}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-16-output-1.png}
+
+}
+
+\end{figure}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{rolling-252-day-volatility-3}{%
+\section{Rolling 252-day Volatility
+(\#3)}\label{rolling-252-day-volatility-3}}
+
+We can calculate a rolling 252-day volatility in a similar fashion as
+the rolling returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px[}\StringTok{\textquotesingle{}vol\_252\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_px[}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{].groupby(df\_px[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{]).rolling(}\DecValTok{252}\NormalTok{).std().values }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{)}
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close & daily\_ret &
+ret\_252 & vol\_252 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.8700 & NaN & NaN &
+NaN \\
+1 & benchmark & 2016-01-01 & 2016 & 1 & 1 & 203.8700 & 0.000000 & NaN &
+NaN \\
+2 & benchmark & 2016-01-04 & 2016 & 1 & 1 & 201.0192 & -0.014082 & NaN &
+NaN \\
+3 & benchmark & 2016-01-05 & 2016 & 1 & 1 & 201.3600 & 0.001694 & NaN &
+NaN \\
+4 & benchmark & 2016-01-06 & 2016 & 1 & 1 & 198.8200 & -0.012694 & NaN &
+NaN \\
+\end{longtable}
+
+This code creates a \texttt{seaborn.FacetGrid()} of the rolling
+volatilities.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g }\OperatorTok{=}\NormalTok{ sns.FacetGrid(df\_px, col}\OperatorTok{=}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, aspect}\OperatorTok{=}\FloatTok{1.25}\NormalTok{, height}\OperatorTok{=}\DecValTok{3}\NormalTok{,)}
+\NormalTok{g.}\BuiltInTok{map}\NormalTok{(plt.plot, }\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vol\_252\textquotesingle{}}\NormalTok{, alpha}\OperatorTok{=}\FloatTok{0.7}\NormalTok{)}
+\NormalTok{g.set\_xticklabels(rotation}\OperatorTok{=}\DecValTok{35}\NormalTok{, horizontalalignment}\OperatorTok{=}\StringTok{\textquotesingle{}right\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\NormalTok{g.add\_legend()}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-18-output-1.png}
+
+}
+
+\end{figure}
+
+The following code uses \textbf{pandas} to graph the rolling returns and
+volatility on the same plot for \texttt{fund\_1}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# filtering conditions}
+\NormalTok{bln\_symbol }\OperatorTok{=}\NormalTok{ df\_px[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{\textquotesingle{}fund\_1\textquotesingle{}}
+\NormalTok{bln\_nans }\OperatorTok{=} \OperatorTok{\textasciitilde{}}\NormalTok{(np.isnan(df\_px[}\StringTok{\textquotesingle{}ret\_252\textquotesingle{}}\NormalTok{]))}
+\NormalTok{bln\_filter }\OperatorTok{=}\NormalTok{ bln\_symbol }\OperatorTok{\&}\NormalTok{ bln\_nans}
+
+\CommentTok{\# graphing}
+\NormalTok{df\_px[bln\_filter].plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}ret\_252\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vol\_252\textquotesingle{}}\NormalTok{])}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-19-output-1.png}
+
+}
+
+\end{figure}
+
+\textbf{Code Challenge} Copy and paste the above code and modify it to
+graph only the data from the beginning of 2019 and onwards.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{bln\_symbol }\OperatorTok{=}\NormalTok{ df\_px[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{\textquotesingle{}fund\_1\textquotesingle{}}
+\NormalTok{bln\_date }\OperatorTok{=}\NormalTok{ df\_px[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{\textgreater{}=} \StringTok{\textquotesingle{}2019{-}01{-}01\textquotesingle{}}
+\NormalTok{bln\_filter }\OperatorTok{=}\NormalTok{ bln\_symbol }\OperatorTok{\&}\NormalTok{ bln\_date}
+
+\NormalTok{df\_px[bln\_filter].plot(x}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, y}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}ret\_252\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}vol\_252\textquotesingle{}}\NormalTok{])}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-20-output-1.png}
+
+}
+
+\end{figure}
+
+\hypertarget{quarterly-returns-and-excess-return-4}{%
+\section{Quarterly Returns and Excess Return
+(\#4)}\label{quarterly-returns-and-excess-return-4}}
+
+Our next analysis objective is to calculate quarterly excess returns for
+\texttt{fund\_1} and \texttt{fund\_2} relative the \texttt{benchmark}.
+
+As we can see, \texttt{df\_px} consist of daily data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_px.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& symbol & trade\_date & year & quarter & month & close & daily\_ret &
+ret\_252 & vol\_252 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2015-12-31 & 2015 & 4 & 12 & 203.8700 & NaN & NaN &
+NaN \\
+1 & benchmark & 2016-01-01 & 2016 & 1 & 1 & 203.8700 & 0.000000 & NaN &
+NaN \\
+2 & benchmark & 2016-01-04 & 2016 & 1 & 1 & 201.0192 & -0.014082 & NaN &
+NaN \\
+3 & benchmark & 2016-01-05 & 2016 & 1 & 1 & 201.3600 & 0.001694 & NaN &
+NaN \\
+4 & benchmark & 2016-01-06 & 2016 & 1 & 1 & 198.8200 & -0.012694 & NaN &
+NaN \\
+\end{longtable}
+
+Calculating the quarterly returns is a straight-forward application of
+\texttt{.groupby().agg()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_quarter }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_px[df\_px.year }\OperatorTok{\textgreater{}} \DecValTok{2015}\NormalTok{] }\OperatorTok{\textbackslash{}}
+\NormalTok{        .groupby([}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{])[}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{].agg([np.}\BuiltInTok{sum}\NormalTok{]).reset\_index() }\OperatorTok{\textbackslash{}}
+\NormalTok{        .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}sum\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}quarterly\_ret\textquotesingle{}}\NormalTok{\})}
+
+\NormalTok{df\_quarter.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& symbol & year & quarter & quarterly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2016 & 1 & 0.008061 \\
+1 & benchmark & 2016 & 2 & 0.019061 \\
+2 & benchmark & 2016 & 3 & 0.032062 \\
+3 & benchmark & 2016 & 4 & 0.032879 \\
+4 & benchmark & 2017 & 1 & 0.053184 \\
+\end{longtable}
+
+Since we ultimately want to calculate excess return relative to the
+\texttt{benchmark}, it would be helpful to have the \texttt{benchmark}
+returns as a separate column in \texttt{df\_quarter}.
+
+In order to do this, let's first separate out the \texttt{benchmark}
+quarterly returns into a separate \texttt{DataFrame} called
+\texttt{df\_bench}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_bench }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_quarter[df\_quarter[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{] }\OperatorTok{==} \StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{] }\OperatorTok{\textbackslash{}}
+\NormalTok{    [[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarterly\_ret\textquotesingle{}}\NormalTok{]] }\OperatorTok{\textbackslash{}}
+\NormalTok{    .rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}quarterly\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}bench\_ret\textquotesingle{}}\NormalTok{\})}
+
+\NormalTok{df\_bench.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& year & quarter & bench\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2016 & 1 & 0.008061 \\
+1 & 2016 & 2 & 0.019061 \\
+2 & 2016 & 3 & 0.032062 \\
+3 & 2016 & 4 & 0.032879 \\
+4 & 2017 & 1 & 0.053184 \\
+\end{longtable}
+
+In order to add the \texttt{bench\_ret} column to \texttt{df\_quarter}
+we will utilize a \texttt{left-join}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_excess }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    pd.merge(}
+\NormalTok{        df\_quarter, df\_bench, how}\OperatorTok{=}\StringTok{\textquotesingle{}left\textquotesingle{}}\NormalTok{,}
+\NormalTok{        left\_on}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{], right\_on}\OperatorTok{=}\NormalTok{[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{]}
+\NormalTok{    )}
+
+\NormalTok{df\_excess.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+& symbol & year & quarter & quarterly\_ret & bench\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2016 & 1 & 0.008061 & 0.008061 \\
+1 & benchmark & 2016 & 2 & 0.019061 & 0.019061 \\
+2 & benchmark & 2016 & 3 & 0.032062 & 0.032062 \\
+3 & benchmark & 2016 & 4 & 0.032879 & 0.032879 \\
+4 & benchmark & 2017 & 1 & 0.053184 & 0.053184 \\
+\end{longtable}
+
+Finally, we can caluclate excess return for each of the funds.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_excess[}\StringTok{\textquotesingle{}excess\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_excess[}\StringTok{\textquotesingle{}quarterly\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ df\_excess[}\StringTok{\textquotesingle{}bench\_ret\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_excess[}\StringTok{\textquotesingle{}year\_quarter\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ df\_excess[}\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{] }\OperatorTok{*} \DecValTok{100} \OperatorTok{+}\NormalTok{ df\_excess[}\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_excess }\OperatorTok{=}\NormalTok{ df\_excess[[}\StringTok{\textquotesingle{}symbol\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarter\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}year\_quarter\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}quarterly\_ret\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}bench\_ret\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}excess\_ret\textquotesingle{}}\NormalTok{]]}
+\NormalTok{df\_excess.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& symbol & year & quarter & year\_quarter & quarterly\_ret & bench\_ret
+& excess\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & benchmark & 2016 & 1 & 201601 & 0.008061 & 0.008061 & 0.0 \\
+1 & benchmark & 2016 & 2 & 201602 & 0.019061 & 0.019061 & 0.0 \\
+2 & benchmark & 2016 & 3 & 201603 & 0.032062 & 0.032062 & 0.0 \\
+3 & benchmark & 2016 & 4 & 201604 & 0.032879 & 0.032879 & 0.0 \\
+4 & benchmark & 2017 & 1 & 201701 & 0.053184 & 0.053184 & 0.0 \\
+\end{longtable}
+
+Next, we create a bar-plot with of the three funds quarterly returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    sns.catplot(}
+\NormalTok{        data}\OperatorTok{=}\NormalTok{df\_excess, x}\OperatorTok{=}\StringTok{"year\_quarter"}\NormalTok{, y}\OperatorTok{=}\StringTok{"quarterly\_ret"}\NormalTok{,}
+\NormalTok{        hue}\OperatorTok{=}\StringTok{"symbol"}\NormalTok{, kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{,}
+\NormalTok{        aspect}\OperatorTok{=} \FloatTok{1.65}\NormalTok{, }
+\NormalTok{    )}
+\NormalTok{g.fig.suptitle(}\StringTok{\textquotesingle{}Fund Quarterly Returns\textquotesingle{}}\NormalTok{)}
+\NormalTok{g.set\_xticklabels(rotation}\OperatorTok{=}\DecValTok{35}\NormalTok{, horizontalalignment}\OperatorTok{=}\StringTok{\textquotesingle{}right\textquotesingle{}}\NormalTok{)}
+\NormalTok{plt.subplots\_adjust(top}\OperatorTok{=}\FloatTok{0.93}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-26-output-1.png}
+
+}
+
+\end{figure}
+
+And finally, we create a bar-plot of the excess returns of
+\texttt{fund\_1} and \texttt{fund\_2}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    sns.catplot(}
+\NormalTok{        data}\OperatorTok{=}\NormalTok{df\_excess[df\_excess.symbol }\OperatorTok{!=} \StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{],}
+\NormalTok{        x}\OperatorTok{=}\StringTok{"year\_quarter"}\NormalTok{, y}\OperatorTok{=}\StringTok{"excess\_ret"}\NormalTok{, }
+\NormalTok{        hue}\OperatorTok{=}\StringTok{"symbol"}\NormalTok{, kind}\OperatorTok{=}\StringTok{"bar"}\NormalTok{,}
+\NormalTok{        aspect}\OperatorTok{=}\FloatTok{1.5}
+\NormalTok{    )}\OperatorTok{;}
+\NormalTok{g.fig.suptitle(}\StringTok{\textquotesingle{}Quarterly Excess Returns: fund\_1 \& fund\_2\textquotesingle{}}\NormalTok{)}
+\NormalTok{g.set\_xticklabels(rotation}\OperatorTok{=}\DecValTok{35}\NormalTok{, horizontalalignment}\OperatorTok{=}\StringTok{\textquotesingle{}right\textquotesingle{}}\NormalTok{)}
+\NormalTok{plt.subplots\_adjust(top}\OperatorTok{=}\FloatTok{0.93}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-27-output-1.png}
+
+}
+
+\end{figure}
+
+\hypertarget{wrangling-returns-data}{%
+\section{Wrangling Returns Data}\label{wrangling-returns-data}}
+
+For the remainder of the tutorial, will be helpful to have an
+\emph{untidy} \texttt{DataFrame} with the daily returns for the three
+funds in separate columns.
+
+Let's first separate out the returns for each fund into their own
+\texttt{DataFrames}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cols }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_bench }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_px[df\_px.symbol }\OperatorTok{==} \StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{][cols].copy().rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{\})}
+\NormalTok{df\_fund1 }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_px[df\_px.symbol }\OperatorTok{==} \StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{][cols].copy().rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{\})}
+\NormalTok{df\_fund2 }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_px[df\_px.symbol }\OperatorTok{==} \StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{][cols].copy().rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}daily\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{\})}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we \texttt{left-join} these three \texttt{DataFrames} together
+into a single variable called \texttt{df\_ret}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_ret }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    df\_bench }\OperatorTok{\textbackslash{}}
+\NormalTok{        .merge(right}\OperatorTok{=}\NormalTok{df\_fund1, how}\OperatorTok{=}\StringTok{\textquotesingle{}left\textquotesingle{}}\NormalTok{, left\_on}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, right\_on}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{) }\OperatorTok{\textbackslash{}}
+\NormalTok{        .merge(right}\OperatorTok{=}\NormalTok{df\_fund2, how}\OperatorTok{=}\StringTok{\textquotesingle{}left\textquotesingle{}}\NormalTok{, left\_on}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, right\_on}\OperatorTok{=}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{) }\OperatorTok{\textbackslash{}}
+\NormalTok{        .query(}\StringTok{\textquotesingle{}trade\_date \textgreater{} "2015{-}12{-}31"\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_ret.head()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& trade\_date & benchmark & fund\_1 & fund\_2 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 2016-01-01 & 0.000000 & 0.000000 & 0.000000 \\
+2 & 2016-01-04 & -0.014082 & -0.015635 & -0.012756 \\
+3 & 2016-01-05 & 0.001694 & -0.004795 & 0.000319 \\
+4 & 2016-01-06 & -0.012694 & -0.013665 & -0.014210 \\
+5 & 2016-01-07 & -0.024284 & -0.032729 & -0.025882 \\
+\end{longtable}
+
+\hypertarget{pair-plots-and-correlation-matrix-5}{%
+\section{Pair-Plots and Correlation Matrix
+(\#5)}\label{pair-plots-and-correlation-matrix-5}}
+
+In a subsequent section, we will perform regressions on the two most
+recent years of data.
+
+Prior to modeling, I find it useful to look at scatter plots and
+correlations.
+
+As a first step, let's programmatically calculate the start date for our
+analysis. We will utilize the \texttt{numpy.timedelta} data structure
+for this purpose.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dt\_curr }\OperatorTok{=}\NormalTok{ df\_ret.sort\_values([}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{])[}\OperatorTok{{-}}\DecValTok{1}\NormalTok{:][}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].values[}\DecValTok{0}\NormalTok{]}
+\NormalTok{dt\_start }\OperatorTok{=}\NormalTok{ dt\_curr }\OperatorTok{{-}}\NormalTok{ np.timedelta64(}\DecValTok{730}\NormalTok{, }\StringTok{\textquotesingle{}D\textquotesingle{}}\NormalTok{)}
+
+\BuiltInTok{print}\NormalTok{(dt\_curr)}
+\BuiltInTok{print}\NormalTok{(dt\_start)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+2019-09-30T00:00:00.000000000
+2017-09-30T00:00:00.000000000
+\end{verbatim}
+
+Next, we use the \texttt{seaborn.pairplot()} function to quickly graph
+all the pairwise correlatior for two years of fund data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cols }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{]}
+\NormalTok{sns.pairplot(}
+\NormalTok{    df\_ret[df\_ret[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start][cols]}
+\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-31-output-1.png}
+
+}
+
+\end{figure}
+
+Clearly all three of our returns are highly correlated.
+
+Let's use the \texttt{DataFrame.corr()} method to calculate the
+correlations explicitly.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cols }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_ret[df\_ret[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start][cols].corr()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& benchmark & fund\_1 & fund\_2 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+benchmark & 1.000000 & 0.927068 & 0.919859 \\
+fund\_1 & 0.927068 & 1.000000 & 0.836144 \\
+fund\_2 & 0.919859 & 0.836144 & 1.000000 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\textbf{Code Challenge:} Copy and paste the above correlation code and
+modify it calculate the correlations for the entirety of the data set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cols }\OperatorTok{=}\NormalTok{ [}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{]}
+\NormalTok{df\_ret[cols].corr()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& benchmark & fund\_1 & fund\_2 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+benchmark & 1.000000 & 0.914292 & 0.914148 \\
+fund\_1 & 0.914292 & 1.000000 & 0.812403 \\
+fund\_2 & 0.914148 & 0.812403 & 1.000000 \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\hypertarget{regression-of-funds-against-benchmark-6-and-7}{%
+\section{Regression of Funds against Benchmark (\#6 and
+\#7)}\label{regression-of-funds-against-benchmark-6-and-7}}
+
+Finally, we will fit regressions of \texttt{fund\_1} and
+\texttt{fund\_2} against the \texttt{benchmark}.
+
+In order to do this, we will utilize the \textbf{sklearn} package which
+is extremely useful for implementing a variety of machine learning
+techniques.
+
+Let's begin by importing the \texttt{LinearRegression()} constructor
+function from \textbf{sklearn}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ sklearn.linear\_model }\ImportTok{import}\NormalTok{ LinearRegression}
+\end{Highlighting}
+\end{Shaded}
+
+We again want to restrict our analysis to the most recent two years, so
+let's recalculate \texttt{dt\_start} just for good measure.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dt\_curr }\OperatorTok{=}\NormalTok{ df\_ret.sort\_values([}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{])[}\OperatorTok{{-}}\DecValTok{1}\NormalTok{:][}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].values[}\DecValTok{0}\NormalTok{]}
+\NormalTok{dt\_start }\OperatorTok{=}\NormalTok{ dt\_curr }\OperatorTok{{-}}\NormalTok{ np.timedelta64(}\DecValTok{730}\NormalTok{, }\StringTok{\textquotesingle{}D\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{fund-1}{%
+\subsection{Fund 1}\label{fund-1}}
+
+Let's begin by regressing \texttt{fund\_1} against the
+\texttt{benchmark}.
+
+As a preliminary step, let's graph the scatter plot of the returns
+series.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_ret }\OperatorTok{\textbackslash{}}
+\NormalTok{    [df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start] }\OperatorTok{\textbackslash{}}
+\NormalTok{    .plot.scatter(}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, c}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-36-output-1.png}
+
+}
+
+\end{figure}
+
+The first step in using \textbf{sklearn} for a regression analysis is to
+instantiate a regression model object as assign it to a variable, which
+we will call \texttt{reg\_fund1}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg\_fund1 }\OperatorTok{=}\NormalTok{ LinearRegression(fit\_intercept}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, let's separate out the \texttt{benchmark} returns and the
+\texttt{fund\_1} returns into their own \texttt{DataFrames}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_bm }\OperatorTok{=}\NormalTok{ df\_ret[[}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{]][df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start]}
+\NormalTok{df\_fund1 }\OperatorTok{=}\NormalTok{ df\_ret[[}\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{]][df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start]}
+\end{Highlighting}
+\end{Shaded}
+
+To fit the regression we call the \texttt{.fit()} method of our model
+object \texttt{reg\_fund1}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg\_fund1.fit(X }\OperatorTok{=}\NormalTok{ df\_bm, y }\OperatorTok{=}\NormalTok{ df\_fund1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+LinearRegression()
+\end{verbatim}
+
+The coefficients \((\beta)\) and the y-intercept \((\alpha)\) are
+attributes of \texttt{reg\_fund1} which we can access as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(}\StringTok{"beta:  "} \OperatorTok{+} \BuiltInTok{str}\NormalTok{(np.}\BuiltInTok{round}\NormalTok{(reg\_fund1.coef\_[}\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{], }\DecValTok{4}\NormalTok{)))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{"alpha: "} \OperatorTok{+} \BuiltInTok{str}\NormalTok{(np.}\BuiltInTok{round}\NormalTok{(reg\_fund1.intercept\_[}\DecValTok{0}\NormalTok{], }\DecValTok{4}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+beta:  1.2982
+alpha: 0.0003
+\end{verbatim}
+
+Every class of machine learning model has a \texttt{.score()} method,
+which gives some kind of accuracy measure. For \texttt{LinearRegression}
+the \texttt{.score()} gives the \(R^2\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg\_fund1.score(df\_ret[[}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{]], df\_ret[[}\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.8349465372078845
+\end{verbatim}
+
+Let's use \textbf{pandas} plotting along with \texttt{matplotlib.pyplot}
+to graph our regression line along with the scatter plot of the data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{xfit }\OperatorTok{=}\NormalTok{ np.linspace(}\OperatorTok{{-}}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\DecValTok{100}\NormalTok{)           }\CommentTok{\# range of line}
+\NormalTok{yfit }\OperatorTok{=}\NormalTok{ reg\_fund1.predict(xfit[:, np.newaxis])  }\CommentTok{\# model values in range}
+
+
+\NormalTok{df\_ret }\OperatorTok{\textbackslash{}}
+\NormalTok{    [df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start] }\OperatorTok{\textbackslash{}}
+\NormalTok{    .plot.scatter(}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{, c}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{))}\OperatorTok{;}
+\NormalTok{plt.plot(xfit, yfit)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+/home/pritam/.local/lib/python3.10/site-packages/sklearn/base.py:439: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
+\end{verbatim}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-42-output-2.png}
+
+}
+
+\end{figure}
+
+\hypertarget{fund-2}{%
+\subsection{Fund 2}\label{fund-2}}
+
+Let's implement the same kind of regression analysis for
+\texttt{fund\_2}.
+
+\textbf{Scatter Plot of \texttt{fund\_2} vs \texttt{benchmark}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_ret}\OperatorTok{\textbackslash{}}
+\NormalTok{    [df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start]}\OperatorTok{\textbackslash{}}
+\NormalTok{    .plot.scatter(}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{, c}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-43-output-1.png}
+
+}
+
+\end{figure}
+
+\textbf{Instantiate a \texttt{LinearRegression} Object}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg\_fund2 }\OperatorTok{=}\NormalTok{ LinearRegression(fit\_intercept}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Separate out Features and Labels for Regression Analysis}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_bm }\OperatorTok{=}\NormalTok{ df\_ret[[}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{]][df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start]}
+\NormalTok{df\_fund2 }\OperatorTok{=}\NormalTok{ df\_ret[[}\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{]][df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start]}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Fit the Regression Model}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg\_fund2.fit(X }\OperatorTok{=}\NormalTok{ df\_bm, y }\OperatorTok{=}\NormalTok{ df\_fund2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+LinearRegression()
+\end{verbatim}
+
+\textbf{Print Coefficients}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{print}\NormalTok{(reg\_fund2.coef\_)}
+\BuiltInTok{print}\NormalTok{(reg\_fund2.intercept\_)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[0.94373491]]
+[-0.00015386]
+\end{verbatim}
+
+\textbf{Check the \(R^2\)}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reg\_fund2.score(df\_ret[[}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{]], df\_ret[[}\StringTok{\textquotesingle{}fund\_1\textquotesingle{}}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.7823936517887883
+\end{verbatim}
+
+\textbf{Plot the Fitted Regression Line}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{xfit }\OperatorTok{=}\NormalTok{ np.linspace(}\OperatorTok{{-}}\FloatTok{0.05}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\DecValTok{100}\NormalTok{)           }\CommentTok{\# range of line}
+\NormalTok{yfit }\OperatorTok{=}\NormalTok{ reg\_fund2.predict(xfit[:, np.newaxis])  }\CommentTok{\# model values in range}
+
+
+\NormalTok{df\_ret }\OperatorTok{\textbackslash{}}
+\NormalTok{    [df\_ret.trade\_date }\OperatorTok{\textgreater{}}\NormalTok{ dt\_start] }\OperatorTok{\textbackslash{}}
+\NormalTok{    .plot.scatter(}\StringTok{\textquotesingle{}benchmark\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}fund\_2\textquotesingle{}}\NormalTok{, c}\OperatorTok{=}\StringTok{\textquotesingle{}k\textquotesingle{}}\NormalTok{, figsize}\OperatorTok{=}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{))}\OperatorTok{;}
+\NormalTok{plt.plot(xfit, yfit)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+/home/pritam/.local/lib/python3.10/site-packages/sklearn/base.py:439: UserWarning: X does not have valid feature names, but LinearRegression was fitted with feature names
+  warnings.warn(
+\end{verbatim}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/17_regression_mutual_fund/regression_mutual_fund_files/figure-pdf/cell-49-output-2.png}
+
+}
+
+\end{figure}
+
 \hypertarget{volatility-forecasting-close-to-close-estimator}{%
 \chapter{Volatility Forecasting: Close-to-Close
 Estimator}\label{volatility-forecasting-close-to-close-estimator}}
@@ -9395,8 +10802,8 @@ Sepp's results for \emph{weekly} volatility forecasts for SPY (see pp
 For the related project you will be asked to implement code for other
 estimators and a number of ETFs.
 
-\hypertarget{loading-packages-7}{%
-\section{Loading Packages}\label{loading-packages-7}}
+\hypertarget{loading-packages-8}{%
+\section{Loading Packages}\label{loading-packages-8}}
 
 Let's begin by loading the packages that we will need.
 

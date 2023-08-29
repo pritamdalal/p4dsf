@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 book:
-  title: "Python for Data Analysis in Finance"
+  title: "Python for Data Science in Finance"
   author: "Pritam Dalal"
   chapters:
     - index.qmd
@@ -29,6 +29,7 @@ book:
       chapters:
       - chapters/15_option_replication/option_replication.ipynb
       - chapters/16_trend_following/trend_following.ipynb
+      - chapters/17_regression_mutual_fund/regression_mutual_fund.ipynb
       - chapters/18_close_to_close/close_to_close.ipynb
     - references.qmd
 
