@@ -28,7 +28,8 @@ book:
     - part: parts/03_applications/applications.ipynb
       chapters:
       - chapters/15_option_replication/option_replication.ipynb
-      - chapters/16_close_to_close/close_to_close.ipynb
+      - chapters/16_trend_following/trend_following.ipynb
+      - chapters/18_close_to_close/close_to_close.ipynb
     - references.qmd
 
 bibliography: references.bib
