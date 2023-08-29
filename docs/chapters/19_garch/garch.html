@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 18&nbsp; Volatility Forecasting: Close-to-Close Estimator</title>
+<title>Python for Data Science in Finance - 19&nbsp; Volatility Forecasting: GARCH</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../chapters/19_garch/garch.html" rel="next">
-<link href="../../chapters/17_regression_mutual_fund/regression_mutual_fund.html" rel="prev">
+<link href="../../references.html" rel="next">
+<link href="../../chapters/18_close_to_close/close_to_close.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/03_applications/applications.html">Applications</a></li><li class="breadcrumb-item"><a href="../../chapters/18_close_to_close/close_to_close.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/03_applications/applications.html">Applications</a></li><li class="breadcrumb-item"><a href="../../chapters/19_garch/garch.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -279,13 +279,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/18_close_to_close/close_to_close.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../chapters/18_close_to_close/close_to_close.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/19_garch/garch.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/19_garch/garch.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span></a>
   </div>
 </li>
@@ -307,12 +307,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">18.1</span> Loading Packages</a></li>
-  <li><a href="#reading-in-spy-data-from-yahoo-finance" id="toc-reading-in-spy-data-from-yahoo-finance" class="nav-link" data-scroll-target="#reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">18.2</span> Reading-In SPY Data From Yahoo Finance</a></li>
-  <li><a href="#calculating-daily-returns-realized-volatility" id="toc-calculating-daily-returns-realized-volatility" class="nav-link" data-scroll-target="#calculating-daily-returns-realized-volatility"><span class="header-section-number">18.3</span> Calculating Daily Returns &amp; Realized Volatility</a></li>
-  <li><a href="#organizing-dates-for-backtest" id="toc-organizing-dates-for-backtest" class="nav-link" data-scroll-target="#organizing-dates-for-backtest"><span class="header-section-number">18.4</span> Organizing Dates for Backtest</a></li>
-  <li><a href="#calculating-weekly-realized-volatility" id="toc-calculating-weekly-realized-volatility" class="nav-link" data-scroll-target="#calculating-weekly-realized-volatility"><span class="header-section-number">18.5</span> Calculating Weekly Realized Volatility</a></li>
-  <li><a href="#close-to-close-estimator" id="toc-close-to-close-estimator" class="nav-link" data-scroll-target="#close-to-close-estimator"><span class="header-section-number">18.6</span> Close-to-Close Estimator</a></li>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">19.1</span> Loading Packages</a></li>
+  <li><a href="#spy-data-for-backtest-period" id="toc-spy-data-for-backtest-period" class="nav-link" data-scroll-target="#spy-data-for-backtest-period"><span class="header-section-number">19.2</span> SPY Data for Backtest Period</a></li>
+  <li><a href="#organizing-dates" id="toc-organizing-dates" class="nav-link" data-scroll-target="#organizing-dates"><span class="header-section-number">19.3</span> Organizing Dates</a></li>
+  <li><a href="#calculating-realized-volatility" id="toc-calculating-realized-volatility" class="nav-link" data-scroll-target="#calculating-realized-volatility"><span class="header-section-number">19.4</span> Calculating Realized Volatility</a></li>
+  <li><a href="#garch-training-data" id="toc-garch-training-data" class="nav-link" data-scroll-target="#garch-training-data"><span class="header-section-number">19.5</span> GARCH Training Data</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">19.6</span> References</a></li>
   </ul>
 </nav>
     </div>
@@ -321,7 +321,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></h1>
+<h1 class="title"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></h1>
 </div>
 
 
@@ -336,29 +336,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>This material is closely related to a the following white papers:</p>
-<ol type="1">
-<li><p><em>Volatility Modeling and Trading</em> - Artur Sepp, 2016</p></li>
-<li><p><em>Measuring Historic Volatility</em> - Colin Bennet &amp; Miguel Gil, 2012</p></li>
-</ol>
-<p>Our main objective will be to implement the code for the close-to-close volatility estimator. To test our work, we will attempt to replicate Sepp’s results for <em>weekly</em> volatility forecasts for SPY (see pp 38-43).</p>
-<p>For the related project you will be asked to implement code for other estimators and a number of ETFs.</p>
-<section id="loading-packages" class="level2" data-number="18.1">
-<h2 data-number="18.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">18.1</span> Loading Packages</h2>
-<p>Let’s begin by loading the packages that we will need.</p>
+<p>Financial asset returns exhibit volatility clustering (also called volatility regimes), as well as mean reversion. This means that high volatility periods beget high volatility periods, low volatility periods beget low volatility periods, and that volatility doesn’t not converge to zero, or diverge to infinity. GARCH (generalized autoregressive conditional heteroskedasticity) time series models are popular for capturing these characteristics.</p>
+<p>This chapter demonstrates code that implements a GARCH(1, 1) model using the <strong>arch</strong> package. We will view GARCH as a volatility prediction mechanism, and our interest will be on empirically determining the performance of GARCH relative to other prediction techniques (see the associated project).</p>
+<p>In this chapter we will be focused exclusively on implementation, and thus we won’t be digging into the mathematical or statistical details of GARCH models (if you are interested, check out the references at the end). Specifically, we will generate some GARCH forecasts of SPY weekly volatility for the backtest period 1/1/2005 - 3/30/2016, and see how our results compare to Sepp 2016 (<em>Volatility Modeling and Trading</em>, pg 57).</p>
+<section id="loading-packages" class="level2" data-number="19.1">
+<h2 data-number="19.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">19.1</span> Loading Packages</h2>
+<p>We begin by loading the packages and functions that we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> arch <span class="im">import</span> arch_model</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="reading-in-spy-data-from-yahoo-finance" class="level2" data-number="18.2">
-<h2 data-number="18.2" class="anchored" data-anchor-id="reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">18.2</span> Reading-In SPY Data From Yahoo Finance</h2>
-<p>Sepp’s analysis covers data starting from 1/1/2005 and ending on 4/2/2016. Let’s grab these SPY prices from Yahoo Finance using <strong>pandas_datareader</strong>.</p>
+<section id="spy-data-for-backtest-period" class="level2" data-number="19.2">
+<h2 data-number="19.2" class="anchored" data-anchor-id="spy-data-for-backtest-period"><span class="header-section-number">19.2</span> SPY Data for Backtest Period</h2>
+<p>Next, let’s read-in the data for the backtest period.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
@@ -395,7 +392,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>121.660004</td>
 <td>120.800003</td>
 <td>120.870003</td>
-<td>84.657806</td>
+<td>84.657822</td>
 <td>28648800</td>
 </tr>
 <tr class="even">
@@ -406,7 +403,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>121.760002</td>
 <td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
+<td>84.258591</td>
 <td>55748000</td>
 </tr>
 <tr class="odd">
@@ -417,7 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>120.540001</td>
 <td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
+<td>83.229019</td>
 <td>69167600</td>
 </tr>
 <tr class="even">
@@ -428,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>119.250000</td>
 <td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
+<td>82.654678</td>
 <td>65667300</td>
 </tr>
 <tr class="odd">
@@ -439,7 +436,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>119.150002</td>
 <td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
+<td>83.074913</td>
 <td>47814700</td>
 </tr>
 <tr class="even">
@@ -461,7 +458,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>203.860001</td>
 <td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
+<td>178.770111</td>
 <td>62408200</td>
 </tr>
 <tr class="even">
@@ -483,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>206.869995</td>
 <td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
+<td>181.215408</td>
 <td>86365300</td>
 </tr>
 <tr class="even">
@@ -505,7 +502,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>207.139999</td>
 <td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
+<td>182.007034</td>
 <td>114423500</td>
 </tr>
 </tbody>
@@ -515,13 +512,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-</section>
-<section id="calculating-daily-returns-realized-volatility" class="level2" data-number="18.3">
-<h2 data-number="18.3" class="anchored" data-anchor-id="calculating-daily-returns-realized-volatility"><span class="header-section-number">18.3</span> Calculating Daily Returns &amp; Realized Volatility</h2>
-<p>The close-to-close estimator is a function of daily returns so let’s calculate those now. In particular, we will use log-returns.</p>
+<p>We will need the daily log returns, so let’s calculate those now.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'close'</span>]).diff()</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="dv">1</span>:].reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'adj_close'</span>]).diff()</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.dropna().reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -551,7 +545,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>121.760002</td>
 <td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
+<td>84.258591</td>
 <td>55748000</td>
 <td>-0.004727</td>
 </tr>
@@ -563,9 +557,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>120.540001</td>
 <td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
+<td>83.229019</td>
 <td>69167600</td>
-<td>-0.012295</td>
+<td>-0.012294</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -575,7 +569,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>119.250000</td>
 <td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
+<td>82.654678</td>
 <td>65667300</td>
 <td>-0.006925</td>
 </tr>
@@ -587,7 +581,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>119.150002</td>
 <td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
+<td>83.074913</td>
 <td>47814700</td>
 <td>0.005071</td>
 </tr>
@@ -599,9 +593,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>119.230003</td>
 <td>118.129997</td>
 <td>118.440002</td>
-<td>82.955849</td>
+<td>82.955826</td>
 <td>55847700</td>
-<td>-0.001434</td>
+<td>-0.001435</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -623,7 +617,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>203.860001</td>
 <td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
+<td>178.770111</td>
 <td>62408200</td>
 <td>0.000591</td>
 </tr>
@@ -647,7 +641,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>206.869995</td>
 <td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
+<td>181.215408</td>
 <td>86365300</td>
 <td>0.004378</td>
 </tr>
@@ -671,7 +665,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>207.139999</td>
 <td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
+<td>182.007034</td>
 <td>114423500</td>
 <td>0.006789</td>
 </tr>
@@ -683,49 +677,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="organizing-dates-for-backtest" class="level2" data-number="18.4">
-<h2 data-number="18.4" class="anchored" data-anchor-id="organizing-dates-for-backtest"><span class="header-section-number">18.4</span> Organizing Dates for Backtest</h2>
-<p>Organizing dates is an important step in a historical analysis.</p>
-<p>We are performing a weekly analysis, which means that in later steps we will performing aggregation calculations of daily calculations grouped into weeks. Therefore, we will need to add a column to <code>df_spy</code> that will allow us to group by weeks.</p>
-<p>The key to our approach will be to use the <code>.dt.weekday</code> attribute of the <code>trade_date</code> columns. In the following code, the variable <code>weekday</code> is a <code>Series</code> that contains the weekday associated with each date. Notice that Monday is encoded by <code>0</code> and Friday is encoded by <code>4</code>.</p>
+<section id="organizing-dates" class="level2" data-number="19.3">
+<h2 data-number="19.3" class="anchored" data-anchor-id="organizing-dates"><span class="header-section-number">19.3</span> Organizing Dates</h2>
+<p>Let’s organize our backtest period into weeks (Monday - Friday), since our analysis is of weekly volatility predictions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>weekday <span class="op">=</span> df_spy[<span class="st">'trade_date'</span>].dt.weekday</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>weekday</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>0       0
-1       1
-2       2
-3       3
-4       4
-       ..
-2826    0
-2827    1
-2828    2
-2829    3
-2830    4
-Name: trade_date, Length: 2831, dtype: int32</code></pre>
-</div>
-</div>
-<p>The following code is a simple <code>for</code>-loop that has the effect of creating a week-number for each week.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>week_num <span class="op">=</span> []</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ix_week <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>week_num.append(ix_week)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(weekday) <span class="op">-</span> <span class="dv">1</span>):</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    prev_day <span class="op">=</span> weekday[ix]</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    curr_day <span class="op">=</span> weekday[ix <span class="op">+</span> <span class="dv">1</span>]</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> curr_day <span class="op">&lt;</span> prev_day:</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        ix_week <span class="op">=</span> ix_week <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    week_num.append(ix_week)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>np.array(week_num) <span class="co"># I use the array function simply because it looks better when it prints</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>array([  0,   0,   0, ..., 586, 586, 586])</code></pre>
-</div>
-</div>
-<p>Let’s now insert the week numbers into <code>df_spy</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">2</span>, <span class="st">'week_num'</span>, week_num)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adding a new columns consisting of the weekday number for each trade_date </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>weekday <span class="op">=</span> df_spy[<span class="st">'trade_date'</span>].dt.weekday</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># assigning a week number to each trade-date; M-F is all the same week</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>week_num <span class="op">=</span> []</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>ix_week <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>week_num.append(ix_week)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(weekday) <span class="op">-</span> <span class="dv">1</span>):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    prev_day <span class="op">=</span> weekday.iloc[ix]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    curr_day <span class="op">=</span> weekday.iloc[ix <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> curr_day <span class="op">&lt;</span> prev_day:</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        ix_week <span class="op">=</span> ix_week <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    week_num.append(ix_week)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># inserting the week-number column into df_spy</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">2</span>, <span class="st">'week_num'</span>, week_num)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -756,7 +728,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>121.760002</td>
 <td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
+<td>84.258591</td>
 <td>55748000</td>
 <td>-0.004727</td>
 </tr>
@@ -769,9 +741,9 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>120.540001</td>
 <td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
+<td>83.229019</td>
 <td>69167600</td>
-<td>-0.012295</td>
+<td>-0.012294</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -782,7 +754,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>119.250000</td>
 <td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
+<td>82.654678</td>
 <td>65667300</td>
 <td>-0.006925</td>
 </tr>
@@ -795,7 +767,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>119.150002</td>
 <td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
+<td>83.074913</td>
 <td>47814700</td>
 <td>0.005071</td>
 </tr>
@@ -808,9 +780,9 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>119.230003</td>
 <td>118.129997</td>
 <td>118.440002</td>
-<td>82.955849</td>
+<td>82.955826</td>
 <td>55847700</td>
-<td>-0.001434</td>
+<td>-0.001435</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -834,7 +806,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>203.860001</td>
 <td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
+<td>178.770111</td>
 <td>62408200</td>
 <td>0.000591</td>
 </tr>
@@ -860,7 +832,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>206.869995</td>
 <td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
+<td>181.215408</td>
 <td>86365300</td>
 <td>0.004378</td>
 </tr>
@@ -886,7 +858,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>207.139999</td>
 <td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
+<td>182.007034</td>
 <td>114423500</td>
 <td>0.006789</td>
 </tr>
@@ -897,25 +869,16 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 </div>
-<hr>
-<p><strong>Discussion Question:</strong> The <code>pandas.Series.dt.week</code> attribute gives the <em>week-of-the-year</em> for a give trade-date. My initial idea was to use <code>.dt.week</code> and <code>dt.year</code> for my grouping, but I ran into an issue. Can you think what the issue was?</p>
+<p>The following code generates a <code>DataFrame</code> that contains the start-date and end-date for each week.</p>
 <div class="cell">
-<details>
-<summary>Solution</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; Weeks at the beginning and end of the year may be partial weeks.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<hr>
-<p>We can now use <code>.groupby()</code> to calculate the starting and ending dates for each week.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_start_end <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    df_spy.groupby([<span class="st">'week_num'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'trade_date'</span>]].agg([<span class="bu">min</span>, <span class="bu">max</span>])[<span class="st">'trade_date'</span>]</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'min'</span>:<span class="st">'week_start'</span>, <span class="st">'max'</span>:<span class="st">'week_end'</span>})</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'index'</span>:<span class="st">'week_num'</span>})</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>df_start_end</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_start_end <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    df_spy.groupby([<span class="st">'week_num'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'trade_date'</span>]].agg([<span class="bu">min</span>, <span class="bu">max</span>])[<span class="st">'trade_date'</span>]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'min'</span>:<span class="st">'week_start'</span>, <span class="st">'max'</span>:<span class="st">'week_end'</span>})</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'index'</span>:<span class="st">'week_num'</span>})</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df_start_end</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1003,10 +966,10 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 </div>
-<p>Let’s merge these columns into <code>df_spy</code>.</p>
+<p>And finally let’s join the weekly start/end dates into <code>df_spy</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.merge(df_start_end)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.merge(df_start_end)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1039,7 +1002,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>121.760002</td>
 <td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
+<td>84.258591</td>
 <td>55748000</td>
 <td>-0.004727</td>
 <td>2005-01-03</td>
@@ -1054,9 +1017,9 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>120.540001</td>
 <td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
+<td>83.229019</td>
 <td>69167600</td>
-<td>-0.012295</td>
+<td>-0.012294</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
 </tr>
@@ -1069,7 +1032,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>119.250000</td>
 <td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
+<td>82.654678</td>
 <td>65667300</td>
 <td>-0.006925</td>
 <td>2005-01-03</td>
@@ -1084,7 +1047,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>119.150002</td>
 <td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
+<td>83.074913</td>
 <td>47814700</td>
 <td>0.005071</td>
 <td>2005-01-03</td>
@@ -1099,9 +1062,9 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>119.230003</td>
 <td>118.129997</td>
 <td>118.440002</td>
-<td>82.955849</td>
+<td>82.955826</td>
 <td>55847700</td>
-<td>-0.001434</td>
+<td>-0.001435</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
 </tr>
@@ -1129,7 +1092,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>203.860001</td>
 <td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
+<td>178.770111</td>
 <td>62408200</td>
 <td>0.000591</td>
 <td>2016-03-28</td>
@@ -1159,7 +1122,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>206.869995</td>
 <td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
+<td>181.215408</td>
 <td>86365300</td>
 <td>0.004378</td>
 <td>2016-03-28</td>
@@ -1189,7 +1152,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>207.139999</td>
 <td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
+<td>182.007034</td>
 <td>114423500</td>
 <td>0.006789</td>
 <td>2016-03-28</td>
@@ -1203,19 +1166,18 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 </section>
-<section id="calculating-weekly-realized-volatility" class="level2" data-number="18.5">
-<h2 data-number="18.5" class="anchored" data-anchor-id="calculating-weekly-realized-volatility"><span class="header-section-number">18.5</span> Calculating Weekly Realized Volatility</h2>
-<p>Now that we have a <code>week_num</code> associated with each <code>trade_date</code>, we can use <code>.groupby()</code> to calculate the realized volatility.</p>
-<p>These weekly realized volatilities are the labels that we will be predicting later in our analysis.</p>
+<section id="calculating-realized-volatility" class="level2" data-number="19.4">
+<h2 data-number="19.4" class="anchored" data-anchor-id="calculating-realized-volatility"><span class="header-section-number">19.4</span> Calculating Realized Volatility</h2>
+<p>This code cell calculates the realized volatility for each week. In machine learning parlance, these are the labels that we are trying to predict.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]].agg(<span class="kw">lambda</span> x: np.std(x) <span class="op">*</span> np.sqrt(<span class="dv">252</span>))</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'realized_vol'</span>})</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> df_realized[<span class="dv">1</span>:]</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>df_realized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]].agg(<span class="kw">lambda</span> x: np.std(x) <span class="op">*</span> np.sqrt(<span class="dv">252</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'realized_vol'</span>})</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> df_realized[<span class="dv">1</span>:]</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>df_realized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1236,35 +1198,35 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>1</td>
 <td>2005-01-10</td>
 <td>2005-01-14</td>
-<td>0.093295</td>
+<td>0.093297</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2</td>
 <td>2005-01-18</td>
 <td>2005-01-21</td>
-<td>0.126557</td>
+<td>0.126558</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3</td>
 <td>3</td>
 <td>2005-01-24</td>
 <td>2005-01-28</td>
-<td>0.029753</td>
+<td>0.029752</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">4</td>
 <td>4</td>
 <td>2005-01-31</td>
 <td>2005-02-04</td>
-<td>0.069583</td>
+<td>0.069585</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5</td>
 <td>5</td>
 <td>2005-02-07</td>
 <td>2005-02-11</td>
-<td>0.084567</td>
+<td>0.084566</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -1278,21 +1240,21 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>582</td>
 <td>2016-02-29</td>
 <td>2016-03-04</td>
-<td>0.159055</td>
+<td>0.159052</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">583</td>
 <td>583</td>
 <td>2016-03-07</td>
 <td>2016-03-11</td>
-<td>0.137591</td>
+<td>0.137589</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">584</td>
 <td>584</td>
 <td>2016-03-14</td>
 <td>2016-03-18</td>
-<td>0.057861</td>
+<td>0.054367</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">585</td>
@@ -1306,7 +1268,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>586</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
-<td>0.066437</td>
+<td>0.066439</td>
 </tr>
 </tbody>
 </table>
@@ -1316,27 +1278,648 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 </section>
-<section id="close-to-close-estimator" class="level2" data-number="18.6">
-<h2 data-number="18.6" class="anchored" data-anchor-id="close-to-close-estimator"><span class="header-section-number">18.6</span> Close-to-Close Estimator</h2>
-<p>Let’s now implement the close-to-close estimator.</p>
+<section id="garch-training-data" class="level2" data-number="19.5">
+<h2 data-number="19.5" class="anchored" data-anchor-id="garch-training-data"><span class="header-section-number">19.5</span> GARCH Training Data</h2>
+<p>A practical rule of thumb for fitting garch models to equity index returns is that you should use 5-10 years worth of data. In this tutorial we will use 10-years worth.</p>
+<p>Let’s begin by grabbing all the data that we will need for fitting.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close(r):</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> r.shape[<span class="dv">0</span>]</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    r_bar <span class="op">=</span> r.mean()</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    vol <span class="op">=</span> np.sqrt((<span class="dv">1</span> <span class="op">/</span> (T <span class="op">-</span> <span class="dv">1</span>)) <span class="op">*</span> ((r <span class="op">-</span> r_bar) <span class="op">**</span> <span class="dv">2</span>).<span class="bu">sum</span>()) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(vol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'1994-12-30'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_train.columns <span class="op">=</span> df_train.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df_train.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>df_train.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<p>Notice that <code>close_to_close()</code> is an aggregation function that takes in an array of daily returns and returns back a number. In order to calculate weekly estimates we use <code>close_to_close()</code> as the aggregation function applied to a <code>.groupby()</code>.</p>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>1994-12-30</td>
+<td>46.203125</td>
+<td>46.250000</td>
+<td>45.562500</td>
+<td>45.562500</td>
+<td>27.317329</td>
+<td>2209500</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>1995-01-03</td>
+<td>45.703125</td>
+<td>45.843750</td>
+<td>45.687500</td>
+<td>45.781250</td>
+<td>27.448469</td>
+<td>324300</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>1995-01-04</td>
+<td>45.984375</td>
+<td>46.000000</td>
+<td>45.750000</td>
+<td>46.000000</td>
+<td>27.579622</td>
+<td>351800</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>1995-01-05</td>
+<td>46.031250</td>
+<td>46.109375</td>
+<td>45.953125</td>
+<td>46.000000</td>
+<td>27.579622</td>
+<td>89800</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>1995-01-06</td>
+<td>46.093750</td>
+<td>46.250000</td>
+<td>45.906250</td>
+<td>46.046875</td>
+<td>27.607731</td>
+<td>448400</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5346</td>
+<td>SPY</td>
+<td>2016-03-28</td>
+<td>203.610001</td>
+<td>203.860001</td>
+<td>202.710007</td>
+<td>203.240005</td>
+<td>178.770142</td>
+<td>62408200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5347</td>
+<td>SPY</td>
+<td>2016-03-29</td>
+<td>202.759995</td>
+<td>205.250000</td>
+<td>202.399994</td>
+<td>205.119995</td>
+<td>180.423767</td>
+<td>92922900</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5348</td>
+<td>SPY</td>
+<td>2016-03-30</td>
+<td>206.300003</td>
+<td>206.869995</td>
+<td>205.589996</td>
+<td>206.020004</td>
+<td>181.215424</td>
+<td>86365300</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5349</td>
+<td>SPY</td>
+<td>2016-03-31</td>
+<td>205.910004</td>
+<td>206.410004</td>
+<td>205.330002</td>
+<td>205.520004</td>
+<td>180.775589</td>
+<td>94584100</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5350</td>
+<td>SPY</td>
+<td>2016-04-01</td>
+<td>204.350006</td>
+<td>207.139999</td>
+<td>203.979996</td>
+<td>206.919998</td>
+<td>182.007050</td>
+<td>114423500</td>
+</tr>
+</tbody>
+</table>
+
+<p>5351 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<p>Next we calculate the daily returns.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_close_to_close <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]]</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        .agg(close_to_close)</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'close_to_close'</span>})</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>df_close_to_close <span class="op">=</span> df_close_to_close[<span class="dv">0</span>:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>df_close_to_close</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_train[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_train[<span class="st">'adj_close'</span>]).diff()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df_train.dropna(inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_train.reset_index(drop <span class="op">=</span> <span class="va">True</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">low</th>
+<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">volume</th>
+<th data-quarto-table-cell-role="th">dly_ret</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>SPY</td>
+<td>1995-01-03</td>
+<td>45.703125</td>
+<td>45.843750</td>
+<td>45.687500</td>
+<td>45.781250</td>
+<td>27.448469</td>
+<td>324300</td>
+<td>0.004789</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>SPY</td>
+<td>1995-01-04</td>
+<td>45.984375</td>
+<td>46.000000</td>
+<td>45.750000</td>
+<td>46.000000</td>
+<td>27.579622</td>
+<td>351800</td>
+<td>0.004767</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>SPY</td>
+<td>1995-01-05</td>
+<td>46.031250</td>
+<td>46.109375</td>
+<td>45.953125</td>
+<td>46.000000</td>
+<td>27.579622</td>
+<td>89800</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>SPY</td>
+<td>1995-01-06</td>
+<td>46.093750</td>
+<td>46.250000</td>
+<td>45.906250</td>
+<td>46.046875</td>
+<td>27.607731</td>
+<td>448400</td>
+<td>0.001019</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>SPY</td>
+<td>1995-01-09</td>
+<td>46.031250</td>
+<td>46.093750</td>
+<td>46.000000</td>
+<td>46.093750</td>
+<td>27.635849</td>
+<td>36800</td>
+<td>0.001018</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5345</td>
+<td>SPY</td>
+<td>2016-03-28</td>
+<td>203.610001</td>
+<td>203.860001</td>
+<td>202.710007</td>
+<td>203.240005</td>
+<td>178.770142</td>
+<td>62408200</td>
+<td>0.000591</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5346</td>
+<td>SPY</td>
+<td>2016-03-29</td>
+<td>202.759995</td>
+<td>205.250000</td>
+<td>202.399994</td>
+<td>205.119995</td>
+<td>180.423767</td>
+<td>92922900</td>
+<td>0.009207</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5347</td>
+<td>SPY</td>
+<td>2016-03-30</td>
+<td>206.300003</td>
+<td>206.869995</td>
+<td>205.589996</td>
+<td>206.020004</td>
+<td>181.215424</td>
+<td>86365300</td>
+<td>0.004378</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5348</td>
+<td>SPY</td>
+<td>2016-03-31</td>
+<td>205.910004</td>
+<td>206.410004</td>
+<td>205.330002</td>
+<td>205.520004</td>
+<td>180.775589</td>
+<td>94584100</td>
+<td>-0.002430</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">5349</td>
+<td>SPY</td>
+<td>2016-04-01</td>
+<td>204.350006</td>
+<td>207.139999</td>
+<td>203.979996</td>
+<td>206.919998</td>
+<td>182.007050</td>
+<td>114423500</td>
+<td>0.006789</td>
+</tr>
+</tbody>
+</table>
+
+<p>5350 rows × 9 columns</p>
+</div>
+</div>
+</div>
+<p>The GARCH fitting process has better convergence if we express the returns as percents rather than decimals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ser_returns <span class="op">=</span> df_train[<span class="st">'dly_ret'</span>] <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ser_returns.index <span class="op">=</span> df_train[<span class="st">'trade_date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we instantiate the model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> arch_model(ser_returns, vol <span class="op">=</span> <span class="st">'Garch'</span>, p <span class="op">=</span> <span class="dv">1</span>, o <span class="op">=</span> <span class="dv">0</span>, q <span class="op">=</span> <span class="dv">1</span>, dist <span class="op">=</span> <span class="st">'Normal'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> model.fit(update_freq <span class="op">=</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration:      5,   Func. Count:     37,   Neg. LLF: 7624.3614767949375
+Iteration:     10,   Func. Count:     65,   Neg. LLF: 7598.333575044246
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: 7598.333533861198
+            Iterations: 12
+            Function evaluations: 75
+            Gradient evaluations: 12</code></pre>
+</div>
+</div>
+<p>The following code loops through and performs the fitting for each day. It takes a while to run, so I’ll leave it to you to run it and examine on your own time. See the package documentation linked below for details - you will probably need to read those in order to complete the associated project.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ix_start = df_train.query('trade_date == trade_date.min()').index[0]</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ix_end = df_train.query('trade_date == "2004-12-31"').index[0]</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># forecasts = {}</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># for ix in range(2518, 5349):</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     sys.stdout.write('.')</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     sys.stdout.flush()</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     result = model.fit(first_obs = (ix - 2518), last_obs = ix, disp = 'off')</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#     temp = result.forecast(horizon = 5, reindex = True).variance</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     fcast = temp.iloc[ix - 1]</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#     forecasts[fcast.name] = fcast</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co"># print()</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># df_forecast = pd.DataFrame(pd.DataFrame(forecasts).T)</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># df_forecast = df_forecast.reset_index().rename(columns = {'index':'trade_date'})</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># df_forecast</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># # writing variance estimates to csv-file</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># df_forecast.to_csv('variance_forecast.csv', index = False)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The above code saves the variance estimates to a CSV file, and we will read those in now.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_forecast <span class="op">=</span> pd.read_csv(<span class="st">'variance_forecast.csv'</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df_forecast[<span class="st">'trade_date'</span>] <span class="op">=</span> pd.to_datetime(df_forecast[<span class="st">'trade_date'</span>])</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df_forecast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">h.1</th>
+<th data-quarto-table-cell-role="th">h.2</th>
+<th data-quarto-table-cell-role="th">h.3</th>
+<th data-quarto-table-cell-role="th">h.4</th>
+<th data-quarto-table-cell-role="th">h.5</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2004-12-30</td>
+<td>0.312152</td>
+<td>0.320800</td>
+<td>0.329415</td>
+<td>0.337999</td>
+<td>0.346551</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2004-12-31</td>
+<td>0.303715</td>
+<td>0.312426</td>
+<td>0.321104</td>
+<td>0.329750</td>
+<td>0.338364</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2005-01-03</td>
+<td>0.313479</td>
+<td>0.322231</td>
+<td>0.330949</td>
+<td>0.339635</td>
+<td>0.348287</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2005-01-04</td>
+<td>0.433124</td>
+<td>0.441654</td>
+<td>0.450148</td>
+<td>0.458607</td>
+<td>0.467031</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2005-01-05</td>
+<td>0.453912</td>
+<td>0.462365</td>
+<td>0.470782</td>
+<td>0.479165</td>
+<td>0.487513</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2826</td>
+<td>2016-03-23</td>
+<td>0.578104</td>
+<td>0.593060</td>
+<td>0.607729</td>
+<td>0.622115</td>
+<td>0.636224</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2827</td>
+<td>2016-03-24</td>
+<td>0.527753</td>
+<td>0.543716</td>
+<td>0.559369</td>
+<td>0.574720</td>
+<td>0.589773</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2828</td>
+<td>2016-03-28</td>
+<td>0.482408</td>
+<td>0.499278</td>
+<td>0.515820</td>
+<td>0.532041</td>
+<td>0.547947</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2829</td>
+<td>2016-03-29</td>
+<td>0.526633</td>
+<td>0.542651</td>
+<td>0.558358</td>
+<td>0.573760</td>
+<td>0.588863</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2830</td>
+<td>2016-03-30</td>
+<td>0.496876</td>
+<td>0.513525</td>
+<td>0.529849</td>
+<td>0.545856</td>
+<td>0.561551</td>
+</tr>
+</tbody>
+</table>
+
+<p>2831 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>The columns of the <code>df_forecast</code> are the one day variance estimates for the next five days. In order to calculate a 5-day volatility forecasts we will add up these columns, divide by 100 (the variances are stated as percentages), and then take a square-root.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_forecast[<span class="st">'volatility_forecast'</span>] <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    np.sqrt((df_forecast[<span class="st">'h.1'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.2'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.3'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.4'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.5'</span>]) <span class="op">/</span> <span class="dv">100</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>df_forecast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">h.1</th>
+<th data-quarto-table-cell-role="th">h.2</th>
+<th data-quarto-table-cell-role="th">h.3</th>
+<th data-quarto-table-cell-role="th">h.4</th>
+<th data-quarto-table-cell-role="th">h.5</th>
+<th data-quarto-table-cell-role="th">volatility_forecast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2004-12-30</td>
+<td>0.312152</td>
+<td>0.320800</td>
+<td>0.329415</td>
+<td>0.337999</td>
+<td>0.346551</td>
+<td>0.128332</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2004-12-31</td>
+<td>0.303715</td>
+<td>0.312426</td>
+<td>0.321104</td>
+<td>0.329750</td>
+<td>0.338364</td>
+<td>0.126703</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2005-01-03</td>
+<td>0.313479</td>
+<td>0.322231</td>
+<td>0.330949</td>
+<td>0.339635</td>
+<td>0.348287</td>
+<td>0.128630</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2005-01-04</td>
+<td>0.433124</td>
+<td>0.441654</td>
+<td>0.450148</td>
+<td>0.458607</td>
+<td>0.467031</td>
+<td>0.150019</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2005-01-05</td>
+<td>0.453912</td>
+<td>0.462365</td>
+<td>0.470782</td>
+<td>0.479165</td>
+<td>0.487513</td>
+<td>0.153419</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2826</td>
+<td>2016-03-23</td>
+<td>0.578104</td>
+<td>0.593060</td>
+<td>0.607729</td>
+<td>0.622115</td>
+<td>0.636224</td>
+<td>0.174277</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2827</td>
+<td>2016-03-24</td>
+<td>0.527753</td>
+<td>0.543716</td>
+<td>0.559369</td>
+<td>0.574720</td>
+<td>0.589773</td>
+<td>0.167192</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2828</td>
+<td>2016-03-28</td>
+<td>0.482408</td>
+<td>0.499278</td>
+<td>0.515820</td>
+<td>0.532041</td>
+<td>0.547947</td>
+<td>0.160546</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2829</td>
+<td>2016-03-29</td>
+<td>0.526633</td>
+<td>0.542651</td>
+<td>0.558358</td>
+<td>0.573760</td>
+<td>0.588863</td>
+<td>0.167041</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2830</td>
+<td>2016-03-30</td>
+<td>0.496876</td>
+<td>0.513525</td>
+<td>0.529849</td>
+<td>0.545856</td>
+<td>0.561551</td>
+<td>0.162716</td>
+</tr>
+</tbody>
+</table>
+
+<p>2831 rows × 7 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s plot these forecasts to make sure that they look reasonable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_forecast.plot(x <span class="op">=</span> <span class="st">'trade_date'</span>, y <span class="op">=</span> <span class="st">'volatility_forecast'</span>, figsize <span class="op">=</span> (<span class="dv">12</span>, <span class="dv">6</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="garch_files/figure-html/cell-16-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We actually have far more forecasts than we need, because we calculated forecasts for each day. We can isolate the ones in question by using a join.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_start_end.merge(df_forecast[[<span class="st">'trade_date'</span>, <span class="st">'volatility_forecast'</span>]], left_on <span class="op">=</span> <span class="st">'week_end'</span>, right_on <span class="op">=</span> <span class="st">'trade_date'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 
@@ -1348,7 +1931,8 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <th data-quarto-table-cell-role="th">week_num</th>
 <th data-quarto-table-cell-role="th">week_start</th>
 <th data-quarto-table-cell-role="th">week_end</th>
-<th data-quarto-table-cell-role="th">close_to_close</th>
+<th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th">volatility_forecast</th>
 </tr>
 </thead>
 <tbody>
@@ -1357,38 +1941,44 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>0</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
-<td>0.102492</td>
+<td>2005-01-07</td>
+<td>0.147481</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>1</td>
 <td>2005-01-10</td>
 <td>2005-01-14</td>
-<td>0.104307</td>
+<td>2005-01-14</td>
+<td>0.150795</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2</td>
 <td>2005-01-18</td>
 <td>2005-01-21</td>
-<td>0.146136</td>
+<td>2005-01-21</td>
+<td>0.170141</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>3</td>
 <td>2005-01-24</td>
 <td>2005-01-28</td>
-<td>0.033265</td>
+<td>2005-01-28</td>
+<td>0.147867</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>4</td>
 <td>2005-01-31</td>
 <td>2005-02-04</td>
-<td>0.077796</td>
+<td>2005-02-04</td>
+<td>0.151963</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1399,239 +1989,93 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>581</td>
 <td>2016-02-22</td>
 <td>2016-02-26</td>
-<td>0.175394</td>
+<td>2016-02-26</td>
+<td>0.250594</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">582</td>
 <td>582</td>
 <td>2016-02-29</td>
 <td>2016-03-04</td>
-<td>0.177829</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">583</td>
-<td>583</td>
-<td>2016-03-07</td>
-<td>2016-03-11</td>
-<td>0.153831</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">584</td>
-<td>584</td>
-<td>2016-03-14</td>
-<td>2016-03-18</td>
-<td>0.064691</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">585</td>
-<td>585</td>
-<td>2016-03-21</td>
-<td>2016-03-24</td>
-<td>0.055581</td>
-</tr>
-</tbody>
-</table>
-
-<p>586 rows × 4 columns</p>
-</div>
-</div>
-</div>
-<hr>
-<p><strong>Discussion Question:</strong> Verify that the <code>.groupby()</code> above works just fine with out including <code>week_start</code> and <code>week_end</code>. If that is the case, then why did I include it?</p>
-<div class="cell">
-<details>
-<summary>Solution</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df_spy</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]]</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    .agg(close_to_close)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'close_to_close'</span>})</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># It makes the code and the dataframe more readable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">week_num</th>
-<th data-quarto-table-cell-role="th">week_start</th>
-<th data-quarto-table-cell-role="th">week_end</th>
-<th data-quarto-table-cell-role="th">close_to_close</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>0</td>
-<td>2005-01-03</td>
-<td>2005-01-07</td>
-<td>0.102492</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>1</td>
-<td>2005-01-10</td>
-<td>2005-01-14</td>
-<td>0.104307</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2</td>
-<td>2005-01-18</td>
-<td>2005-01-21</td>
-<td>0.146136</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>3</td>
-<td>2005-01-24</td>
-<td>2005-01-28</td>
-<td>0.033265</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>4</td>
-<td>2005-01-31</td>
-<td>2005-02-04</td>
-<td>0.077796</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">582</td>
-<td>582</td>
-<td>2016-02-29</td>
 <td>2016-03-04</td>
-<td>0.177829</td>
+<td>0.242543</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td data-quarto-table-cell-role="th">583</td>
 <td>583</td>
 <td>2016-03-07</td>
 <td>2016-03-11</td>
-<td>0.153831</td>
+<td>2016-03-11</td>
+<td>0.230967</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td data-quarto-table-cell-role="th">584</td>
 <td>584</td>
 <td>2016-03-14</td>
 <td>2016-03-18</td>
-<td>0.064691</td>
+<td>2016-03-18</td>
+<td>0.188825</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td data-quarto-table-cell-role="th">585</td>
 <td>585</td>
 <td>2016-03-21</td>
 <td>2016-03-24</td>
-<td>0.055581</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">586</td>
-<td>586</td>
-<td>2016-03-28</td>
-<td>2016-04-01</td>
-<td>0.074279</td>
+<td>2016-03-24</td>
+<td>0.167192</td>
 </tr>
 </tbody>
 </table>
 
-<p>587 rows × 4 columns</p>
+<p>586 rows × 5 columns</p>
 </div>
 </div>
 </div>
-<hr>
-<p><strong>Code Challenge:</strong> Create an alternative version of our close-to-close function using <code>np.std()</code>. Call the new function <code>close_to_close_std()</code>. Verify that your values match.</p>
+<p>Let’s grab the forecasts and put them into their own variable.</p>
 <div class="cell">
-<details>
-<summary>Solution</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close_std(r):</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    vol <span class="op">=</span> np.std(r, ddof <span class="op">=</span> <span class="dv">1</span>) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(vol)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>df_std <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'week_num'</span>, <span class="st">'week_start'</span>, <span class="st">'week_end'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'dly_ret'</span>]]</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        .agg(close_to_close_std)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        .rename(columns <span class="op">=</span> {<span class="st">'dly_ret'</span>:<span class="st">'close_to_close'</span>})</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>df_std <span class="op">=</span> df_std[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_std[<span class="st">'close_to_close'</span>].<span class="bu">sum</span>())</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_close_to_close[<span class="st">'close_to_close'</span>].<span class="bu">sum</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>90.6980642016463
-90.6980642016463</code></pre>
-</div>
-</div>
-<p>In Sepp 2016, the author uses the <span class="math inline">\(R^2\)</span> between the forecasts and the realized labels as a means of assessing the quality of a particular estimator. Let’s utilize <strong>sklearn</strong> to do the same.</p>
-<p>We being by importing the <code>LinearRegression()</code> constructor and instantiating a model.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>mdl_reg <span class="op">=</span> LinearRegression(fit_intercept <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Next, let’s organize our features and labels.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df_close_to_close[[<span class="st">'close_to_close'</span>]]</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df_realized[<span class="st">'realized_vol'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>We can now fit the model.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mdl_reg.fit(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>volatility_forecasts <span class="op">=</span> df_start_end.merge(df_forecast, left_on <span class="op">=</span> <span class="st">'week_end'</span>, right_on <span class="op">=</span> <span class="st">'trade_date'</span>)[<span class="st">'volatility_forecast'</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>volatility_forecasts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
+<pre><code>0      0.147481
+1      0.150795
+2      0.170141
+3      0.147867
+4      0.151963
+         ...   
+581    0.250594
+582    0.242543
+583    0.230967
+584    0.188825
+585    0.167192
+Name: volatility_forecast, Length: 586, dtype: float64</code></pre>
 </div>
 </div>
-<p>The <code>.score()</code> method of a <code>LinearRegression</code> model returns the <span class="math inline">\(R^2\)</span>.</p>
+<p>Next, let’s use the <span class="math inline">\(R^2\)</span> metric that Sepp uses in his studies.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mdl_reg.score(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>np.corrcoef(volatility_forecasts, df_realized[<span class="st">'realized_vol'</span>])[<span class="dv">0</span>,<span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<pre><code>0.4093645253435927</code></pre>
+<pre><code>0.5612564282964889</code></pre>
 </div>
 </div>
-<p>And we can examine the slope and intercept of our model as follows:</p>
+<p>And finally, let’s calculate the bias and efficiency.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Intercept:"</span>, mdl_reg.intercept_)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Slope:   "</span>, mdl_reg.coef_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.mean(volatility_forecasts <span class="op">-</span> df_realized[<span class="st">'realized_vol'</span>]))</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># efficiency</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.std(df_realized[<span class="st">'realized_vol'</span>]) <span class="op">/</span> np.std(volatility_forecasts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Intercept: 0.04933384095053199
-Slope:    [0.57068844]</code></pre>
+<pre><code>0.1028763057503257
+0.8233056504414178</code></pre>
 </div>
 </div>
-<hr>
-<p><strong>Discussion Question:</strong> How do our results compare to Sepp’s?</p>
-<div class="cell">
-<details>
-<summary>Solution</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># They seem close enough that there probably isn't some error in my calculations.</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The differences probably come down to differences in data.</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># I do wish the results were a bit closer to feel totally comfortable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<hr>
-<p>Let’s also measure the bias and efficiency of the the close-to-close estimator.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Bias:      "</span>, np.mean(df_close_to_close[<span class="st">'close_to_close'</span>] <span class="op">-</span> df_realized[<span class="st">'realized_vol'</span>]))</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># efficiency</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Efficiency:"</span>, np.std(df_realized[<span class="st">'realized_vol'</span>]) <span class="op">/</span> np.std(df_close_to_close[<span class="st">'close_to_close'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Bias:       0.01708041424884867
-Efficiency: 0.8919571135609281</code></pre>
-</div>
-</div>
+</section>
+<section id="references" class="level2" data-number="19.6">
+<h2 data-number="19.6" class="anchored" data-anchor-id="references"><span class="header-section-number">19.6</span> References</h2>
+<p><em>Does Anything Beat Garch(1, 1)</em> - Hansen and Lunde 2004</p>
+<p><em>Options, Futures, and Other Derivatives 9th Edition</em> - John Hull (Chapter 23)</p>
+<p><em>Volatility Modeling and Trading</em> - Artur Sepp 2016</p>
+<p><a href="https://arch.readthedocs.io/en/latest/univariate/univariate_volatility_forecasting.html">https://arch.readthedocs.io/en/latest/univariate/univariate_volatility_forecasting.html</a></p>
 
 
 </section>
@@ -1872,13 +2316,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../chapters/17_regression_mutual_fund/regression_mutual_fund.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span>
+      <a href="../../chapters/18_close_to_close/close_to_close.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../chapters/19_garch/garch.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -31,6 +31,7 @@ book:
       - chapters/16_trend_following/trend_following.ipynb
       - chapters/17_regression_mutual_fund/regression_mutual_fund.ipynb
       - chapters/18_close_to_close/close_to_close.ipynb
+      - chapters/19_garch/garch.ipynb
     - references.qmd
 
 bibliography: references.bib

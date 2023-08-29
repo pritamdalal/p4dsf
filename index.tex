@@ -218,7 +218,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -11383,10 +11383,677 @@ Bias:       0.01708041424884867
 Efficiency: 0.8919571135609281
 \end{verbatim}
 
-\bookmarksetup{startatroot}
+\hypertarget{volatility-forecasting-garch}{%
+\chapter{Volatility Forecasting:
+GARCH}\label{volatility-forecasting-garch}}
+
+Financial asset returns exhibit volatility clustering (also called
+volatility regimes), as well as mean reversion. This means that high
+volatility periods beget high volatility periods, low volatility periods
+beget low volatility periods, and that volatility doesn't not converge
+to zero, or diverge to infinity. GARCH (generalized autoregressive
+conditional heteroskedasticity) time series models are popular for
+capturing these characteristics.
+
+This chapter demonstrates code that implements a GARCH(1, 1) model using
+the \textbf{arch} package. We will view GARCH as a volatility prediction
+mechanism, and our interest will be on empirically determining the
+performance of GARCH relative to other prediction techniques (see the
+associated project).
+
+In this chapter we will be focused exclusively on implementation, and
+thus we won't be digging into the mathematical or statistical details of
+GARCH models (if you are interested, check out the references at the
+end). Specifically, we will generate some GARCH forecasts of SPY weekly
+volatility for the backtest period 1/1/2005 - 3/30/2016, and see how our
+results compare to Sepp 2016 (\emph{Volatility Modeling and Trading}, pg
+57).
+
+\hypertarget{loading-packages-9}{%
+\section{Loading Packages}\label{loading-packages-9}}
+
+We begin by loading the packages and functions that we will need.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{from}\NormalTok{ arch }\ImportTok{import}\NormalTok{ arch\_model}
+\ImportTok{import}\NormalTok{ yfinance }\ImportTok{as}\NormalTok{ yf}
+\NormalTok{yf.pdr\_override()}
+\ImportTok{from}\NormalTok{ pandas\_datareader }\ImportTok{import}\NormalTok{ data }\ImportTok{as}\NormalTok{ pdr}
+\ImportTok{import}\NormalTok{ sys}
+\NormalTok{pd.options.display.max\_rows }\OperatorTok{=} \DecValTok{10}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{spy-data-for-backtest-period}{%
+\section{SPY Data for Backtest
+Period}\label{spy-data-for-backtest-period}}
+
+Next, let's read-in the data for the backtest period.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo(}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, start }\OperatorTok{=} \StringTok{\textquotesingle{}2004{-}12{-}31\textquotesingle{}}\NormalTok{, end }\OperatorTok{=} \StringTok{\textquotesingle{}2016{-}04{-}02\textquotesingle{}}\NormalTok{).reset\_index()}
+\NormalTok{df\_spy.columns }\OperatorTok{=}\NormalTok{ df\_spy.columns.}\BuiltInTok{str}\NormalTok{.lower().}\BuiltInTok{str}\NormalTok{.replace(}\StringTok{\textquotesingle{} \textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\_\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy.rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{\}, inplace }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy.insert(}\DecValTok{0}\NormalTok{, }\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  1 of 1 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & open & high & low & close & adj\_close &
+volume \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2004-12-31 & 121.300003 & 121.660004 & 120.800003 & 120.870003
+& 84.657822 & 28648800 \\
+1 & SPY & 2005-01-03 & 121.559998 & 121.760002 & 119.900002 & 120.300003
+& 84.258591 & 55748000 \\
+2 & SPY & 2005-01-04 & 120.459999 & 120.540001 & 118.440002 & 118.830002
+& 83.229019 & 69167600 \\
+3 & SPY & 2005-01-05 & 118.739998 & 119.250000 & 118.000000 & 118.010002
+& 82.654678 & 65667300 \\
+4 & SPY & 2005-01-06 & 118.440002 & 119.150002 & 118.260002 & 118.610001
+& 83.074913 & 47814700 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2827 & SPY & 2016-03-28 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770111 & 62408200 \\
+2828 & SPY & 2016-03-29 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 \\
+2829 & SPY & 2016-03-30 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215408 & 86365300 \\
+2830 & SPY & 2016-03-31 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 \\
+2831 & SPY & 2016-04-01 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007034 & 114423500 \\
+\end{longtable}
+
+We will need the daily log returns, so let's calculate those now.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ np.log(df\_spy[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]).diff()}
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.dropna().reset\_index(drop }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & open & high & low & close & adj\_close & volume
+& dly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2005-01-03 & 121.559998 & 121.760002 & 119.900002 & 120.300003
+& 84.258591 & 55748000 & -0.004727 \\
+1 & SPY & 2005-01-04 & 120.459999 & 120.540001 & 118.440002 & 118.830002
+& 83.229019 & 69167600 & -0.012294 \\
+2 & SPY & 2005-01-05 & 118.739998 & 119.250000 & 118.000000 & 118.010002
+& 82.654678 & 65667300 & -0.006925 \\
+3 & SPY & 2005-01-06 & 118.440002 & 119.150002 & 118.260002 & 118.610001
+& 83.074913 & 47814700 & 0.005071 \\
+4 & SPY & 2005-01-07 & 118.970001 & 119.230003 & 118.129997 & 118.440002
+& 82.955826 & 55847700 & -0.001435 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2826 & SPY & 2016-03-28 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770111 & 62408200 & 0.000591 \\
+2827 & SPY & 2016-03-29 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 & 0.009208 \\
+2828 & SPY & 2016-03-30 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215408 & 86365300 & 0.004378 \\
+2829 & SPY & 2016-03-31 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 \\
+2830 & SPY & 2016-04-01 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007034 & 114423500 & 0.006789 \\
+\end{longtable}
+
+\hypertarget{organizing-dates}{%
+\section{Organizing Dates}\label{organizing-dates}}
+
+Let's organize our backtest period into weeks (Monday - Friday), since
+our analysis is of weekly volatility predictions.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# adding a new columns consisting of the weekday number for each trade\_date }
+\NormalTok{weekday }\OperatorTok{=}\NormalTok{ df\_spy[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{].dt.weekday}
+
+\CommentTok{\# assigning a week number to each trade{-}date; M{-}F is all the same week}
+\NormalTok{week\_num }\OperatorTok{=}\NormalTok{ []}
+\NormalTok{ix\_week }\OperatorTok{=} \DecValTok{0}
+\NormalTok{week\_num.append(ix\_week)}
+\ControlFlowTok{for}\NormalTok{ ix }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\DecValTok{0}\NormalTok{, }\BuiltInTok{len}\NormalTok{(weekday) }\OperatorTok{{-}} \DecValTok{1}\NormalTok{):}
+\NormalTok{    prev\_day }\OperatorTok{=}\NormalTok{ weekday.iloc[ix]}
+\NormalTok{    curr\_day }\OperatorTok{=}\NormalTok{ weekday.iloc[ix }\OperatorTok{+} \DecValTok{1}\NormalTok{]}
+    \ControlFlowTok{if}\NormalTok{ curr\_day }\OperatorTok{\textless{}}\NormalTok{ prev\_day:}
+\NormalTok{        ix\_week }\OperatorTok{=}\NormalTok{ ix\_week }\OperatorTok{+} \DecValTok{1}
+\NormalTok{    week\_num.append(ix\_week)}
+
+\CommentTok{\# inserting the week{-}number column into df\_spy}
+\NormalTok{df\_spy.insert(}\DecValTok{2}\NormalTok{, }\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, week\_num)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & week\_num & open & high & low & close &
+adj\_close & volume & dly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2005-01-03 & 0 & 121.559998 & 121.760002 & 119.900002 &
+120.300003 & 84.258591 & 55748000 & -0.004727 \\
+1 & SPY & 2005-01-04 & 0 & 120.459999 & 120.540001 & 118.440002 &
+118.830002 & 83.229019 & 69167600 & -0.012294 \\
+2 & SPY & 2005-01-05 & 0 & 118.739998 & 119.250000 & 118.000000 &
+118.010002 & 82.654678 & 65667300 & -0.006925 \\
+3 & SPY & 2005-01-06 & 0 & 118.440002 & 119.150002 & 118.260002 &
+118.610001 & 83.074913 & 47814700 & 0.005071 \\
+4 & SPY & 2005-01-07 & 0 & 118.970001 & 119.230003 & 118.129997 &
+118.440002 & 82.955826 & 55847700 & -0.001435 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+2826 & SPY & 2016-03-28 & 586 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770111 & 62408200 & 0.000591 \\
+2827 & SPY & 2016-03-29 & 586 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 & 0.009208 \\
+2828 & SPY & 2016-03-30 & 586 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215408 & 86365300 & 0.004378 \\
+2829 & SPY & 2016-03-31 & 586 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 \\
+2830 & SPY & 2016-04-01 & 586 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007034 & 114423500 & 0.006789 \\
+\end{longtable}
+
+The following code generates a \texttt{DataFrame} that contains the
+start-date and end-date for each week.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_start\_end }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_spy.groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{]].agg([}\BuiltInTok{min}\NormalTok{, }\BuiltInTok{max}\NormalTok{])[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{]}
+\NormalTok{    .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}min\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}max\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    .reset\_index()}
+\NormalTok{    .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}index\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_start\_end}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & 2005-01-03 & 2005-01-07 \\
+1 & 1 & 2005-01-10 & 2005-01-14 \\
+2 & 2 & 2005-01-18 & 2005-01-21 \\
+3 & 3 & 2005-01-24 & 2005-01-28 \\
+4 & 4 & 2005-01-31 & 2005-02-04 \\
+... & ... & ... & ... \\
+582 & 582 & 2016-02-29 & 2016-03-04 \\
+583 & 583 & 2016-03-07 & 2016-03-11 \\
+584 & 584 & 2016-03-14 & 2016-03-18 \\
+585 & 585 & 2016-03-21 & 2016-03-24 \\
+586 & 586 & 2016-03-28 & 2016-04-01 \\
+\end{longtable}
+
+And finally let's join the weekly start/end dates into \texttt{df\_spy}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_spy }\OperatorTok{=}\NormalTok{ df\_spy.merge(df\_start\_end)}
+\NormalTok{df\_spy}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & week\_num & open & high & low & close &
+adj\_close & volume & dly\_ret & week\_start & week\_end \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 2005-01-03 & 0 & 121.559998 & 121.760002 & 119.900002 &
+120.300003 & 84.258591 & 55748000 & -0.004727 & 2005-01-03 &
+2005-01-07 \\
+1 & SPY & 2005-01-04 & 0 & 120.459999 & 120.540001 & 118.440002 &
+118.830002 & 83.229019 & 69167600 & -0.012294 & 2005-01-03 &
+2005-01-07 \\
+2 & SPY & 2005-01-05 & 0 & 118.739998 & 119.250000 & 118.000000 &
+118.010002 & 82.654678 & 65667300 & -0.006925 & 2005-01-03 &
+2005-01-07 \\
+3 & SPY & 2005-01-06 & 0 & 118.440002 & 119.150002 & 118.260002 &
+118.610001 & 83.074913 & 47814700 & 0.005071 & 2005-01-03 &
+2005-01-07 \\
+4 & SPY & 2005-01-07 & 0 & 118.970001 & 119.230003 & 118.129997 &
+118.440002 & 82.955826 & 55847700 & -0.001435 & 2005-01-03 &
+2005-01-07 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... & ... &
+... \\
+2826 & SPY & 2016-03-28 & 586 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770111 & 62408200 & 0.000591 & 2016-03-28 &
+2016-04-01 \\
+2827 & SPY & 2016-03-29 & 586 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423782 & 92922900 & 0.009208 & 2016-03-28 &
+2016-04-01 \\
+2828 & SPY & 2016-03-30 & 586 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215408 & 86365300 & 0.004378 & 2016-03-28 &
+2016-04-01 \\
+2829 & SPY & 2016-03-31 & 586 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 & 2016-03-28 &
+2016-04-01 \\
+2830 & SPY & 2016-04-01 & 586 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007034 & 114423500 & 0.006789 & 2016-03-28 &
+2016-04-01 \\
+\end{longtable}
+
+\hypertarget{calculating-realized-volatility-1}{%
+\section{Calculating Realized
+Volatility}\label{calculating-realized-volatility-1}}
+
+This code cell calculates the realized volatility for each week. In
+machine learning parlance, these are the labels that we are trying to
+predict.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_realized }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    (}
+\NormalTok{    df\_spy}
+\NormalTok{        .groupby([}\StringTok{\textquotesingle{}week\_num\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_start\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{], as\_index }\OperatorTok{=} \VariableTok{False}\NormalTok{)[[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{]].agg(}\KeywordTok{lambda}\NormalTok{ x: np.std(x) }\OperatorTok{*}\NormalTok{ np.sqrt(}\DecValTok{252}\NormalTok{))}
+\NormalTok{        .rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{\})}
+\NormalTok{    )}
+\NormalTok{df\_realized }\OperatorTok{=}\NormalTok{ df\_realized[}\DecValTok{1}\NormalTok{:]}
+\NormalTok{df\_realized}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end & realized\_vol \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 1 & 2005-01-10 & 2005-01-14 & 0.093297 \\
+2 & 2 & 2005-01-18 & 2005-01-21 & 0.126558 \\
+3 & 3 & 2005-01-24 & 2005-01-28 & 0.029752 \\
+4 & 4 & 2005-01-31 & 2005-02-04 & 0.069585 \\
+5 & 5 & 2005-02-07 & 2005-02-11 & 0.084566 \\
+... & ... & ... & ... & ... \\
+582 & 582 & 2016-02-29 & 2016-03-04 & 0.159052 \\
+583 & 583 & 2016-03-07 & 2016-03-11 & 0.137589 \\
+584 & 584 & 2016-03-14 & 2016-03-18 & 0.054367 \\
+585 & 585 & 2016-03-21 & 2016-03-24 & 0.048135 \\
+586 & 586 & 2016-03-28 & 2016-04-01 & 0.066439 \\
+\end{longtable}
+
+\hypertarget{garch-training-data}{%
+\section{GARCH Training Data}\label{garch-training-data}}
+
+A practical rule of thumb for fitting garch models to equity index
+returns is that you should use 5-10 years worth of data. In this
+tutorial we will use 10-years worth.
+
+Let's begin by grabbing all the data that we will need for fitting.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_train }\OperatorTok{=}\NormalTok{ pdr.get\_data\_yahoo(}\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{, start }\OperatorTok{=} \StringTok{\textquotesingle{}1994{-}12{-}30\textquotesingle{}}\NormalTok{, end }\OperatorTok{=} \StringTok{\textquotesingle{}2016{-}04{-}02\textquotesingle{}}\NormalTok{).reset\_index()}
+\NormalTok{df\_train.columns }\OperatorTok{=}\NormalTok{ df\_train.columns.}\BuiltInTok{str}\NormalTok{.lower().}\BuiltInTok{str}\NormalTok{.replace(}\StringTok{\textquotesingle{} \textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\_\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_train.rename(columns }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}date\textquotesingle{}}\NormalTok{:}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{\}, inplace }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_train.insert(}\DecValTok{0}\NormalTok{, }\StringTok{\textquotesingle{}ticker\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}SPY\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_train}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[*********************100%***********************]  1 of 1 completed
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & open & high & low & close & adj\_close &
+volume \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 1994-12-30 & 46.203125 & 46.250000 & 45.562500 & 45.562500 &
+27.317329 & 2209500 \\
+1 & SPY & 1995-01-03 & 45.703125 & 45.843750 & 45.687500 & 45.781250 &
+27.448469 & 324300 \\
+2 & SPY & 1995-01-04 & 45.984375 & 46.000000 & 45.750000 & 46.000000 &
+27.579622 & 351800 \\
+3 & SPY & 1995-01-05 & 46.031250 & 46.109375 & 45.953125 & 46.000000 &
+27.579622 & 89800 \\
+4 & SPY & 1995-01-06 & 46.093750 & 46.250000 & 45.906250 & 46.046875 &
+27.607731 & 448400 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... \\
+5346 & SPY & 2016-03-28 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770142 & 62408200 \\
+5347 & SPY & 2016-03-29 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423767 & 92922900 \\
+5348 & SPY & 2016-03-30 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215424 & 86365300 \\
+5349 & SPY & 2016-03-31 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 \\
+5350 & SPY & 2016-04-01 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007050 & 114423500 \\
+\end{longtable}
+
+Next we calculate the daily returns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_train[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ np.log(df\_train[}\StringTok{\textquotesingle{}adj\_close\textquotesingle{}}\NormalTok{]).diff()}
+\NormalTok{df\_train.dropna(inplace }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_train.reset\_index(drop }\OperatorTok{=} \VariableTok{True}\NormalTok{, inplace }\OperatorTok{=} \VariableTok{True}\NormalTok{)}
+\NormalTok{df\_train}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& ticker & trade\_date & open & high & low & close & adj\_close & volume
+& dly\_ret \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & SPY & 1995-01-03 & 45.703125 & 45.843750 & 45.687500 & 45.781250 &
+27.448469 & 324300 & 0.004789 \\
+1 & SPY & 1995-01-04 & 45.984375 & 46.000000 & 45.750000 & 46.000000 &
+27.579622 & 351800 & 0.004767 \\
+2 & SPY & 1995-01-05 & 46.031250 & 46.109375 & 45.953125 & 46.000000 &
+27.579622 & 89800 & 0.000000 \\
+3 & SPY & 1995-01-06 & 46.093750 & 46.250000 & 45.906250 & 46.046875 &
+27.607731 & 448400 & 0.001019 \\
+4 & SPY & 1995-01-09 & 46.031250 & 46.093750 & 46.000000 & 46.093750 &
+27.635849 & 36800 & 0.001018 \\
+... & ... & ... & ... & ... & ... & ... & ... & ... & ... \\
+5345 & SPY & 2016-03-28 & 203.610001 & 203.860001 & 202.710007 &
+203.240005 & 178.770142 & 62408200 & 0.000591 \\
+5346 & SPY & 2016-03-29 & 202.759995 & 205.250000 & 202.399994 &
+205.119995 & 180.423767 & 92922900 & 0.009207 \\
+5347 & SPY & 2016-03-30 & 206.300003 & 206.869995 & 205.589996 &
+206.020004 & 181.215424 & 86365300 & 0.004378 \\
+5348 & SPY & 2016-03-31 & 205.910004 & 206.410004 & 205.330002 &
+205.520004 & 180.775589 & 94584100 & -0.002430 \\
+5349 & SPY & 2016-04-01 & 204.350006 & 207.139999 & 203.979996 &
+206.919998 & 182.007050 & 114423500 & 0.006789 \\
+\end{longtable}
+
+The GARCH fitting process has better convergence if we express the
+returns as percents rather than decimals.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ser\_returns }\OperatorTok{=}\NormalTok{ df\_train[}\StringTok{\textquotesingle{}dly\_ret\textquotesingle{}}\NormalTok{] }\OperatorTok{*} \DecValTok{100}
+\NormalTok{ser\_returns.index }\OperatorTok{=}\NormalTok{ df\_train[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we instantiate the model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model }\OperatorTok{=}\NormalTok{ arch\_model(ser\_returns, vol }\OperatorTok{=} \StringTok{\textquotesingle{}Garch\textquotesingle{}}\NormalTok{, p }\OperatorTok{=} \DecValTok{1}\NormalTok{, o }\OperatorTok{=} \DecValTok{0}\NormalTok{, q }\OperatorTok{=} \DecValTok{1}\NormalTok{, dist }\OperatorTok{=} \StringTok{\textquotesingle{}Normal\textquotesingle{}}\NormalTok{)}
+\NormalTok{result }\OperatorTok{=}\NormalTok{ model.fit(update\_freq }\OperatorTok{=} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Iteration:      5,   Func. Count:     37,   Neg. LLF: 7624.3614767949375
+Iteration:     10,   Func. Count:     65,   Neg. LLF: 7598.333575044246
+Optimization terminated successfully    (Exit mode 0)
+            Current function value: 7598.333533861198
+            Iterations: 12
+            Function evaluations: 75
+            Gradient evaluations: 12
+\end{verbatim}
+
+The following code loops through and performs the fitting for each day.
+It takes a while to run, so I'll leave it to you to run it and examine
+on your own time. See the package documentation linked below for details
+- you will probably need to read those in order to complete the
+associated project.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# ix\_start = df\_train.query(\textquotesingle{}trade\_date == trade\_date.min()\textquotesingle{}).index[0]}
+\CommentTok{\# ix\_end = df\_train.query(\textquotesingle{}trade\_date == "2004{-}12{-}31"\textquotesingle{}).index[0]}
+\CommentTok{\# forecasts = \{\}}
+\CommentTok{\# for ix in range(2518, 5349):}
+\CommentTok{\#     sys.stdout.write(\textquotesingle{}.\textquotesingle{})}
+\CommentTok{\#     sys.stdout.flush()}
+\CommentTok{\#     result = model.fit(first\_obs = (ix {-} 2518), last\_obs = ix, disp = \textquotesingle{}off\textquotesingle{})}
+\CommentTok{\#     temp = result.forecast(horizon = 5, reindex = True).variance}
+\CommentTok{\#     fcast = temp.iloc[ix {-} 1]}
+\CommentTok{\#     forecasts[fcast.name] = fcast}
+\CommentTok{\# print()}
+\CommentTok{\# df\_forecast = pd.DataFrame(pd.DataFrame(forecasts).T)}
+\CommentTok{\# df\_forecast = df\_forecast.reset\_index().rename(columns = \{\textquotesingle{}index\textquotesingle{}:\textquotesingle{}trade\_date\textquotesingle{}\})}
+\CommentTok{\# df\_forecast}
+
+\CommentTok{\# \# writing variance estimates to csv{-}file}
+\CommentTok{\# df\_forecast.to\_csv(\textquotesingle{}variance\_forecast.csv\textquotesingle{}, index = False)}
+\end{Highlighting}
+\end{Shaded}
+
+The above code saves the variance estimates to a CSV file, and we will
+read those in now.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_forecast }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}variance\_forecast.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{df\_forecast[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ pd.to\_datetime(df\_forecast[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{])}
+\NormalTok{df\_forecast}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+& trade\_date & h.1 & h.2 & h.3 & h.4 & h.5 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2004-12-30 & 0.312152 & 0.320800 & 0.329415 & 0.337999 & 0.346551 \\
+1 & 2004-12-31 & 0.303715 & 0.312426 & 0.321104 & 0.329750 & 0.338364 \\
+2 & 2005-01-03 & 0.313479 & 0.322231 & 0.330949 & 0.339635 & 0.348287 \\
+3 & 2005-01-04 & 0.433124 & 0.441654 & 0.450148 & 0.458607 & 0.467031 \\
+4 & 2005-01-05 & 0.453912 & 0.462365 & 0.470782 & 0.479165 & 0.487513 \\
+... & ... & ... & ... & ... & ... & ... \\
+2826 & 2016-03-23 & 0.578104 & 0.593060 & 0.607729 & 0.622115 &
+0.636224 \\
+2827 & 2016-03-24 & 0.527753 & 0.543716 & 0.559369 & 0.574720 &
+0.589773 \\
+2828 & 2016-03-28 & 0.482408 & 0.499278 & 0.515820 & 0.532041 &
+0.547947 \\
+2829 & 2016-03-29 & 0.526633 & 0.542651 & 0.558358 & 0.573760 &
+0.588863 \\
+2830 & 2016-03-30 & 0.496876 & 0.513525 & 0.529849 & 0.545856 &
+0.561551 \\
+\end{longtable}
+
+The columns of the \texttt{df\_forecast} are the one day variance
+estimates for the next five days. In order to calculate a 5-day
+volatility forecasts we will add up these columns, divide by 100 (the
+variances are stated as percentages), and then take a square-root.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_forecast[}\StringTok{\textquotesingle{}volatility\_forecast\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \OperatorTok{\textbackslash{}}
+\NormalTok{    np.sqrt((df\_forecast[}\StringTok{\textquotesingle{}h.1\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_forecast[}\StringTok{\textquotesingle{}h.2\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_forecast[}\StringTok{\textquotesingle{}h.3\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_forecast[}\StringTok{\textquotesingle{}h.4\textquotesingle{}}\NormalTok{] }\OperatorTok{+}\NormalTok{ df\_forecast[}\StringTok{\textquotesingle{}h.5\textquotesingle{}}\NormalTok{]) }\OperatorTok{/} \DecValTok{100}\NormalTok{)}
+\NormalTok{df\_forecast}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllll@{}}
+\toprule\noalign{}
+& trade\_date & h.1 & h.2 & h.3 & h.4 & h.5 & volatility\_forecast \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 2004-12-30 & 0.312152 & 0.320800 & 0.329415 & 0.337999 & 0.346551 &
+0.128332 \\
+1 & 2004-12-31 & 0.303715 & 0.312426 & 0.321104 & 0.329750 & 0.338364 &
+0.126703 \\
+2 & 2005-01-03 & 0.313479 & 0.322231 & 0.330949 & 0.339635 & 0.348287 &
+0.128630 \\
+3 & 2005-01-04 & 0.433124 & 0.441654 & 0.450148 & 0.458607 & 0.467031 &
+0.150019 \\
+4 & 2005-01-05 & 0.453912 & 0.462365 & 0.470782 & 0.479165 & 0.487513 &
+0.153419 \\
+... & ... & ... & ... & ... & ... & ... & ... \\
+2826 & 2016-03-23 & 0.578104 & 0.593060 & 0.607729 & 0.622115 & 0.636224
+& 0.174277 \\
+2827 & 2016-03-24 & 0.527753 & 0.543716 & 0.559369 & 0.574720 & 0.589773
+& 0.167192 \\
+2828 & 2016-03-28 & 0.482408 & 0.499278 & 0.515820 & 0.532041 & 0.547947
+& 0.160546 \\
+2829 & 2016-03-29 & 0.526633 & 0.542651 & 0.558358 & 0.573760 & 0.588863
+& 0.167041 \\
+2830 & 2016-03-30 & 0.496876 & 0.513525 & 0.529849 & 0.545856 & 0.561551
+& 0.162716 \\
+\end{longtable}
+
+Let's plot these forecasts to make sure that they look reasonable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_forecast.plot(x }\OperatorTok{=} \StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, y }\OperatorTok{=} \StringTok{\textquotesingle{}volatility\_forecast\textquotesingle{}}\NormalTok{, figsize }\OperatorTok{=}\NormalTok{ (}\DecValTok{12}\NormalTok{, }\DecValTok{6}\NormalTok{))}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{chapters/19_garch/garch_files/figure-pdf/cell-16-output-1.png}
+
+}
+
+\end{figure}
+
+We actually have far more forecasts than we need, because we calculated
+forecasts for each day. We can isolate the ones in question by using a
+join.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_start\_end.merge(df\_forecast[[}\StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}volatility\_forecast\textquotesingle{}}\NormalTok{]], left\_on }\OperatorTok{=} \StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{, right\_on }\OperatorTok{=} \StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+& week\_num & week\_start & week\_end & trade\_date &
+volatility\_forecast \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & 2005-01-03 & 2005-01-07 & 2005-01-07 & 0.147481 \\
+1 & 1 & 2005-01-10 & 2005-01-14 & 2005-01-14 & 0.150795 \\
+2 & 2 & 2005-01-18 & 2005-01-21 & 2005-01-21 & 0.170141 \\
+3 & 3 & 2005-01-24 & 2005-01-28 & 2005-01-28 & 0.147867 \\
+4 & 4 & 2005-01-31 & 2005-02-04 & 2005-02-04 & 0.151963 \\
+... & ... & ... & ... & ... & ... \\
+581 & 581 & 2016-02-22 & 2016-02-26 & 2016-02-26 & 0.250594 \\
+582 & 582 & 2016-02-29 & 2016-03-04 & 2016-03-04 & 0.242543 \\
+583 & 583 & 2016-03-07 & 2016-03-11 & 2016-03-11 & 0.230967 \\
+584 & 584 & 2016-03-14 & 2016-03-18 & 2016-03-18 & 0.188825 \\
+585 & 585 & 2016-03-21 & 2016-03-24 & 2016-03-24 & 0.167192 \\
+\end{longtable}
+
+Let's grab the forecasts and put them into their own variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{volatility\_forecasts }\OperatorTok{=}\NormalTok{ df\_start\_end.merge(df\_forecast, left\_on }\OperatorTok{=} \StringTok{\textquotesingle{}week\_end\textquotesingle{}}\NormalTok{, right\_on }\OperatorTok{=} \StringTok{\textquotesingle{}trade\_date\textquotesingle{}}\NormalTok{)[}\StringTok{\textquotesingle{}volatility\_forecast\textquotesingle{}}\NormalTok{]}
+\NormalTok{volatility\_forecasts}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0      0.147481
+1      0.150795
+2      0.170141
+3      0.147867
+4      0.151963
+         ...   
+581    0.250594
+582    0.242543
+583    0.230967
+584    0.188825
+585    0.167192
+Name: volatility_forecast, Length: 586, dtype: float64
+\end{verbatim}
+
+Next, let's use the \(R^2\) metric that Sepp uses in his studies.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{np.corrcoef(volatility\_forecasts, df\_realized[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{])[}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{] }\OperatorTok{**} \DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.5612564282964889
+\end{verbatim}
+
+And finally, let's calculate the bias and efficiency.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# bias}
+\BuiltInTok{print}\NormalTok{(np.mean(volatility\_forecasts }\OperatorTok{{-}}\NormalTok{ df\_realized[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{]))}
+
+\CommentTok{\# efficiency}
+\BuiltInTok{print}\NormalTok{(np.std(df\_realized[}\StringTok{\textquotesingle{}realized\_vol\textquotesingle{}}\NormalTok{]) }\OperatorTok{/}\NormalTok{ np.std(volatility\_forecasts))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+0.1028763057503257
+0.8233056504414178
+\end{verbatim}
 
 \hypertarget{references}{%
-\chapter*{References}\label{references}}
+\section{References}\label{references}}
+
+\emph{Does Anything Beat Garch(1, 1)} - Hansen and Lunde 2004
+
+\emph{Options, Futures, and Other Derivatives 9th Edition} - John Hull
+(Chapter 23)
+
+\emph{Volatility Modeling and Trading} - Artur Sepp 2016
+
+\url{https://arch.readthedocs.io/en/latest/univariate/univariate_volatility_forecasting.html}
+
+\bookmarksetup{startatroot}
+
+\hypertarget{references-1}{%
+\chapter*{References}\label{references-1}}
 \addcontentsline{toc}{chapter}{References}
 
 \markboth{References}{References}
