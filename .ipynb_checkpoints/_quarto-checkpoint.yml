@@ -41,7 +41,8 @@ book:
       - chapters/24_k_nearest_neighbors_cross_validation/k_nearest_neighbors_cross_validation.ipynb
       - chapters/25_stock_prediction/stock_prediction.ipynb
       - chapters/26_pca/pca.ipynb
-      - chapters/27_pca_visualization/pca_visualization.ipynb
+      - chapters/27_k_means_clustering/k_means_clustering.ipynb
+      - chapters/28_pca_visualization/pca_visualization.ipynb
     - references.qmd
 
 bibliography: references.bib

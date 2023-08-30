@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 27&nbsp; Visualizing Principal Components Analysis</title>
+<title>Python for Data Science in Finance - 28&nbsp; Visualizing Principal Components Analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
 <link href="../../references.html" rel="next">
-<link href="../../chapters/26_pca/pca.html" rel="prev">
+<link href="../../chapters/27_k_means_clustering/k_means_clustering.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -111,7 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/27_pca_visualization/pca_visualization.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/28_pca_visualization/pca_visualization.html"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -342,8 +342,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/27_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
+  <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/28_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
   </div>
 </li>
       </ul>
@@ -364,11 +370,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">27.1</span> Importing Packages</a></li>
-  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">27.2</span> Reading-In Data</a></li>
-  <li><a href="#fitting-pca" id="toc-fitting-pca" class="nav-link" data-scroll-target="#fitting-pca"><span class="header-section-number">27.3</span> Fitting PCA</a></li>
-  <li><a href="#visualizing-loading-vectors" id="toc-visualizing-loading-vectors" class="nav-link" data-scroll-target="#visualizing-loading-vectors"><span class="header-section-number">27.4</span> Visualizing Loading Vectors</a></li>
-  <li><a href="#visualizing-scatter-plots-of-the-scores" id="toc-visualizing-scatter-plots-of-the-scores" class="nav-link" data-scroll-target="#visualizing-scatter-plots-of-the-scores"><span class="header-section-number">27.5</span> Visualizing Scatter Plots of the Scores</a></li>
+  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">28.1</span> Importing Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">28.2</span> Reading-In Data</a></li>
+  <li><a href="#fitting-pca" id="toc-fitting-pca" class="nav-link" data-scroll-target="#fitting-pca"><span class="header-section-number">28.3</span> Fitting PCA</a></li>
+  <li><a href="#visualizing-loading-vectors" id="toc-visualizing-loading-vectors" class="nav-link" data-scroll-target="#visualizing-loading-vectors"><span class="header-section-number">28.4</span> Visualizing Loading Vectors</a></li>
+  <li><a href="#visualizing-scatter-plots-of-the-scores" id="toc-visualizing-scatter-plots-of-the-scores" class="nav-link" data-scroll-target="#visualizing-scatter-plots-of-the-scores"><span class="header-section-number">28.5</span> Visualizing Scatter Plots of the Scores</a></li>
   </ul>
 </nav>
     </div>
@@ -377,7 +383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></h1>
+<h1 class="title"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></h1>
 </div>
 
 
@@ -393,8 +399,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <p>In this chapter we will explore some visualizations of principal components analysis applied to weekly PNL data from an options trading backtest applied to various underlyings. This is the same data set we analyzed in the K-means Clustering chapter.</p>
-<section id="importing-packages" class="level2" data-number="27.1">
-<h2 data-number="27.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">27.1</span> Importing Packages</h2>
+<section id="importing-packages" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">28.1</span> Importing Packages</h2>
 <p>Let’s begin by importing the packages that we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -404,8 +410,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="reading-in-data" class="level2" data-number="27.2">
-<h2 data-number="27.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">27.2</span> Reading-In Data</h2>
+<section id="reading-in-data" class="level2" data-number="28.2">
+<h2 data-number="28.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">28.2</span> Reading-In Data</h2>
 <p>Next, let’s read-in the data that we will analyze. This data consists of weekly PNLs of an options trading strategy that is applied to various underlyings.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_strategy <span class="op">=</span> pd.read_csv(<span class="st">'strategy_pca.csv'</span>)</span>
@@ -714,8 +720,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="fitting-pca" class="level2" data-number="27.3">
-<h2 data-number="27.3" class="anchored" data-anchor-id="fitting-pca"><span class="header-section-number">27.3</span> Fitting PCA</h2>
+<section id="fitting-pca" class="level2" data-number="28.3">
+<h2 data-number="28.3" class="anchored" data-anchor-id="fitting-pca"><span class="header-section-number">28.3</span> Fitting PCA</h2>
 <p>We are now ready to fit a PCA to this PNL data; let’s start by scaling.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> scale</span>
@@ -759,8 +765,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <hr>
 </section>
-<section id="visualizing-loading-vectors" class="level2" data-number="27.4">
-<h2 data-number="27.4" class="anchored" data-anchor-id="visualizing-loading-vectors"><span class="header-section-number">27.4</span> Visualizing Loading Vectors</h2>
+<section id="visualizing-loading-vectors" class="level2" data-number="28.4">
+<h2 data-number="28.4" class="anchored" data-anchor-id="visualizing-loading-vectors"><span class="header-section-number">28.4</span> Visualizing Loading Vectors</h2>
 <p>Next, we will visualize the loading vectors. In order to do this, let’s begin by creating a <code>DataFrame</code> to hold them.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_components <span class="op">=</span> <span class="op">\</span></span>
@@ -1066,8 +1072,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <hr>
 </section>
-<section id="visualizing-scatter-plots-of-the-scores" class="level2" data-number="27.5">
-<h2 data-number="27.5" class="anchored" data-anchor-id="visualizing-scatter-plots-of-the-scores"><span class="header-section-number">27.5</span> Visualizing Scatter Plots of the Scores</h2>
+<section id="visualizing-scatter-plots-of-the-scores" class="level2" data-number="28.5">
+<h2 data-number="28.5" class="anchored" data-anchor-id="visualizing-scatter-plots-of-the-scores"><span class="header-section-number">28.5</span> Visualizing Scatter Plots of the Scores</h2>
 <p>Let’s now graph the scores of the principal components. We can access these with the <code>.transform</code> attribute.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>transform <span class="op">=</span> pca.transform(Xs)</span>
@@ -1346,8 +1352,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../chapters/26_pca/pca.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span>
+      <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
