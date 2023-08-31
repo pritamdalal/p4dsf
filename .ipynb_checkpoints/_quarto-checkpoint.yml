@@ -25,7 +25,7 @@ book:
       - chapters/12_seaborn/seaborn.ipynb
       - chapters/13_bokeh_basic/bokeh_basic.ipynb
       - chapters/14_bokeh_advanced/bokeh_advanced.ipynb
-    - part: parts/03_applications/applications.ipynb
+    - part: parts/03_data_analysis/data_analysis.ipynb
       chapters:
       - chapters/15_option_replication/option_replication.ipynb
       - chapters/16_trend_following/trend_following.ipynb
@@ -47,6 +47,9 @@ book:
       - chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.ipynb
       - chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.ipynb
       - chapters/32_student_loan_xgboost/student_loan_xgboost.ipynb
+      - chapters/33_option_volume_introduction/option_volume_introduction.ipynb
+      - chapters/34_option_volume_feature_selection/option_volume_feature_selection.ipynb
+      - chapters/35_option_volume_xgboost/option_volume_xgboost.ipynb
     - references.qmd
 
 bibliography: references.bib
