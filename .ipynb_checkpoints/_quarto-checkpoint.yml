@@ -50,6 +50,9 @@ book:
       - chapters/33_option_volume_introduction/option_volume_introduction.ipynb
       - chapters/34_option_volume_feature_selection/option_volume_feature_selection.ipynb
       - chapters/35_option_volume_xgboost/option_volume_xgboost.ipynb
+    - part: parts/05_neural_networks/neural_networks.ipynb
+      chapters:
+      - chapters/36_mnist_digit_recognition/mnist_digit_recognition.ipynb
     - references.qmd
 
 bibliography: references.bib
