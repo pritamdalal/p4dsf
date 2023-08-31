@@ -43,6 +43,10 @@ book:
       - chapters/26_pca/pca.ipynb
       - chapters/27_k_means_clustering/k_means_clustering.ipynb
       - chapters/28_pca_visualization/pca_visualization.ipynb
+      - chapters/29_student_loan_overfitting/student_loan_overfitting.ipynb
+      - chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.ipynb
+      - chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.ipynb
+      - chapters/32_student_loan_xgboost/student_loan_xgboost.ipynb
     - references.qmd
 
 bibliography: references.bib
