@@ -54,7 +54,9 @@ book:
       chapters:
       - chapters/36_mnist_digit_recognition/mnist_digit_recognition.ipynb
       - chapters/37_student_loan_neural_network/student_loan_neural_network.ipynb
+      - chapters/38_exchange_rate/exchange_rate.ipynb
     - references.qmd
+
 
 bibliography: references.bib
 
