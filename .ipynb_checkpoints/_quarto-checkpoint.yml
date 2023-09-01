@@ -53,6 +53,7 @@ book:
     - part: parts/05_neural_networks/neural_networks.ipynb
       chapters:
       - chapters/36_mnist_digit_recognition/mnist_digit_recognition.ipynb
+      - chapters/37_student_loan_neural_network/student_loan_neural_network.ipynb
     - references.qmd
 
 bibliography: references.bib
