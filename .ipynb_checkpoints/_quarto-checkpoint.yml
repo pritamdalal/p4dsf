@@ -57,6 +57,7 @@ book:
       - chapters/38_exchange_rate/exchange_rate.ipynb
       - chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.ipynb
       - chapters/40_numerai/numerai.ipynb
+      - chapters/41_exchange_rate_rnn/exchange_rate_rnn.ipynb
     - references.qmd
 
 

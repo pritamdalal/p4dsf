@@ -435,6 +435,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -508,7 +514,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="38.2" class="anchored" data-anchor-id="read-in-and-wrangle-data"><span class="header-section-number">38.2</span> Read-In and Wrangle Data</h2>
 <p>Next, let’s read and wrangle the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_csv(<span class="st">'eur_usd.csv'</span>)</span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_csv(<span class="st">'../data/eur_usd.csv'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>raw.set_index(<span class="st">'Date'</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>raw.index <span class="op">=</span> pd.to_datetime(raw.index)</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>raw.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1134,11 +1140,11 @@ Name: count, dtype: int64</code></pre>
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>tf.get_logger().setLevel(logging.ERROR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>2023-09-01 13:48:11.547160: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-09-01 13:48:11.721990: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-09-01 13:48:11.723387: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+<pre><code>2023-09-02 13:56:54.221015: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2023-09-02 13:56:54.426295: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2023-09-02 13:56:54.427533: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2023-09-01 13:48:13.296663: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT</code></pre>
+2023-09-02 13:56:55.407293: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT</code></pre>
 </div>
 </div>
 <p>This function sets all the relevant the random seeds so we always get the same values.</p>
@@ -1173,15 +1179,15 @@ To enable the following instructions: AVX2 FMA, in other operations, rebuild Ten
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>model.fit(data[cols], data[<span class="st">'d'</span>], epochs<span class="op">=</span><span class="dv">50</span>, verbose<span class="op">=</span><span class="va">False</span>, class_weight<span class="op">=</span>cw(data))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CPU times: user 7.08 s, sys: 503 ms, total: 7.58 s
-Wall time: 4.88 s</code></pre>
+<pre><code>CPU times: user 6.19 s, sys: 427 ms, total: 6.62 s
+Wall time: 4.32 s</code></pre>
 </div>
 </div>
 <p>Let’s check how the model fit the training data (in-sample). As you can see we have an accuracy of about 60%.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model.evaluate(data[cols], data[<span class="st">'d'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>69/69 [==============================] - 0s 1ms/step - loss: 0.6017 - accuracy: 0.5754</code></pre>
+<pre><code>69/69 [==============================] - 0s 928us/step - loss: 0.6017 - accuracy: 0.5754</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>[0.6016581058502197, 0.5753549933433533]</code></pre>
@@ -1192,7 +1198,7 @@ Wall time: 4.88 s</code></pre>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'p'</span>] <span class="op">=</span> np.where(model.predict(data[cols]) <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'p'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>69/69 [==============================] - 0s 806us/step</code></pre>
+<pre><code>69/69 [==============================] - 0s 856us/step</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>p
@@ -1221,8 +1227,8 @@ Name: count, dtype: int64</code></pre>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> model.fit(train[cols], train[<span class="st">'d'</span>], epochs<span class="op">=</span><span class="dv">50</span>, verbose<span class="op">=</span><span class="va">False</span>, validation_split<span class="op">=</span><span class="fl">0.2</span>, shuffle<span class="op">=</span><span class="va">False</span>, class_weight<span class="op">=</span>cw(train))<span class="op">;</span></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co">#h = model.fit(train[cols], train['d'], epochs=50, verbose=False, validation_split=0.2, class_weight=cw(train));</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CPU times: user 5.46 s, sys: 501 ms, total: 5.96 s
-Wall time: 4.15 s</code></pre>
+<pre><code>CPU times: user 5.38 s, sys: 485 ms, total: 5.87 s
+Wall time: 4.1 s</code></pre>
 </div>
 </div>
 <p>Let’s see how our model performed in-sample.</p>
@@ -1250,7 +1256,7 @@ Wall time: 4.15 s</code></pre>
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'p'</span>] <span class="op">=</span> np.where(model.predict(test[cols]) <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'p'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>14/14 [==============================] - 0s 880us/step</code></pre>
+<pre><code>14/14 [==============================] - 0s 940us/step</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>p
@@ -1285,15 +1291,15 @@ Name: count, dtype: int64</code></pre>
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time </span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> model.fit(train_[cols], train[<span class="st">'d'</span>], epochs<span class="op">=</span><span class="dv">50</span>, verbose<span class="op">=</span><span class="va">False</span>, validation_split<span class="op">=</span><span class="fl">0.2</span>, shuffle<span class="op">=</span><span class="va">False</span>, class_weight<span class="op">=</span>cw(train))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CPU times: user 6.29 s, sys: 616 ms, total: 6.91 s
-Wall time: 4.49 s</code></pre>
+<pre><code>CPU times: user 6.1 s, sys: 584 ms, total: 6.68 s
+Wall time: 4.34 s</code></pre>
 </div>
 </div>
 <p>Let’s evaluate it in-sample. As we can see there is a big jump in the in-sample accuracy.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>model.evaluate(train_[cols], train[<span class="st">'d'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>55/55 [==============================] - 0s 1ms/step - loss: 0.4099 - accuracy: 0.9124</code></pre>
+<pre><code>55/55 [==============================] - 0s 998us/step - loss: 0.4099 - accuracy: 0.9124</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>[0.40989920496940613, 0.9123711585998535]</code></pre>
@@ -1318,7 +1324,7 @@ Wall time: 4.49 s</code></pre>
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'p'</span>] <span class="op">=</span> np.where(model.predict(test_[cols]) <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>test[<span class="st">'p'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>14/14 [==============================] - 0s 1ms/step</code></pre>
+<pre><code>14/14 [==============================] - 0s 922us/step</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>p
@@ -1367,15 +1373,15 @@ Name: count, dtype: int64</code></pre>
 <div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time </span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> model.fit(train_[cols], train[<span class="st">'d'</span>], epochs<span class="op">=</span><span class="dv">50</span>, verbose<span class="op">=</span><span class="va">False</span>, validation_split<span class="op">=</span><span class="fl">0.15</span>, shuffle<span class="op">=</span><span class="va">False</span>, class_weight<span class="op">=</span>cw(train))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CPU times: user 6.38 s, sys: 574 ms, total: 6.95 s
-Wall time: 4.79 s</code></pre>
+<pre><code>CPU times: user 5.97 s, sys: 453 ms, total: 6.43 s
+Wall time: 4.48 s</code></pre>
 </div>
 </div>
 <p>Let’s check the in-sample accuracy.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>model.evaluate(train_[cols], train[<span class="st">'d'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>55/55 [==============================] - 0s 1ms/step - loss: 0.4345 - accuracy: 0.7984</code></pre>
+<pre><code>55/55 [==============================] - 0s 976us/step - loss: 0.4345 - accuracy: 0.7984</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>[0.43445172905921936, 0.7983963489532471]</code></pre>
@@ -1436,8 +1442,8 @@ Wall time: 4.79 s</code></pre>
 <div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time </span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> model.fit(train_[cols], train[<span class="st">'d'</span>], epochs<span class="op">=</span><span class="dv">50</span>, verbose<span class="op">=</span><span class="va">False</span>, validation_split<span class="op">=</span><span class="fl">0.2</span>, shuffle<span class="op">=</span><span class="va">False</span>, class_weight<span class="op">=</span>cw(train))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CPU times: user 6.21 s, sys: 490 ms, total: 6.7 s
-Wall time: 4.5 s</code></pre>
+<pre><code>CPU times: user 5.75 s, sys: 533 ms, total: 6.28 s
+Wall time: 4.19 s</code></pre>
 </div>
 </div>
 <p>Let’s check in-sample accuracy.</p>
@@ -1485,8 +1491,8 @@ Wall time: 4.5 s</code></pre>
 <div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time </span>
 <span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>h <span class="op">=</span> model.fit(train_[cols], train[<span class="st">'d'</span>], epochs<span class="op">=</span><span class="dv">50</span>, verbose<span class="op">=</span><span class="va">False</span>, validation_split<span class="op">=</span><span class="fl">0.2</span>, shuffle<span class="op">=</span><span class="va">False</span>, class_weight<span class="op">=</span>cw(train))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>CPU times: user 7.48 s, sys: 635 ms, total: 8.11 s
-Wall time: 5.11 s</code></pre>
+<pre><code>CPU times: user 7.16 s, sys: 593 ms, total: 7.75 s
+Wall time: 4.94 s</code></pre>
 </div>
 </div>
 <p>Let’s check the training accuracy.</p>
@@ -1503,7 +1509,7 @@ Wall time: 5.11 s</code></pre>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb96"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>model.evaluate(test_[cols], test[<span class="st">'d'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>14/14 [==============================] - 0s 2ms/step - loss: 0.5871 - accuracy: 0.6270</code></pre>
+<pre><code>14/14 [==============================] - 0s 1ms/step - loss: 0.5871 - accuracy: 0.6270</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <pre><code>[0.5870832800865173, 0.6270022988319397]</code></pre>
@@ -1550,15 +1556,15 @@ Wall time: 5.11 s</code></pre>
 <span id="cb104-12"><a href="#cb104-12" aria-hidden="true" tabindex="-1"></a>    out <span class="op">+=</span> <span class="ss">f' | out-of-sample=</span><span class="sc">{</span>acc_te<span class="sc">:.4f}</span><span class="ss">'</span></span>
 <span id="cb104-13"><a href="#cb104-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>sgd        | time[s]: 4.6996 | in-sample=0.6346 | out-of-sample=0.6728
-rmsprop    | time[s]: 4.3185 | in-sample=0.7692 | out-of-sample=0.6499
-adagrad    | time[s]: 4.2688 | in-sample=0.6254 | out-of-sample=0.6613
-adadelta   | time[s]: 4.4679 | in-sample=0.3396 | out-of-sample=0.3501
-adam       | time[s]: 4.6540 | in-sample=0.7766 | out-of-sample=0.6499
-adamax     | time[s]: 4.6364 | in-sample=0.6770 | out-of-sample=0.6293
-nadam      | time[s]: 4.8502 | in-sample=0.7852 | out-of-sample=0.6682
-CPU times: user 43.6 s, sys: 2.32 s, total: 45.9 s
-Wall time: 33.4 s</code></pre>
+<pre><code>sgd        | time[s]: 4.5323 | in-sample=0.6346 | out-of-sample=0.6728
+rmsprop    | time[s]: 4.3281 | in-sample=0.7692 | out-of-sample=0.6499
+adagrad    | time[s]: 4.2491 | in-sample=0.6254 | out-of-sample=0.6613
+adadelta   | time[s]: 4.4557 | in-sample=0.3396 | out-of-sample=0.3501
+adam       | time[s]: 4.5690 | in-sample=0.7766 | out-of-sample=0.6499
+adamax     | time[s]: 5.0954 | in-sample=0.6770 | out-of-sample=0.6293
+nadam      | time[s]: 5.4853 | in-sample=0.7852 | out-of-sample=0.6682
+CPU times: user 44.8 s, sys: 2.56 s, total: 47.3 s
+Wall time: 34.3 s</code></pre>
 </div>
 </div>
 <p>The choice of optimizer doesn’t seem to make a huge difference, except for <code>adadelta</code>.</p>
