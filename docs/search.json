@@ -2126,5 +2126,68 @@
     "title": "39  Stock Returns: Neural Network",
     "section": "39.11 Classification",
     "text": "39.11 Classification\nFinally, let’s recast this as a classification problem where we are simply trying to predict gains and losses. First we have to change our labels to binary outcomes.\n\ny_train_classification = np.where(y_train['msft'] &gt; 0, 1, 0)\ny_test_classification = np.where(y_test['msft'] &gt; 0, 1, 0)\n\n\nset_seeds()\n\n\nmodel = Sequential()\nmodel.add(Dense(units=128, input_dim=len(X_train.columns), activation='relu'))\nmodel.add(Dense(units=64, activation='relu'))\nmodel.add(Dense(units=32, activation='relu'))\nmodel.add(Dense(1, activation='sigmoid'))\nmodel.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])\n\n\n%%time\nmodel.fit(X_train, y_train_classification, epochs=50, batch_size=32, verbose=0);\n\nCPU times: user 6.03 s, sys: 297 ms, total: 6.33 s\nWall time: 4.19 s\n\n\nThe binary classification is right about 50% of the time..\n\nmodel.evaluate(X_test, y_test_classification)\n\n44/44 [==============================] - 0s 2ms/step - loss: 0.6899 - accuracy: 0.5036\n\n\n[0.689908504486084, 0.5036075115203857]\n\n\nGuessing that MSFT will rise everyday is right 55% of the time.\n\ny_test_classification.mean()\n\n0.5526695526695526"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#reading-in-data",
+    "href": "chapters/40_numerai/numerai.html#reading-in-data",
+    "title": "40  Numerai",
+    "section": "40.1 Reading-In Data",
+    "text": "40.1 Reading-In Data\nLet’s begin by reading-in the data and organizing our features and labels.\n\nimport pandas as pd\nimport numpy as np\n\n\ndf_data = pd.read_csv('../data/numerai_training_data.csv')\ndf_data.head()\n\n\n\n\n\n\n\n\nfeature1\nfeature2\nfeature3\nfeature4\nfeature5\nfeature6\nfeature7\nfeature8\nfeature9\nfeature10\n...\nfeature13\nfeature14\nfeature15\nfeature16\nfeature17\nfeature18\nfeature19\nfeature20\nfeature21\ntarget\n\n\n\n\n0\n0.499664\n0.951271\n0.127110\n0.469706\n0.188336\n0.113830\n0.917618\n0.398412\n0.418910\n0.452983\n...\n0.137192\n0.201437\n0.507708\n0.919475\n0.978169\n0.177080\n0.101372\n0.722138\n0.832319\n0\n\n\n1\n0.099515\n0.682824\n0.867939\n0.943828\n0.505526\n0.886766\n0.530862\n0.531002\n0.980002\n0.941859\n...\n0.642640\n0.533367\n0.616879\n0.697038\n0.741461\n0.086690\n0.109533\n0.324666\n0.552276\n1\n\n\n2\n0.671993\n0.383901\n0.533011\n0.690863\n0.176539\n0.600196\n0.381543\n0.648849\n0.831643\n0.861746\n...\n0.520068\n0.660924\n0.538882\n0.160117\n0.765317\n0.301772\n0.352097\n0.638205\n0.383552\n0\n\n\n3\n0.578177\n0.872357\n0.679625\n0.108961\n0.945910\n0.571062\n0.891958\n0.916592\n0.141508\n0.258504\n...\n0.037959\n0.604539\n0.974103\n0.187519\n0.938254\n0.560129\n0.136483\n0.284507\n0.199446\n1\n\n\n4\n0.474311\n0.639613\n0.563562\n0.169508\n0.456858\n0.580710\n0.969811\n0.357417\n0.157594\n0.251147\n...\n0.038095\n0.770200\n0.697395\n0.792327\n0.711650\n0.177080\n0.247403\n0.666598\n0.755557\n0\n\n\n\n\n5 rows × 22 columns\n\n\n\n\ndf_X = df_data.drop(columns='target').copy()\n\n\ndf_y = df_data['target'].copy()"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#the-data-is-clean",
+    "href": "chapters/40_numerai/numerai.html#the-data-is-clean",
+    "title": "40  Numerai",
+    "section": "40.2 The Data is Clean",
+    "text": "40.2 The Data is Clean\nOne nice thing about working with the Numerai data is that it is clean and normalized.\n\nAll the features are in the range of \\([0, 1]\\).\nAll the features have a mean of 0.50 and a standard deviation of 0.28.\nThe occurrence of labels is even at 50% gains and 50% losses.\n\n\ndf_X.mean()\n\nfeature1     0.511372\nfeature2     0.492770\nfeature3     0.492105\nfeature4     0.499420\nfeature5     0.502291\nfeature6     0.493039\nfeature7     0.480280\nfeature8     0.494526\nfeature9     0.492926\nfeature10    0.489265\nfeature11    0.495725\nfeature12    0.510969\nfeature13    0.489852\nfeature14    0.509350\nfeature15    0.487469\nfeature16    0.509012\nfeature17    0.488944\nfeature18    0.484929\nfeature19    0.491757\nfeature20    0.509223\nfeature21    0.498371\ndtype: float64\n\n\n\ndf_X.std()\n\nfeature1     0.282260\nfeature2     0.287446\nfeature3     0.282481\nfeature4     0.284493\nfeature5     0.289867\nfeature6     0.287061\nfeature7     0.287526\nfeature8     0.288087\nfeature9     0.293945\nfeature10    0.287046\nfeature11    0.290922\nfeature12    0.285451\nfeature13    0.291276\nfeature14    0.290140\nfeature15    0.286997\nfeature16    0.289279\nfeature17    0.284790\nfeature18    0.290445\nfeature19    0.283742\nfeature20    0.291001\nfeature21    0.289637\ndtype: float64\n\n\nNotice that a guess of increase for all assets would yield an accuracy of 50.5%.\n\ndf_y.mean()\n\n0.5051702657807309"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#logistic-regression",
+    "href": "chapters/40_numerai/numerai.html#logistic-regression",
+    "title": "40  Numerai",
+    "section": "40.3 Logistic Regression",
+    "text": "40.3 Logistic Regression\nThe first model that we will fit is a simple LogisticRegression. We will use a 10-fold cross-validation accuracy as our goodness of fit metric.\n\nfrom sklearn.linear_model import LogisticRegression\nmdl_logistic_regression = LogisticRegression(C=1.0, random_state=0)\n\n\n%%time\nfrom sklearn.model_selection import cross_val_score\nscores = cross_val_score(mdl_logistic_regression, df_X, df_y, cv=10, verbose=0)\n\nCPU times: user 21 s, sys: 17.9 s, total: 39 s\nWall time: 5.1 s\n\n\nWe get a mean accuracy of about 52% which is just slightly higher than guessing a gain for all assets.\n\nnp.mean(scores)\n\n0.5219476744186047"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#random-forest",
+    "href": "chapters/40_numerai/numerai.html#random-forest",
+    "title": "40  Numerai",
+    "section": "40.4 Random Forest",
+    "text": "40.4 Random Forest\nNext let’s fit a RandomForestClassifier. We use a 5-fold cross-validation accuracy rather than 10-fold because these models take time to run.\n\nfrom sklearn.ensemble import RandomForestClassifier\nmdl_random_forest = RandomForestClassifier(n_estimators=100, max_depth=7, random_state=0)\n\n\n%%time\nscores = cross_val_score(mdl_random_forest, df_X, df_y, cv=5, scoring='accuracy', verbose=0)\nscores\n\nCPU times: user 44.4 s, sys: 0 ns, total: 44.4 s\nWall time: 44.4 s\n\n\narray([0.51858389, 0.51723422, 0.52450166, 0.51650748, 0.52460548])\n\n\nSimilar to logistic regression we get a mean score of around 52%\n\nnp.mean(scores)\n\n0.5202865448504983"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#xgboost",
+    "href": "chapters/40_numerai/numerai.html#xgboost",
+    "title": "40  Numerai",
+    "section": "40.5 XGBoost",
+    "text": "40.5 XGBoost\nThe next model that we will fit is a gradient boosted tree with the xgboost package. We use 5-fold cross-validation to assess model performance.\n\nfrom xgboost import XGBClassifier\nmdl_xgboost = XGBClassifier(n_estimators=100, max_depth=10, learning_rate=0.01, eval_metric='logloss')\n\n\nscores = cross_val_score(mdl_xgboost, df_X, df_y, cv=5, scoring='accuracy', verbose=0)\nscores\n\narray([0.51292566, 0.51775332, 0.51977782, 0.51629983, 0.515625  ])\n\n\nOur mean accuracy score is slightly lower at 51.5%.\n\nnp.mean(scores)\n\n0.5164763289036545"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#validation-set",
+    "href": "chapters/40_numerai/numerai.html#validation-set",
+    "title": "40  Numerai",
+    "section": "40.6 Validation Set",
+    "text": "40.6 Validation Set\nIn the subsequent sections we will try a variety of neural networks. In order to check out-of-sample accuracy, let’s first create a holdout set with train_test_split().\n\nfrom sklearn.model_selection import train_test_split\n\n\nX_train, X_test, y_train, y_test = train_test_split(df_X, df_y, test_size=0.20, random_state=0)"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#initial-neural-network",
+    "href": "chapters/40_numerai/numerai.html#initial-neural-network",
+    "title": "40  Numerai",
+    "section": "40.7 Initial Neural Network",
+    "text": "40.7 Initial Neural Network\nWe are now ready to fit our first neural network.\n\nimport random\nimport tensorflow as tf\nfrom keras.layers import Dense\nfrom keras.models import Sequential\nfrom keras.optimizers import Adam\nfrom sklearn.metrics import accuracy_score\n\n2023-09-02 13:39:44.717146: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.\n2023-09-02 13:39:44.941096: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.\n2023-09-02 13:39:44.943020: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.\nTo enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.\n2023-09-02 13:39:45.900127: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT\n\n\nLet’s set our random seeds to get reproducible results.\n\ndef set_seeds(seed=100):\n    random.seed(seed)\n    np.random.seed(seed)\n    tf.random.set_seed(seed)\n\n\nset_seeds()\n\nNext, let’s build up our dense feed-forward neural network. We use 3 hidden layer with 16, 8, and 4 units, respectively.\n\nmodel = Sequential()\nmodel.add(Dense(units=16, input_dim=len(df_X.columns), activation='relu'))\nmodel.add(Dense(units=8, input_dim=len(df_X.columns), activation='relu'))\nmodel.add(Dense(units=4, input_dim=len(df_X.columns), activation='relu'))\nmodel.add(Dense(units=1, activation='sigmoid'))\nmodel.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])\n\nNow we can fit our model.\n\n%%time\nh = model.fit(X_train, y_train, epochs=10, verbose=False);\n\nCPU times: user 30.1 s, sys: 2.14 s, total: 32.2 s\nWall time: 21.2 s\n\n\nAs we can see, our neural network model performs about the same as the previous models.\n\nmodel.evaluate(X_test, y_test)\n\n602/602 [==============================] - 1s 813us/step - loss: 0.6916 - accuracy: 0.5192\n\n\n[0.6915713548660278, 0.5192068219184875]"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#dropout",
+    "href": "chapters/40_numerai/numerai.html#dropout",
+    "title": "40  Numerai",
+    "section": "40.8 Dropout",
+    "text": "40.8 Dropout\nIn this section we implement dropout regularization with our neural network. We use a slightly different architecture with 2 hidden units of 64 and 32 units, respectively.\n\nfrom keras.layers import Dropout\n\n\nset_seeds()\n\n\nmodel = Sequential()\nmodel.add(Dense(units=64, input_dim=len(df_X.columns), activation='relu'))\nmodel.add(Dropout(rate=0.1, seed=100))\nmodel.add(Dense(units=32, input_dim=len(df_X.columns), activation='relu'))\nmodel.add(Dropout(rate=0.1, seed=100))\nmodel.add(Dense(units=1, activation='sigmoid'))\nmodel.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])\n\n\n%%time\nmodel.fit(X_train, y_train, epochs=10, verbose=False);\n\nCPU times: user 32.3 s, sys: 2.01 s, total: 34.3 s\nWall time: 21.2 s\n\n\nDropout reglarization doesn’t seem to have much of an effect on our model.\n\nmodel.evaluate(X_test, y_test)\n\n602/602 [==============================] - 1s 898us/step - loss: 0.6916 - accuracy: 0.5192\n\n\n[0.6916125416755676, 0.5192068219184875]"
+  },
+  {
+    "objectID": "chapters/40_numerai/numerai.html#regularization",
+    "href": "chapters/40_numerai/numerai.html#regularization",
+    "title": "40  Numerai",
+    "section": "40.9 Regularization",
+    "text": "40.9 Regularization\nFinally we perform l1 regularization on our neural network.\n\nfrom keras.regularizers import l1, l2\n\n\nset_seeds()\n\n\nmodel = Sequential()\nmodel.add(Dense(units=64, input_dim=len(df_X.columns), activation='relu', activity_regularizer=l1(0.0005)))\nmodel.add(Dense(units=32, input_dim=len(df_X.columns), activation='relu', activity_regularizer=l1(0.0005)))\nmodel.add(Dense(units=1, activation='sigmoid'))\nmodel.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.001), metrics=['accuracy'])\n\n\n%%time\nmodel.fit(X_train, y_train, epochs=10, verbose=False);\n\nCPU times: user 29.2 s, sys: 1.75 s, total: 30.9 s\nWall time: 20.1 s\n\n\nOnce again, l1 regularization doesn’t seem improve performance that much.\n\nmodel.evaluate(X_test, y_test)\n\n602/602 [==============================] - 1s 873us/step - loss: 0.6925 - accuracy: 0.5205\n\n\n[0.6924766302108765, 0.5205045938491821]\n\n\n\nDiscussion Question: Based on our results so far, which model would you select?\n\n\n\n\n\n\n\nCode Challenge: Try some different neural architectures and see if you can improve model performance."
   }
 ]

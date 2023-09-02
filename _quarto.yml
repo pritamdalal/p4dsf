@@ -56,6 +56,7 @@ book:
       - chapters/37_student_loan_neural_network/student_loan_neural_network.ipynb
       - chapters/38_exchange_rate/exchange_rate.ipynb
       - chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.ipynb
+      - chapters/40_numerai/numerai.ipynb
     - references.qmd
 
 
