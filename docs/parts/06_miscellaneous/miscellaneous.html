@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 11&nbsp; Scatter Plots with pandas</title>
+<title>Python for Data Science in Finance - Miscellaneous</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -64,8 +30,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../chapters/12_seaborn/seaborn.html" rel="next">
-<link href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" rel="prev">
+<link href="../../chapters/42_virtual_environments/virtual_environments.html" rel="next">
+<link href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -95,9 +61,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -111,7 +74,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/02_part_visualization/part_visualization.html">Visualization</a></li><li class="breadcrumb-item"><a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with **pandas**</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/06_miscellaneous/miscellaneous.html">Miscellaneous</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -224,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></span></a>
   </div>
 </li>
@@ -445,7 +408,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../../parts/06_miscellaneous/miscellaneous.html" class="sidebar-item-text sidebar-link">
+            <a href="../../parts/06_miscellaneous/miscellaneous.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Miscellaneous</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -472,23 +435,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">11.1</span> Loading Packages</a></li>
-  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">11.2</span> Reading-In Data</a></li>
-  <li><a href="#adding-returns-and-vix-changes-to-df_spy" id="toc-adding-returns-and-vix-changes-to-df_spy" class="nav-link" data-scroll-target="#adding-returns-and-vix-changes-to-df_spy"><span class="header-section-number">11.3</span> Adding Returns and VIX Changes to <code>df_spy</code></a></li>
-  <li><a href="#scatter-plot" id="toc-scatter-plot" class="nav-link" data-scroll-target="#scatter-plot"><span class="header-section-number">11.4</span> Scatter Plot</a></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></h1>
+<h1 class="title">Miscellaneous</h1>
 </div>
 
 
@@ -503,439 +457,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>The purpose of this chapter is to demonstrate the <strong>pandas</strong> built-in functionality for creating scatter plots.</p>
-<p>The financial task we will accomplish is demonstrating SPY’s <em>implied leverage effect</em>: when the market suffers losses, implied volatility increases; when the market experiences gains, implied volatility decreases.</p>
-<p>Our measure of SPY implied volatility will be the VIX index. To verify the above relationship, we will plot SPY daily returns against daily changes in the VIX for 2016Q1-2021Q2.</p>
-<section id="loading-packages" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">11.1</span> Loading Packages</h2>
-<p>Let’s begin by loading the packages we will need.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="reading-in-data" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">11.2</span> Reading-In Data</h2>
-<p>Next, let’s use <strong>pandas_datareader</strong> to read in the SPY and VIX data.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo([<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[*********************100%***********************]  2 of 2 completed</code></pre>
-</div>
-<div class="cell-output cell-output-display">
-<div>
+<hr>
 
 
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Adj Close</th>
-<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Close</th>
-<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">High</th>
-<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Low</th>
-<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Open</th>
-<th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Volume</th>
-</tr>
-<tr class="odd">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">SPY</th>
-<th data-quarto-table-cell-role="th">^VIX</th>
-<th data-quarto-table-cell-role="th">SPY</th>
-<th data-quarto-table-cell-role="th">^VIX</th>
-<th data-quarto-table-cell-role="th">SPY</th>
-<th data-quarto-table-cell-role="th">^VIX</th>
-<th data-quarto-table-cell-role="th">SPY</th>
-<th data-quarto-table-cell-role="th">^VIX</th>
-<th data-quarto-table-cell-role="th">SPY</th>
-<th data-quarto-table-cell-role="th">^VIX</th>
-<th data-quarto-table-cell-role="th">SPY</th>
-<th data-quarto-table-cell-role="th">^VIX</th>
-</tr>
-<tr class="header">
-<th data-quarto-table-cell-role="th">Date</th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2016-01-04</td>
-<td>175.91</td>
-<td>20.70</td>
-<td>201.02</td>
-<td>20.70</td>
-<td>201.03</td>
-<td>23.36</td>
-<td>198.59</td>
-<td>20.67</td>
-<td>200.49</td>
-<td>22.48</td>
-<td>222353500</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2016-01-05</td>
-<td>176.21</td>
-<td>19.34</td>
-<td>201.36</td>
-<td>19.34</td>
-<td>201.90</td>
-<td>21.06</td>
-<td>200.05</td>
-<td>19.25</td>
-<td>201.40</td>
-<td>20.75</td>
-<td>110845800</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2016-01-06</td>
-<td>173.98</td>
-<td>20.59</td>
-<td>198.82</td>
-<td>20.59</td>
-<td>200.06</td>
-<td>21.86</td>
-<td>197.60</td>
-<td>19.80</td>
-<td>198.34</td>
-<td>21.67</td>
-<td>152112600</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">2016-01-07</td>
-<td>169.81</td>
-<td>24.99</td>
-<td>194.05</td>
-<td>24.99</td>
-<td>197.44</td>
-<td>25.86</td>
-<td>193.59</td>
-<td>22.40</td>
-<td>195.33</td>
-<td>23.22</td>
-<td>213436100</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2016-01-08</td>
-<td>167.95</td>
-<td>27.01</td>
-<td>191.92</td>
-<td>27.01</td>
-<td>195.85</td>
-<td>27.08</td>
-<td>191.58</td>
-<td>22.48</td>
-<td>195.19</td>
-<td>22.96</td>
-<td>209817200</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<p>The following code cleans up the data by isolating the the <code>Close</code> prices, resetting the index, and then changing the column names</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="st">'Close'</span>].reset_index()</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">spy</th>
-<th data-quarto-table-cell-role="th">vix</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2016-01-04</td>
-<td>201.02</td>
-<td>20.70</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2016-01-05</td>
-<td>201.36</td>
-<td>19.34</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2016-01-06</td>
-<td>198.82</td>
-<td>20.59</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2016-01-07</td>
-<td>194.05</td>
-<td>24.99</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2016-01-08</td>
-<td>191.92</td>
-<td>27.01</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</section>
-<section id="adding-returns-and-vix-changes-to-df_spy" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="adding-returns-and-vix-changes-to-df_spy"><span class="header-section-number">11.3</span> Adding Returns and VIX Changes to <code>df_spy</code></h2>
-<p>Let’s add a <code>return</code> column to <code>df_spy</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>] <span class="op">=</span> df_spy[<span class="st">'spy'</span>] <span class="op">/</span> df_spy[<span class="st">'spy'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">spy</th>
-<th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">return</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2016-01-04</td>
-<td>201.02</td>
-<td>20.70</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2016-01-05</td>
-<td>201.36</td>
-<td>19.34</td>
-<td>0.001691</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2016-01-06</td>
-<td>198.82</td>
-<td>20.59</td>
-<td>-0.012614</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2016-01-07</td>
-<td>194.05</td>
-<td>24.99</td>
-<td>-0.023992</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2016-01-08</td>
-<td>191.92</td>
-<td>27.01</td>
-<td>-0.010977</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<p>Next, let’s calculate the daily change in the VIX, and put it in a new column called <code>vix_chg</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix_chng'</span>] <span class="op">=</span> df_spy[<span class="st">'vix'</span>].diff()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">spy</th>
-<th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">return</th>
-<th data-quarto-table-cell-role="th">vix_chng</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2016-01-04</td>
-<td>201.02</td>
-<td>20.70</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2016-01-05</td>
-<td>201.36</td>
-<td>19.34</td>
-<td>0.001691</td>
-<td>-1.36</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2016-01-06</td>
-<td>198.82</td>
-<td>20.59</td>
-<td>-0.012614</td>
-<td>1.25</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2016-01-07</td>
-<td>194.05</td>
-<td>24.99</td>
-<td>-0.023992</td>
-<td>4.40</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2016-01-08</td>
-<td>191.92</td>
-<td>27.01</td>
-<td>-0.010977</td>
-<td>2.02</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<p>The <code>return</code> column in <code>df_spy</code> is expressed as a decimal, so let’s change the <code>vix</code> and <code>vix_chng</code> columns of <code>df_vix</code> to also be expressed as decimals.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix'</span>] <span class="op">=</span> df_spy[<span class="st">'vix'</span>] <span class="op">/</span> <span class="dv">100</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix_chng'</span>] <span class="op">=</span> df_spy[<span class="st">'vix_chng'</span>] <span class="op">/</span> <span class="dv">100</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-
-
-<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">spy</th>
-<th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">return</th>
-<th data-quarto-table-cell-role="th">vix_chng</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>2016-01-04</td>
-<td>201.02</td>
-<td>0.2070</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>2016-01-05</td>
-<td>201.36</td>
-<td>0.1934</td>
-<td>0.001691</td>
-<td>-0.0136</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>2016-01-06</td>
-<td>198.82</td>
-<td>0.2059</td>
-<td>-0.012614</td>
-<td>0.0125</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>2016-01-07</td>
-<td>194.05</td>
-<td>0.2499</td>
-<td>-0.023992</td>
-<td>0.0440</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>2016-01-08</td>
-<td>191.92</td>
-<td>0.2701</td>
-<td>-0.010977</td>
-<td>0.0202</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</section>
-<section id="scatter-plot" class="level2" data-number="11.4">
-<h2 data-number="11.4" class="anchored" data-anchor-id="scatter-plot"><span class="header-section-number">11.4</span> Scatter Plot</h2>
-<p>Now that we have our data wrangled, we are in position to use the <code>DataFrame.plot.scatter()</code> method to plot daily SPY return against daily changes in the VIX.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot.scatter(<span class="st">'return'</span>, <span class="st">'vix_chng'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_scatter_plots_files/figure-html/cell-8-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-<p>The following code improves the aesthetics of our plot:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot.scatter(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="st">'return'</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="st">'vix_chng'</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    grid<span class="op">=</span><span class="va">True</span> ,  </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    c<span class="op">=</span><span class="st">'k'</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span><span class="fl">0.75</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    s<span class="op">=</span><span class="dv">10</span>,  <span class="co"># changing the size of the dots</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">6</span>),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'SPY Return vs VIX Changes (2016Q1-2021Q2: daily)'</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<p><img src="pandas_scatter_plots_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
-</div>
-</div>
-
-
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1173,13 +697,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span>
+      <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../chapters/12_seaborn/seaborn.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Visualization with <strong>seaborn</strong></span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

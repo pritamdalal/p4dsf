@@ -58,6 +58,9 @@ book:
       - chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.ipynb
       - chapters/40_numerai/numerai.ipynb
       - chapters/41_exchange_rate_rnn/exchange_rate_rnn.ipynb
+    - part: parts/06_miscellaneous/miscellaneous.ipynb
+      chapters:
+      - chapters/42_virtual_environments/virtual_environments.ipynb
     - references.qmd
 
 

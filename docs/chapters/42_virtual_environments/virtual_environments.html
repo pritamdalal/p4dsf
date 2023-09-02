@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 35&nbsp; Option Volume: xgboost</title>
+<title>Python for Data Science in Finance - 42&nbsp; Virtual Enviroments</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,8 +64,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../../">
-<link href="../../parts/05_neural_networks/neural_networks.html" rel="next">
-<link href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" rel="prev">
+<link href="../../references.html" rel="next">
+<link href="../../parts/06_miscellaneous/miscellaneous.html" rel="prev">
 <script src="../../site_libs/quarto-html/quarto.js"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -95,12 +95,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -113,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: **xgboost**</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/06_miscellaneous/miscellaneous.html">Miscellaneous</a></li><li class="breadcrumb-item"><a href="../../chapters/42_virtual_environments/virtual_environments.html"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -392,7 +387,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
@@ -456,7 +451,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
   </div>
 </li>
@@ -478,13 +473,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">35.1</span> Importing Packages</a></li>
-  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">35.2</span> Reading-In Data</a></li>
-  <li><a href="#feature-selection" id="toc-feature-selection" class="nav-link" data-scroll-target="#feature-selection"><span class="header-section-number">35.3</span> Feature Selection</a></li>
-  <li><a href="#user-defined-functions" id="toc-user-defined-functions" class="nav-link" data-scroll-target="#user-defined-functions"><span class="header-section-number">35.4</span> User Defined Functions</a></li>
-  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning"><span class="header-section-number">35.5</span> Hyperparameter Tuning</a></li>
-  <li><a href="#fitting-model" id="toc-fitting-model" class="nav-link" data-scroll-target="#fitting-model"><span class="header-section-number">35.6</span> Fitting Model</a></li>
-  <li><a href="#backtest" id="toc-backtest" class="nav-link" data-scroll-target="#backtest"><span class="header-section-number">35.7</span> Backtest</a></li>
+  <li><a href="#where-do-packages-live-on-your-machine" id="toc-where-do-packages-live-on-your-machine" class="nav-link active" data-scroll-target="#where-do-packages-live-on-your-machine"><span class="header-section-number">42.1</span> Where Do Packages Live on Your Machine?</a></li>
+  <li><a href="#dist-packages-and-site-packages" id="toc-dist-packages-and-site-packages" class="nav-link" data-scroll-target="#dist-packages-and-site-packages"><span class="header-section-number">42.2</span> Dist-packages and Site-packages</a></li>
+  <li><a href="#the-need-for-virtual-environments" id="toc-the-need-for-virtual-environments" class="nav-link" data-scroll-target="#the-need-for-virtual-environments"><span class="header-section-number">42.3</span> The Need for Virtual Environments</a></li>
+  <li><a href="#what-is-a-virtual-environment" id="toc-what-is-a-virtual-environment" class="nav-link" data-scroll-target="#what-is-a-virtual-environment"><span class="header-section-number">42.4</span> What is a Virtual Environment?</a></li>
+  <li><a href="#creating-a-virtual-environment" id="toc-creating-a-virtual-environment" class="nav-link" data-scroll-target="#creating-a-virtual-environment"><span class="header-section-number">42.5</span> Creating a Virtual Environment</a></li>
+  <li><a href="#creating-a-virtual-environment-1" id="toc-creating-a-virtual-environment-1" class="nav-link" data-scroll-target="#creating-a-virtual-environment-1"><span class="header-section-number">42.6</span> Creating a Virtual Environment</a></li>
+  <li><a href="#activating-the-virtual-environment" id="toc-activating-the-virtual-environment" class="nav-link" data-scroll-target="#activating-the-virtual-environment"><span class="header-section-number">42.7</span> Activating the Virtual Environment</a></li>
+  <li><a href="#installing-packages-into-a-virtual-environment" id="toc-installing-packages-into-a-virtual-environment" class="nav-link" data-scroll-target="#installing-packages-into-a-virtual-environment"><span class="header-section-number">42.8</span> Installing Packages into a Virtual Environment</a></li>
+  <li><a href="#creating-a-requirements.txt" id="toc-creating-a-requirements.txt" class="nav-link" data-scroll-target="#creating-a-requirements.txt"><span class="header-section-number">42.9</span> Creating a <code>requirements.txt</code></a></li>
+  <li><a href="#deactivating-a-virtual-environment" id="toc-deactivating-a-virtual-environment" class="nav-link" data-scroll-target="#deactivating-a-virtual-environment"><span class="header-section-number">42.10</span> Deactivating a Virtual Environment</a></li>
+  <li><a href="#reproducing-a-development-environment-with-requirements.txt" id="toc-reproducing-a-development-environment-with-requirements.txt" class="nav-link" data-scroll-target="#reproducing-a-development-environment-with-requirements.txt"><span class="header-section-number">42.11</span> Reproducing a Development Environment with <code>requirements.txt</code></a></li>
+  <li><a href="#virtual-environments-in-jupyter-notebooks" id="toc-virtual-environments-in-jupyter-notebooks" class="nav-link" data-scroll-target="#virtual-environments-in-jupyter-notebooks"><span class="header-section-number">42.12</span> Virtual Environments in Jupyter Notebooks</a></li>
+  <li><a href="#removing-a-virtual-environment-from-a-jupyter-notebook" id="toc-removing-a-virtual-environment-from-a-jupyter-notebook" class="nav-link" data-scroll-target="#removing-a-virtual-environment-from-a-jupyter-notebook"><span class="header-section-number">42.13</span> Removing a Virtual Environment from a Jupyter Notebook</a></li>
   </ul>
 </nav>
     </div>
@@ -493,7 +494,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></h1>
+<h1 class="title"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></h1>
 </div>
 
 
@@ -508,247 +509,195 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>XGBoost is a general framework for constructing gradient boosted trees; the Python implementation is a package called <strong>xgboost</strong>.</p>
-<p>This chapter is a continuation of the option volume prediction work we have been doing in previous chapters. In particular, we show how to use <strong>xgboost</strong> in that context.</p>
-<section id="importing-packages" class="level2" data-number="35.1">
-<h2 data-number="35.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">35.1</span> Importing Packages</h2>
-<p>Let’s begin by importing the packages that we will need.</p>
+<p>Many data scientists aren’t particularly careful about knowing <em>where</em> their packages live on their machine. They usually just install their packages at the system level and then get on with their data analysis.</p>
+<p>In a high stakes context, you will want to make sure that your work is completely reproducible. Insuring reproducibility will also be important when you start collaborating with others.</p>
+<p><em>Virtual environments</em> are a way to insure reproducibility of your work; they are a specific example of the general concept of a <em>project specific library</em>.</p>
+<section id="where-do-packages-live-on-your-machine" class="level2" data-number="42.1">
+<h2 data-number="42.1" class="anchored" data-anchor-id="where-do-packages-live-on-your-machine"><span class="header-section-number">42.1</span> Where Do Packages Live on Your Machine?</h2>
+<p>Where does Python look for packages to use in your projects? You can see the default set of paths that it looks for using the following code.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> xgboost <span class="im">import</span> XGBRegressor</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="reading-in-data" class="level2" data-number="35.2">
-<h2 data-number="35.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">35.2</span> Reading-In Data</h2>
-<p>Next, let’s read-in our training data and testing data.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> pd.read_csv(<span class="st">'../data/option_train_2017.csv'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_test <span class="op">=</span> pd.read_csv(<span class="st">'../data/option_test_2018.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="feature-selection" class="level2" data-number="35.3">
-<h2 data-number="35.3" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">35.3</span> Feature Selection</h2>
-<p>For this exercise we will use all the features available in our training data set.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> [<span class="st">'iv_change_one_lag'</span>, <span class="st">'iv_change_two_lag'</span>, <span class="st">'scaled_return_one_lag'</span>, </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">'scaled_return_two_lag'</span>, <span class="st">'rank_one_lag'</span>, <span class="st">'rank_two_lag'</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">'rank_change_one_lag'</span>, <span class="st">'rank_change_two_lag'</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="user-defined-functions" class="level2" data-number="35.4">
-<h2 data-number="35.4" class="anchored" data-anchor-id="user-defined-functions"><span class="header-section-number">35.4</span> User Defined Functions</h2>
-<p>In this section we import the three custom functions that are needed to execute our backtest. These functions were introduced in a previous chapter.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> top_n_volume(n):</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    df_test <span class="op">=</span> pd.read_csv(<span class="st">"../data/option_test_2018.csv"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df_top_n_volume <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    df_test</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        .query(<span class="st">'daily_volume_rank &lt;= @n'</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">'quotedate'</span>])[[<span class="st">'totalvol'</span>]].<span class="bu">sum</span>()</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        .reset_index()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'totalvol'</span>:<span class="st">'top_'</span> <span class="op">+</span> <span class="bu">str</span>(n) <span class="op">+</span> <span class="st">'_volume'</span>})</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(df_top_n_volume)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calc_top_n_ratio(n, trade_date, df_test, model<span class="op">=</span><span class="va">None</span>, features<span class="op">=</span>[]):</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># grabbing top-n volume for each day in backtest</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    df_top_n <span class="op">=</span> top_n_volume(n)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># grabbing feature observations for trade_date</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    df_prediction <span class="op">=</span> df_test.query(<span class="st">'quotedate == @trade_date'</span>).copy()</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># selecting features from df_X</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    df_X <span class="op">=</span> df_prediction[features]</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating model predictions</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> model <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        df_prediction[<span class="st">'prediction'</span>] <span class="op">=</span> model.predict(df_X) <span class="co"># predictions based on model</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        df_prediction[<span class="st">'prediction'</span>] <span class="op">=</span> df_prediction[<span class="st">'rank_one_lag'</span>] <span class="co"># simple-rule based predictor</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># sorting by predicted rank</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    df_prediction <span class="op">=</span> df_prediction.sort_values([<span class="st">'prediction'</span>])</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating predicted top-n volume</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    predicted_top_n_volume <span class="op">=</span> df_prediction.head(n)[<span class="st">'totalvol'</span>].<span class="bu">sum</span>()</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># querying for actual top-n volume</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    actual_top_n_volume <span class="op">=</span> df_top_n.query(<span class="st">'quotedate == @trade_date'</span>)[<span class="st">'top_'</span> <span class="op">+</span> <span class="bu">str</span>(n) <span class="op">+</span> <span class="st">'_volume'</span>].values[<span class="dv">0</span>]</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return the top-n-ratio</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(predicted_top_n_volume <span class="op">/</span> actual_top_n_volume)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> backtest(n, df_test, model<span class="op">=</span><span class="va">None</span>, features<span class="op">=</span>[]):</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># all trade dates in backtest period</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    trade_dates <span class="op">=</span> df_test[<span class="st">'quotedate'</span>].unique().tolist()</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating all top-n ratios</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    top_n_ratios <span class="op">=</span> []</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ix_trade_date <span class="kw">in</span> trade_dates:</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        top_n_ratios.append(calc_top_n_ratio(n, ix_trade_date, df_test, model, features))</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># creating a dataframe of daily top-n ratios</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    df_daily <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">'trade_date'</span>:trade_dates,</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">'top_'</span><span class="op">+</span><span class="bu">str</span>(n)<span class="op">+</span><span class="st">'_volume'</span>: np.<span class="bu">round</span>(top_n_ratios, <span class="dv">3</span>),</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculating summary statistics of top-n ratios during backtest period</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    df_stats <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">'model'</span>:[<span class="bu">str</span>(model)],</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">'average'</span>:[np.mean(top_n_ratios).<span class="bu">round</span>(<span class="dv">3</span>)],</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">'std_dev'</span>:[np.std(top_n_ratios).<span class="bu">round</span>(<span class="dv">3</span>)],</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">'minimum'</span>:[np.<span class="bu">min</span>(top_n_ratios).<span class="bu">round</span>(<span class="dv">3</span>)],</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">'maximum'</span>:[np.<span class="bu">max</span>(top_n_ratios).<span class="bu">round</span>(<span class="dv">3</span>)],</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>([df_daily, df_stats])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="hyperparameter-tuning" class="level2" data-number="35.5">
-<h2 data-number="35.5" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">35.5</span> Hyperparameter Tuning</h2>
-<p>The <code>learning_rate</code> is rate at which successive trees are boosted; a lower <code>learning_rate</code> amounts to slower learning.</p>
-<p>Here we use a 5-fold cross-validation to select the optimal <code>learning_rate</code>. We will use <span class="math inline">\(R^2\)</span> as our goodness of fit metric.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_features <span class="op">=</span> df_train[features]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_label <span class="op">=</span> df_train[[<span class="st">'daily_volume_rank'</span>]]</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>alphas <span class="op">=</span> np.linspace(<span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix_alpha <span class="kw">in</span> alphas:</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>   xgb_model <span class="op">=</span> XGBRegressor(n_estimators<span class="op">=</span><span class="dv">25</span>, max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span>ix_alpha, random_state<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>   cvs <span class="op">=</span> cross_val_score(xgb_model, df_features, df_label, cv <span class="op">=</span> <span class="dv">5</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>   <span class="bu">print</span>(np.<span class="bu">round</span>(ix_alpha, <span class="dv">2</span>), cvs.mean())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>0.1 0.36246615782763447
-0.2 0.38969475875156323
-0.3 0.3910816017808643
-0.4 0.38967754013651945
-0.5 0.38808813540767895
-0.6 0.38692635332836656
-0.7 0.38474370336623864
-0.8 0.3841157442722449
-0.9 0.38194061118381856
-1.0 0.37935841896562783</code></pre>
-</div>
-</div>
-<p>As we can see, <code>learning_rate = 0.3</code> yields the highest <span class="math inline">\(R^2\)</span>.</p>
-</section>
-<section id="fitting-model" class="level2" data-number="35.6">
-<h2 data-number="35.6" class="anchored" data-anchor-id="fitting-model"><span class="header-section-number">35.6</span> Fitting Model</h2>
-<p>Now we are ready to fit the our model with <code>learning_rate = 0.3</code>. Notice that we are increasing <code>n_estimators=500</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_features <span class="op">=</span> df_train[features]</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_label <span class="op">=</span> df_train[[<span class="st">'daily_volume_rank'</span>]]</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>xg_model <span class="op">=</span> XGBRegressor(n_estimators<span class="op">=</span><span class="dv">500</span>, max_depth<span class="op">=</span><span class="dv">3</span>, learning_rate<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>xg_model.fit(df_features, df_label)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>sys.path</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
-<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>XGBRegressor(base_score=None, booster=None, callbacks=None,
-             colsample_bylevel=None, colsample_bynode=None,
-             colsample_bytree=None, early_stopping_rounds=None,
-             enable_categorical=False, eval_metric=None, feature_types=None,
-             gamma=None, gpu_id=None, grow_policy=None, importance_type=None,
-             interaction_constraints=None, learning_rate=0.3, max_bin=None,
-             max_cat_threshold=None, max_cat_to_onehot=None,
-             max_delta_step=None, max_depth=3, max_leaves=None,
-             min_child_weight=None, missing=nan, monotone_constraints=None,
-             n_estimators=500, n_jobs=None, num_parallel_tree=None,
-             predictor=None, random_state=0, ...)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">XGBRegressor</label><div class="sk-toggleable__content"><pre>XGBRegressor(base_score=None, booster=None, callbacks=None,
-             colsample_bylevel=None, colsample_bynode=None,
-             colsample_bytree=None, early_stopping_rounds=None,
-             enable_categorical=False, eval_metric=None, feature_types=None,
-             gamma=None, gpu_id=None, grow_policy=None, importance_type=None,
-             interaction_constraints=None, learning_rate=0.3, max_bin=None,
-             max_cat_threshold=None, max_cat_to_onehot=None,
-             max_delta_step=None, max_depth=3, max_leaves=None,
-             min_child_weight=None, missing=nan, monotone_constraints=None,
-             n_estimators=500, n_jobs=None, num_parallel_tree=None,
-             predictor=None, random_state=0, ...)</pre></div></div></div></div></div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>sklearn.metrics.r2_score(df_label, xg_model.predict(df_features))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>0.4621096942085411</code></pre>
+<pre><code>['/home/pritam/Desktop/p4dsf/chapters/42_virtual_environments',
+ '/usr/lib/python310.zip',
+ '/usr/lib/python3.10',
+ '/usr/lib/python3.10/lib-dynload',
+ '',
+ '/home/pritam/.local/lib/python3.10/site-packages',
+ '/usr/local/lib/python3.10/dist-packages',
+ '/usr/lib/python3/dist-packages']</code></pre>
 </div>
 </div>
 </section>
-<section id="backtest" class="level2" data-number="35.7">
-<h2 data-number="35.7" class="anchored" data-anchor-id="backtest"><span class="header-section-number">35.7</span> Backtest</h2>
-<p>Let’s run our backtest with the fit model.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>backtest(<span class="dv">25</span>, df_test, xg_model, features)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>[    trade_date  top_25_volume
- 0   2018-01-05          0.827
- 1   2018-01-08          0.574
- 2   2018-01-09          0.694
- 3   2018-01-10          0.535
- 4   2018-01-11          0.780
- 5   2018-01-12          0.562
- 6   2018-01-16          0.584
- 7   2018-01-17          0.552
- 8   2018-01-18          0.475
- 9   2018-01-19          0.642
- 10  2018-01-22          0.717
- 11  2018-01-23          0.563
- 12  2018-01-24          0.599
- 13  2018-01-25          0.588
- 14  2018-01-26          0.868
- 15  2018-01-29          0.577
- 16  2018-01-30          0.546
- 17  2018-01-31          0.679,
-                                                model  average  std_dev   
- 0  XGBRegressor(base_score=None, booster=None, ca...    0.631    0.105  \
- 
-    minimum  maximum  
- 0    0.475    0.868  ]</code></pre>
-</div>
-</div>
-<p>And we can compare our results to the simple rules based strategy.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>backtest(<span class="dv">25</span>, df_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>[    trade_date  top_25_volume
- 0   2018-01-05          0.768
- 1   2018-01-08          0.556
- 2   2018-01-09          0.624
- 3   2018-01-10          0.467
- 4   2018-01-11          0.678
- 5   2018-01-12          0.504
- 6   2018-01-16          0.591
- 7   2018-01-17          0.516
- 8   2018-01-18          0.419
- 9   2018-01-19          0.610
- 10  2018-01-22          0.675
- 11  2018-01-23          0.562
- 12  2018-01-24          0.550
- 13  2018-01-25          0.563
- 14  2018-01-26          0.722
- 15  2018-01-29          0.592
- 16  2018-01-30          0.525
- 17  2018-01-31          0.753,
-   model  average  std_dev  minimum  maximum
- 0  None    0.593    0.094    0.419    0.768]</code></pre>
-</div>
-</div>
-<hr>
-<p><strong>Code Challenge:</strong> Search the documentation and find a model hyper-parameter to tune. Then see how the new model performs with that hyper-parameter set to the optimal value that you found.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<hr>
+<section id="dist-packages-and-site-packages" class="level2" data-number="42.2">
+<h2 data-number="42.2" class="anchored" data-anchor-id="dist-packages-and-site-packages"><span class="header-section-number">42.2</span> Dist-packages and Site-packages</h2>
+<p>There are two types of packages: <em>dist-packages</em> and <em>site-packages</em>. Dist-packages are the <em>standard library</em> that comes out-of-the-box with every Python distribution. Site-packages are the third party packages that you install using <code>pip</code>.</p>
+<p>From what I can tell, dist-packages <em>mostly</em> live in <code>/usr/lib/python3.10</code>. And site-packages <em>mostly</em> live in <code>/home/pritam/.local/lib/python3.10/site-packages</code>.</p>
+<p>Let’s hop into the terminal and take a look.</p>
+<pre class="shell"><code>$$ ls /usr/lib/python3.8
+
+$$ ls /home/pritam/.local/lib/python3.8/site-packages</code></pre>
+<p>(Of course, the specific file paths will be different on your machine.)</p>
+</section>
+<section id="the-need-for-virtual-environments" class="level2" data-number="42.3">
+<h2 data-number="42.3" class="anchored" data-anchor-id="the-need-for-virtual-environments"><span class="header-section-number">42.3</span> The Need for Virtual Environments</h2>
+<p>Consider the following scenario where you have two projects: ProjectA and ProjectB, both of which have a dependency on the same library, ProjectC. The problem becomes apparent when we start requiring different versions of ProjectC. Maybe ProjectA needs v1.0.0, while ProjectB requires the newer v2.0.0, for example.</p>
+<p>This is a real problem for Python since it can’t differentiate between versions in the site-packages directory. So both v1.0.0 and v2.0.0 would reside in the same directory with the same name</p>
+<p>A virtual envorionment will solve this problem.</p>
+</section>
+<section id="what-is-a-virtual-environment" class="level2" data-number="42.4">
+<h2 data-number="42.4" class="anchored" data-anchor-id="what-is-a-virtual-environment"><span class="header-section-number">42.4</span> What is a Virtual Environment?</h2>
+<p>A virtual environment is simply a directory with three important components:</p>
+<ul>
+<li>A <code>site-packages/</code> folder where third party libraries are installed.</li>
+<li>Symlinks to Python executables installed on your system.</li>
+<li>Scripts that ensure executed Python code uses the Python interpreter and site packages installed inside the given virtual environment.</li>
+</ul>
+</section>
+<section id="creating-a-virtual-environment" class="level2" data-number="42.5">
+<h2 data-number="42.5" class="anchored" data-anchor-id="creating-a-virtual-environment"><span class="header-section-number">42.5</span> Creating a Virtual Environment</h2>
+<p>Let’s begin by creating a simple project to demonstrate these concepts.</p>
+<pre class="shell"><code>$$ mkdir test_project
+
+$$ cd test_project</code></pre>
+<p>Next, let’s create a simple script inside our project and call it <code>script.py</code>:</p>
+<pre><code>import pandas as pd
+import yfinance as yf
+yf.pdr_override()
+from pandas_datareader import data as pdr
+
+df = pdr.get_data_yahoo('SPY')
+print(df)</code></pre>
+<p>Let’s try running our script at the terminal:</p>
+<pre class="shell"><code>$$ python3 script.py</code></pre>
+<p>This runs just fine because our project is looking for system-wide installations of <code>pandas-datareader</code>.</p>
+<p>We can see a list of all site-packages with the following:</p>
+<pre class="shell"><code>$$ pip list</code></pre>
+<p>Notice that <code>pandas-datareader</code> is in this list.</p>
+</section>
+<section id="creating-a-virtual-environment-1" class="level2" data-number="42.6">
+<h2 data-number="42.6" class="anchored" data-anchor-id="creating-a-virtual-environment-1"><span class="header-section-number">42.6</span> Creating a Virtual Environment</h2>
+<p>Now let’s create a virtual environment in <code>test_project</code>. There are many different ways of creating virtual environments in Python. We are going to use the <strong>venv</strong> package which is part of the standard library.</p>
+<p>The command for creating a virtual environment is simply:</p>
+<pre class="shell"><code>$$ python3 -m venv .venv</code></pre>
+<p>Let’s take a look at the contents of our project directory with <code>ls -la</code>. As you can see, there is a new directory called <code>.venv</code>. If we look at the content of <code>.venv</code> we see a number of subdirectories.</p>
+<p>Here is what the important folders contains:</p>
+<ul>
+<li><code>bin</code>: files that interact with the virtual environment</li>
+<li><code>include</code>: C headers that compile the Python packages</li>
+<li><code>lib</code>: a copy of the Python version along with a site-packages folder where each dependency is installed</li>
+</ul>
+<p>Now that we have created our virtual environment inside our <code>test_project</code>, let’s try rerunning our script. As you can see it works fine.</p>
+<pre class="shell"><code>$$ python3 script.py</code></pre>
+<p>As you can see the script still runs fine.</p>
+</section>
+<section id="activating-the-virtual-environment" class="level2" data-number="42.7">
+<h2 data-number="42.7" class="anchored" data-anchor-id="activating-the-virtual-environment"><span class="header-section-number">42.7</span> Activating the Virtual Environment</h2>
+<p>Even though we have created our virtual environment, we still have not activated it. Let’s do so now.</p>
+<pre class="shell"><code>$$ source .venv/bin/activate
+
+(venv) $$</code></pre>
+<p>Notice the <code>(.venv)</code> decorator at the terminal prompt. This indicates that the virtual environment has been activated.</p>
+<p>Let’s try running our script again:</p>
+<pre class="shell"><code>$$ python3 script.py</code></pre>
+<p>This time it fails. To see why, let’s look at the search path in the Python console.</p>
+<pre class="shell"><code>&gt;&gt;&gt; import sys
+&gt;&gt;&gt; import pprint
+&gt;&gt;&gt; pprint.pprint(sys.path)</code></pre>
+<p>As you can see, <code>sys.path</code> is much shorter now. Now, all the site packages associated with the project are in <code>/home/pritam/Desktop/test_project/.venv/lib/python3.8/site-packages</code>.</p>
+<p>In the terminal, let’s look at the contents of this directory with <code>ls -la</code>. As you can see, the content of this directory are minimal and, in particular, <code>pandas-datareader</code> is not present.</p>
+<p>Another way to verify this is to run:</p>
+<pre class="shell"><code>$$ pip list</code></pre>
+</section>
+<section id="installing-packages-into-a-virtual-environment" class="level2" data-number="42.8">
+<h2 data-number="42.8" class="anchored" data-anchor-id="installing-packages-into-a-virtual-environment"><span class="header-section-number">42.8</span> Installing Packages into a Virtual Environment</h2>
+<p>Let’s now use <code>pip</code> to install <code>pandas-datareader</code> into our virtual environment.</p>
+<pre class="shell"><code>$$ pip install pandas-datareader
+
+$$ ls /home/pritam/Desktop/test_project/.venv/lib/python3.10/site-packages</code></pre>
+<p>Now we can see that <code>/home/pritam/Desktop/test_project/venv/lib/python3.8/site-packages</code> contains <code>pandas-datareader</code> and all its dependencies. We also have a longer <code>pip list</code>.</p>
+<pre class="shell"><code>$$ pip list</code></pre>
+<p>If we try to rerun our script, it now works.</p>
+<pre class="shell"><code>$$ python3 script.py</code></pre>
+</section>
+<section id="creating-a-requirements.txt" class="level2" data-number="42.9">
+<h2 data-number="42.9" class="anchored" data-anchor-id="creating-a-requirements.txt"><span class="header-section-number">42.9</span> Creating a <code>requirements.txt</code></h2>
+<p>In order to make our project reproducible we will need to make a <code>requirements.txt</code> which will detail all the packages in our virtual environment. This is done as follows:</p>
+<pre class="shell"><code>$$ pip freeze &gt; requirements.txt</code></pre>
+<p>We now have a text file called <code>requirements.txt</code> which details all the packages in our project as well as their version numbers. Let’s check the contents of this text file:</p>
+<pre class="shell"><code>$$ cat requirements.txt</code></pre>
+</section>
+<section id="deactivating-a-virtual-environment" class="level2" data-number="42.10">
+<h2 data-number="42.10" class="anchored" data-anchor-id="deactivating-a-virtual-environment"><span class="header-section-number">42.10</span> Deactivating a Virtual Environment</h2>
+<p>Deactivating a virtual enviroment is straight forward.</p>
+<pre class="shell"><code>(venv) $$ deactivate
+
+$$</code></pre>
+<p>We can verify that our virtual environment is deactivated by running:</p>
+<pre class="shell"><code>$$ pip list</code></pre>
+<p>Notice the much longer list of system-wide site package installations.</p>
+</section>
+<section id="reproducing-a-development-environment-with-requirements.txt" class="level2" data-number="42.11">
+<h2 data-number="42.11" class="anchored" data-anchor-id="reproducing-a-development-environment-with-requirements.txt"><span class="header-section-number">42.11</span> Reproducing a Development Environment with <code>requirements.txt</code></h2>
+<p>Let’s delete the <code>.venv/</code> virtual enviroment in our <code>test_project</code> and pretend that we cloned this project from github. (Conventional wisdom is that it is best to put virtual environments in your <code>.gitignore</code>)</p>
+<pre class="shell"><code>$$ rm -rf .venv</code></pre>
+<p>Because we have the <code>requirements.txt</code> we can reproduce the set of site package installations that we had before.</p>
+<p>First, let’s create a new virtual enviroment and activate it:</p>
+<pre class="shell"><code>$$ python3 -m venv .venv/
+
+$$ source .venv/bin/activate
+
+(venv) $ </code></pre>
+<p>We can see that we once again have a minimal number of site-packages in our virtual environment.</p>
+<pre class="shell"><code>$$ pip list</code></pre>
+<p>Also, our <code>script.py</code> once again doesn’t run because <code>pandas-datareader</code> is not in the virtual environments site library.</p>
+<pre class="shell"><code>$$ python3 script.py</code></pre>
+<p>All we have to do to reproduce the development environment is run the following code:</p>
+<pre class="shell"><code>$$ pip install -r requirements.txt</code></pre>
+<p>Now we can check <code>pip list</code> and also verify that our code runs.</p>
+<pre class="shell"><code>$$ pip list
+
+$$ python3 script.py</code></pre>
+</section>
+<section id="virtual-environments-in-jupyter-notebooks" class="level2" data-number="42.12">
+<h2 data-number="42.12" class="anchored" data-anchor-id="virtual-environments-in-jupyter-notebooks"><span class="header-section-number">42.12</span> Virtual Environments in Jupyter Notebooks</h2>
+<p>Working with virtual environments in Jupyter is a little more tricky.</p>
+<p>Let’s begin by creating fresh virtual environment in our project and activating it.</p>
+<pre class="shell"><code>$$ deactivate
+
+$$ rm -rf .venv/
+
+$$ python3 -m venv .venv
+
+$$ source .venv/bin/activate</code></pre>
+<p>You can verify that our script once again does not run in the project.</p>
+<p>Next, let’s create a blank Jupyter notebook in our project and call it <code>notebook.ipynb</code>. And let’s type the following code in a cell and run it:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Notice that this is the same code that is in <code>script.py</code>, yet it runs even though the virtual environment is activated and <code>script.py</code> doesn’t run.</p>
+<p>The reason for this is that behind the scenes of a Jupyter notebook, the computational engine is an <em>IPython kernel</em>. In order to use a virtual environment in a Jupyter notebook you have to take the extra step of registering it as a kernel. That is what we will do next with the following commands:</p>
+<pre class="shell"><code>$$ pip install ipykernel
+
+$$ python3 -m ipykernel install --user --name=.venv
+
+$$ cat /home/pritam/.local/share/jupyter/kernels/.venv/kernel.json</code></pre>
+<p>Notice that <code>.venv</code> is now available in the JupyterLab launcher.</p>
+<p>Go into <code>notebook.ipynb</code> and choose the <code>.venv</code> kernel that appears in the drop down menu. Now, rerun the code chunk from above and you will find that it doesn’t work. This is because we are now working in the context of <code>.venv</code> which doesn’t have <code>pandas-datareader</code> in it.</p>
+</section>
+<section id="removing-a-virtual-environment-from-a-jupyter-notebook" class="level2" data-number="42.13">
+<h2 data-number="42.13" class="anchored" data-anchor-id="removing-a-virtual-environment-from-a-jupyter-notebook"><span class="header-section-number">42.13</span> Removing a Virtual Environment from a Jupyter Notebook</h2>
+<p>It is straight forward to remove a virtual environment kernel. To see all the available kernels run the following:</p>
+<pre class="shell"><code>$$ jupyter kernelspec list</code></pre>
+<p>Notice that <code>.venv</code> isn’t the list.</p>
+<p>To remove the <code>.venv</code> kernel simply run the following code:</p>
+<pre class="shell"><code>$$ jupyter kernelspec uninstall .venv</code></pre>
+<p>You can rerun <code>jupyter kernelspec list</code> to verify that the kernel has been removed. It is also no longer available in the JupyterLab launcher.</p>
 
 
 </section>
@@ -989,13 +938,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span>
+      <a href="../../parts/06_miscellaneous/miscellaneous.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Miscellaneous</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../../parts/05_neural_networks/neural_networks.html" class="pagination-link">
-        <span class="nav-page-text">Neural Networks</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../../references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

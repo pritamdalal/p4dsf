@@ -2252,5 +2252,96 @@
     "title": "41  Exchange Rate: Recurrent Neural Network",
     "section": "41.9 Deep RNNs",
     "text": "41.9 Deep RNNs\nIn this section we create a deep (multilayer) RNN with dropout regularization.\n\nfrom keras.layers import Dropout\n\nThis user defined function creates the deep RNN.\n\ndef create_deep_rnn_model(hl=2, hu=100, layer='SimpleRNN', \n                          optimizer='rmsprop', features=1,\n                          dropout=False, rate=0.3, seed=100):\n    if hl &lt;= 2: hl = 2\n    if layer == 'SimpleRNN':\n        layer = SimpleRNN\n    else:\n        layer = LSTM\n    model = Sequential()\n    model.add(layer(hu, input_shape=(lags, features), return_sequences=True,))\n    if dropout:\n        model.add(Dropout(rate, seed=seed))\n    for _ in range(2, hl):\n        model.add(layer(hu, return_sequences=True))\n        if dropout:\n            model.add(Dropout(rate, seed=seed))\n    model.add(layer(hu))\n    model.add(Dense(1, activation='sigmoid'))\n    model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])\n    return model\n\nNext, we set the seeds and create the model.\n\nset_seeds()\nmodel = create_deep_rnn_model(hl=2, hu=50, layer='SimpleRNN', features=len(data.columns), dropout=True, rate=0.3)\n\nThis model summary give some information about the neural network that we have created.\n\nmodel.summary()\n\nModel: \"sequential_5\"\n_________________________________________________________________\n Layer (type)                Output Shape              Param #   \n=================================================================\n simple_rnn_4 (SimpleRNN)    (None, 5, 50)             2750      \n                                                                 \n dropout (Dropout)           (None, 5, 50)             0         \n                                                                 \n simple_rnn_5 (SimpleRNN)    (None, 50)                5050      \n                                                                 \n dense_5 (Dense)             (None, 1)                 51        \n                                                                 \n=================================================================\nTotal params: 7851 (30.67 KB)\nTrainable params: 7851 (30.67 KB)\nNon-trainable params: 0 (0.00 Byte)\n_________________________________________________________________\n\n\nLet’s fit the model.\n\n%%time\nmodel.fit(g, epochs=200, steps_per_epoch=10, verbose=False, class_weight=cw(train_y));\n\nCPU times: user 16.7 s, sys: 1e+03 ms, total: 17.7 s\nWall time: 9.5 s\n\n\nNext we make our predictions.\n\ny = np.where(model.predict(g_, batch_size=None) &gt; 0.5, 1, 0).flatten()\n\n175/175 [==============================] - 0s 1ms/step\n\n\n\nnp.bincount(y)\n\narray([419, 455])\n\n\nUsing deep RNNs doesn’t seem to help performance.\n\naccuracy_score(test_y[lags:], y)\n\n0.5869565217391305"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#where-do-packages-live-on-your-machine",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#where-do-packages-live-on-your-machine",
+    "title": "42  Virtual Enviroments",
+    "section": "42.1 Where Do Packages Live on Your Machine?",
+    "text": "42.1 Where Do Packages Live on Your Machine?\nWhere does Python look for packages to use in your projects? You can see the default set of paths that it looks for using the following code.\n\nimport sys\nsys.path\n\n['/home/pritam/Desktop/p4dsf/chapters/42_virtual_environments',\n '/usr/lib/python310.zip',\n '/usr/lib/python3.10',\n '/usr/lib/python3.10/lib-dynload',\n '',\n '/home/pritam/.local/lib/python3.10/site-packages',\n '/usr/local/lib/python3.10/dist-packages',\n '/usr/lib/python3/dist-packages']"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#dist-packages-and-site-packages",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#dist-packages-and-site-packages",
+    "title": "42  Virtual Enviroments",
+    "section": "42.2 Dist-packages and Site-packages",
+    "text": "42.2 Dist-packages and Site-packages\nThere are two types of packages: dist-packages and site-packages. Dist-packages are the standard library that comes out-of-the-box with every Python distribution. Site-packages are the third party packages that you install using pip.\nFrom what I can tell, dist-packages mostly live in /usr/lib/python3.10. And site-packages mostly live in /home/pritam/.local/lib/python3.10/site-packages.\nLet’s hop into the terminal and take a look.\n$$ ls /usr/lib/python3.8\n\n$$ ls /home/pritam/.local/lib/python3.8/site-packages\n(Of course, the specific file paths will be different on your machine.)"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#the-need-for-virtual-environments",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#the-need-for-virtual-environments",
+    "title": "42  Virtual Enviroments",
+    "section": "42.3 The Need for Virtual Environments",
+    "text": "42.3 The Need for Virtual Environments\nConsider the following scenario where you have two projects: ProjectA and ProjectB, both of which have a dependency on the same library, ProjectC. The problem becomes apparent when we start requiring different versions of ProjectC. Maybe ProjectA needs v1.0.0, while ProjectB requires the newer v2.0.0, for example.\nThis is a real problem for Python since it can’t differentiate between versions in the site-packages directory. So both v1.0.0 and v2.0.0 would reside in the same directory with the same name\nA virtual envorionment will solve this problem."
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#what-is-a-virtual-environment",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#what-is-a-virtual-environment",
+    "title": "42  Virtual Enviroments",
+    "section": "42.4 What is a Virtual Environment?",
+    "text": "42.4 What is a Virtual Environment?\nA virtual environment is simply a directory with three important components:\n\nA site-packages/ folder where third party libraries are installed.\nSymlinks to Python executables installed on your system.\nScripts that ensure executed Python code uses the Python interpreter and site packages installed inside the given virtual environment."
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#creating-a-virtual-environment",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#creating-a-virtual-environment",
+    "title": "42  Virtual Enviroments",
+    "section": "42.5 Creating a Virtual Environment",
+    "text": "42.5 Creating a Virtual Environment\nLet’s begin by creating a simple project to demonstrate these concepts.\n$$ mkdir test_project\n\n$$ cd test_project\nNext, let’s create a simple script inside our project and call it script.py:\nimport pandas as pd\nimport yfinance as yf\nyf.pdr_override()\nfrom pandas_datareader import data as pdr\n\ndf = pdr.get_data_yahoo('SPY')\nprint(df)\nLet’s try running our script at the terminal:\n$$ python3 script.py\nThis runs just fine because our project is looking for system-wide installations of pandas-datareader.\nWe can see a list of all site-packages with the following:\n$$ pip list\nNotice that pandas-datareader is in this list."
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#creating-a-virtual-environment-1",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#creating-a-virtual-environment-1",
+    "title": "42  Virtual Enviroments",
+    "section": "42.6 Creating a Virtual Environment",
+    "text": "42.6 Creating a Virtual Environment\nNow let’s create a virtual environment in test_project. There are many different ways of creating virtual environments in Python. We are going to use the venv package which is part of the standard library.\nThe command for creating a virtual environment is simply:\n$$ python3 -m venv .venv\nLet’s take a look at the contents of our project directory with ls -la. As you can see, there is a new directory called .venv. If we look at the content of .venv we see a number of subdirectories.\nHere is what the important folders contains:\n\nbin: files that interact with the virtual environment\ninclude: C headers that compile the Python packages\nlib: a copy of the Python version along with a site-packages folder where each dependency is installed\n\nNow that we have created our virtual environment inside our test_project, let’s try rerunning our script. As you can see it works fine.\n$$ python3 script.py\nAs you can see the script still runs fine."
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#activating-the-virtual-environment",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#activating-the-virtual-environment",
+    "title": "42  Virtual Enviroments",
+    "section": "42.7 Activating the Virtual Environment",
+    "text": "42.7 Activating the Virtual Environment\nEven though we have created our virtual environment, we still have not activated it. Let’s do so now.\n$$ source .venv/bin/activate\n\n(venv) $$\nNotice the (.venv) decorator at the terminal prompt. This indicates that the virtual environment has been activated.\nLet’s try running our script again:\n$$ python3 script.py\nThis time it fails. To see why, let’s look at the search path in the Python console.\n&gt;&gt;&gt; import sys\n&gt;&gt;&gt; import pprint\n&gt;&gt;&gt; pprint.pprint(sys.path)\nAs you can see, sys.path is much shorter now. Now, all the site packages associated with the project are in /home/pritam/Desktop/test_project/.venv/lib/python3.8/site-packages.\nIn the terminal, let’s look at the contents of this directory with ls -la. As you can see, the content of this directory are minimal and, in particular, pandas-datareader is not present.\nAnother way to verify this is to run:\n$$ pip list"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#installing-packages-into-a-virtual-environment",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#installing-packages-into-a-virtual-environment",
+    "title": "42  Virtual Enviroments",
+    "section": "42.8 Installing Packages into a Virtual Environment",
+    "text": "42.8 Installing Packages into a Virtual Environment\nLet’s now use pip to install pandas-datareader into our virtual environment.\n$$ pip install pandas-datareader\n\n$$ ls /home/pritam/Desktop/test_project/.venv/lib/python3.10/site-packages\nNow we can see that /home/pritam/Desktop/test_project/venv/lib/python3.8/site-packages contains pandas-datareader and all its dependencies. We also have a longer pip list.\n$$ pip list\nIf we try to rerun our script, it now works.\n$$ python3 script.py"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#creating-a-requirements.txt",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#creating-a-requirements.txt",
+    "title": "42  Virtual Enviroments",
+    "section": "42.9 Creating a requirements.txt",
+    "text": "42.9 Creating a requirements.txt\nIn order to make our project reproducible we will need to make a requirements.txt which will detail all the packages in our virtual environment. This is done as follows:\n$$ pip freeze &gt; requirements.txt\nWe now have a text file called requirements.txt which details all the packages in our project as well as their version numbers. Let’s check the contents of this text file:\n$$ cat requirements.txt"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#deactivating-a-virtual-environment",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#deactivating-a-virtual-environment",
+    "title": "42  Virtual Enviroments",
+    "section": "42.10 Deactivating a Virtual Environment",
+    "text": "42.10 Deactivating a Virtual Environment\nDeactivating a virtual enviroment is straight forward.\n(venv) $$ deactivate\n\n$$\nWe can verify that our virtual environment is deactivated by running:\n$$ pip list\nNotice the much longer list of system-wide site package installations."
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#reproducing-a-development-environment-with-requirements.txt",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#reproducing-a-development-environment-with-requirements.txt",
+    "title": "42  Virtual Enviroments",
+    "section": "42.11 Reproducing a Development Environment with requirements.txt",
+    "text": "42.11 Reproducing a Development Environment with requirements.txt\nLet’s delete the .venv/ virtual enviroment in our test_project and pretend that we cloned this project from github. (Conventional wisdom is that it is best to put virtual environments in your .gitignore)\n$$ rm -rf .venv\nBecause we have the requirements.txt we can reproduce the set of site package installations that we had before.\nFirst, let’s create a new virtual enviroment and activate it:\n$$ python3 -m venv .venv/\n\n$$ source .venv/bin/activate\n\n(venv) $ \nWe can see that we once again have a minimal number of site-packages in our virtual environment.\n$$ pip list\nAlso, our script.py once again doesn’t run because pandas-datareader is not in the virtual environments site library.\n$$ python3 script.py\nAll we have to do to reproduce the development environment is run the following code:\n$$ pip install -r requirements.txt\nNow we can check pip list and also verify that our code runs.\n$$ pip list\n\n$$ python3 script.py"
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#virtual-environments-in-jupyter-notebooks",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#virtual-environments-in-jupyter-notebooks",
+    "title": "42  Virtual Enviroments",
+    "section": "42.12 Virtual Environments in Jupyter Notebooks",
+    "text": "42.12 Virtual Environments in Jupyter Notebooks\nWorking with virtual environments in Jupyter is a little more tricky.\nLet’s begin by creating fresh virtual environment in our project and activating it.\n$$ deactivate\n\n$$ rm -rf .venv/\n\n$$ python3 -m venv .venv\n\n$$ source .venv/bin/activate\nYou can verify that our script once again does not run in the project.\nNext, let’s create a blank Jupyter notebook in our project and call it notebook.ipynb. And let’s type the following code in a cell and run it:\nimport pandas as pd\nimport yfinance as yf\nyf.pdr_override()\nfrom pandas_datareader import data as pdr\n\ndf = pdr.get_data_yahoo('SPY')\nprint(df)\nNotice that this is the same code that is in script.py, yet it runs even though the virtual environment is activated and script.py doesn’t run.\nThe reason for this is that behind the scenes of a Jupyter notebook, the computational engine is an IPython kernel. In order to use a virtual environment in a Jupyter notebook you have to take the extra step of registering it as a kernel. That is what we will do next with the following commands:\n$$ pip install ipykernel\n\n$$ python3 -m ipykernel install --user --name=.venv\n\n$$ cat /home/pritam/.local/share/jupyter/kernels/.venv/kernel.json\nNotice that .venv is now available in the JupyterLab launcher.\nGo into notebook.ipynb and choose the .venv kernel that appears in the drop down menu. Now, rerun the code chunk from above and you will find that it doesn’t work. This is because we are now working in the context of .venv which doesn’t have pandas-datareader in it."
+  },
+  {
+    "objectID": "chapters/42_virtual_environments/virtual_environments.html#removing-a-virtual-environment-from-a-jupyter-notebook",
+    "href": "chapters/42_virtual_environments/virtual_environments.html#removing-a-virtual-environment-from-a-jupyter-notebook",
+    "title": "42  Virtual Enviroments",
+    "section": "42.13 Removing a Virtual Environment from a Jupyter Notebook",
+    "text": "42.13 Removing a Virtual Environment from a Jupyter Notebook\nIt is straight forward to remove a virtual environment kernel. To see all the available kernels run the following:\n$$ jupyter kernelspec list\nNotice that .venv isn’t the list.\nTo remove the .venv kernel simply run the following code:\n$$ jupyter kernelspec uninstall .venv\nYou can rerun jupyter kernelspec list to verify that the kernel has been removed. It is also no longer available in the JupyterLab launcher."
   }
 ]
