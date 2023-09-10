@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 18&nbsp; Volatility Forecasting: Close-to-Close Estimator</title>
+<title>Python for Data Science in Finance - 19&nbsp; Volatility Forecasting: Close-to-Close Estimator</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/03_data_analysis/data_analysis.html">Data Analysis</a></li><li class="breadcrumb-item"><a href="../../chapters/18_close_to_close/close_to_close.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/03_data_analysis/data_analysis.html">Data Analysis</a></li><li class="breadcrumb-item"><a href="../../chapters/18_close_to_close/close_to_close.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -261,38 +261,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/15_option_replication/option_replication.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/15a_option_replication/option_replication.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../chapters/15b_asset_allocation/asset_allocation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Asset Allocation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../chapters/16_trend_following/trend_following.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Trend Following</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trend Following</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/17_regression_mutual_fund/regression_mutual_fund.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/18_close_to_close/close_to_close.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span></a>
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/19_garch/garch.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/20_feed_grains_database/feed_grains_database.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Exploration of the Feed Grains Database</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Exploration of the Feed Grains Database</span></span></a>
   </div>
 </li>
       </ul>
@@ -309,91 +315,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/21_simple_linear_regression/simple_linear_regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Simple Linear Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Simple Linear Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></span></a>
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/24_k_nearest_neighbors_cross_validation/k_nearest_neighbors_cross_validation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">K Nearest Neighbors &amp; Cross-Validation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">K Nearest Neighbors &amp; Cross-Validation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/25_stock_prediction/stock_prediction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Predicting Stock Returns</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Predicting Stock Returns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/26_pca/pca.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/28_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/29_student_loan_overfitting/student_loan_overfitting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/32_student_loan_xgboost/student_loan_xgboost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/33_option_volume_introduction/option_volume_introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
       </ul>
@@ -410,37 +416,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/36_mnist_digit_recognition/mnist_digit_recognition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/37_student_loan_neural_network/student_loan_neural_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/38_exchange_rate/exchange_rate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/40_numerai/numerai.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
   </div>
 </li>
       </ul>
@@ -457,19 +463,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/43_pipelines_pickles/pipelines_pickles.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/44_columntransformers/columntransformers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
   </div>
 </li>
       </ul>
@@ -490,12 +496,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">18.1</span> Loading Packages</a></li>
-  <li><a href="#reading-in-spy-data-from-yahoo-finance" id="toc-reading-in-spy-data-from-yahoo-finance" class="nav-link" data-scroll-target="#reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">18.2</span> Reading-In SPY Data From Yahoo Finance</a></li>
-  <li><a href="#calculating-daily-returns-realized-volatility" id="toc-calculating-daily-returns-realized-volatility" class="nav-link" data-scroll-target="#calculating-daily-returns-realized-volatility"><span class="header-section-number">18.3</span> Calculating Daily Returns &amp; Realized Volatility</a></li>
-  <li><a href="#organizing-dates-for-backtest" id="toc-organizing-dates-for-backtest" class="nav-link" data-scroll-target="#organizing-dates-for-backtest"><span class="header-section-number">18.4</span> Organizing Dates for Backtest</a></li>
-  <li><a href="#calculating-weekly-realized-volatility" id="toc-calculating-weekly-realized-volatility" class="nav-link" data-scroll-target="#calculating-weekly-realized-volatility"><span class="header-section-number">18.5</span> Calculating Weekly Realized Volatility</a></li>
-  <li><a href="#close-to-close-estimator" id="toc-close-to-close-estimator" class="nav-link" data-scroll-target="#close-to-close-estimator"><span class="header-section-number">18.6</span> Close-to-Close Estimator</a></li>
+  <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link active" data-scroll-target="#loading-packages"><span class="header-section-number">19.1</span> Loading Packages</a></li>
+  <li><a href="#reading-in-spy-data-from-yahoo-finance" id="toc-reading-in-spy-data-from-yahoo-finance" class="nav-link" data-scroll-target="#reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">19.2</span> Reading-In SPY Data From Yahoo Finance</a></li>
+  <li><a href="#calculating-daily-returns-realized-volatility" id="toc-calculating-daily-returns-realized-volatility" class="nav-link" data-scroll-target="#calculating-daily-returns-realized-volatility"><span class="header-section-number">19.3</span> Calculating Daily Returns &amp; Realized Volatility</a></li>
+  <li><a href="#organizing-dates-for-backtest" id="toc-organizing-dates-for-backtest" class="nav-link" data-scroll-target="#organizing-dates-for-backtest"><span class="header-section-number">19.4</span> Organizing Dates for Backtest</a></li>
+  <li><a href="#calculating-weekly-realized-volatility" id="toc-calculating-weekly-realized-volatility" class="nav-link" data-scroll-target="#calculating-weekly-realized-volatility"><span class="header-section-number">19.5</span> Calculating Weekly Realized Volatility</a></li>
+  <li><a href="#close-to-close-estimator" id="toc-close-to-close-estimator" class="nav-link" data-scroll-target="#close-to-close-estimator"><span class="header-section-number">19.6</span> Close-to-Close Estimator</a></li>
   </ul>
 </nav>
     </div>
@@ -504,7 +510,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></h1>
+<h1 class="title"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></h1>
 </div>
 
 
@@ -526,8 +532,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p>Our main objective will be to implement the code for the close-to-close volatility estimator. To test our work, we will attempt to replicate Sepp’s results for <em>weekly</em> volatility forecasts for SPY (see pp 38-43).</p>
 <p>For the related project you will be asked to implement code for other estimators and a number of ETFs.</p>
-<section id="loading-packages" class="level2" data-number="18.1">
-<h2 data-number="18.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">18.1</span> Loading Packages</h2>
+<section id="loading-packages" class="level2" data-number="19.1">
+<h2 data-number="19.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">19.1</span> Loading Packages</h2>
 <p>Let’s begin by loading the packages that we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -539,8 +545,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="reading-in-spy-data-from-yahoo-finance" class="level2" data-number="18.2">
-<h2 data-number="18.2" class="anchored" data-anchor-id="reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">18.2</span> Reading-In SPY Data From Yahoo Finance</h2>
+<section id="reading-in-spy-data-from-yahoo-finance" class="level2" data-number="19.2">
+<h2 data-number="19.2" class="anchored" data-anchor-id="reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">19.2</span> Reading-In SPY Data From Yahoo Finance</h2>
 <p>Sepp’s analysis covers data starting from 1/1/2005 and ending on 4/2/2016. Let’s grab these SPY prices from Yahoo Finance using <strong>pandas_datareader</strong>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
@@ -699,8 +705,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="calculating-daily-returns-realized-volatility" class="level2" data-number="18.3">
-<h2 data-number="18.3" class="anchored" data-anchor-id="calculating-daily-returns-realized-volatility"><span class="header-section-number">18.3</span> Calculating Daily Returns &amp; Realized Volatility</h2>
+<section id="calculating-daily-returns-realized-volatility" class="level2" data-number="19.3">
+<h2 data-number="19.3" class="anchored" data-anchor-id="calculating-daily-returns-realized-volatility"><span class="header-section-number">19.3</span> Calculating Daily Returns &amp; Realized Volatility</h2>
 <p>The close-to-close estimator is a function of daily returns so let’s calculate those now. In particular, we will use log-returns.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'close'</span>]).diff()</span>
@@ -866,8 +872,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="organizing-dates-for-backtest" class="level2" data-number="18.4">
-<h2 data-number="18.4" class="anchored" data-anchor-id="organizing-dates-for-backtest"><span class="header-section-number">18.4</span> Organizing Dates for Backtest</h2>
+<section id="organizing-dates-for-backtest" class="level2" data-number="19.4">
+<h2 data-number="19.4" class="anchored" data-anchor-id="organizing-dates-for-backtest"><span class="header-section-number">19.4</span> Organizing Dates for Backtest</h2>
 <p>Organizing dates is an important step in a historical analysis.</p>
 <p>We are performing a weekly analysis, which means that in later steps we will performing aggregation calculations of daily calculations grouped into weeks. Therefore, we will need to add a column to <code>df_spy</code> that will allow us to group by weeks.</p>
 <p>The key to our approach will be to use the <code>.dt.weekday</code> attribute of the <code>trade_date</code> columns. In the following code, the variable <code>weekday</code> is a <code>Series</code> that contains the weekday associated with each date. Notice that Monday is encoded by <code>0</code> and Friday is encoded by <code>4</code>.</p>
@@ -1386,8 +1392,8 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 </section>
-<section id="calculating-weekly-realized-volatility" class="level2" data-number="18.5">
-<h2 data-number="18.5" class="anchored" data-anchor-id="calculating-weekly-realized-volatility"><span class="header-section-number">18.5</span> Calculating Weekly Realized Volatility</h2>
+<section id="calculating-weekly-realized-volatility" class="level2" data-number="19.5">
+<h2 data-number="19.5" class="anchored" data-anchor-id="calculating-weekly-realized-volatility"><span class="header-section-number">19.5</span> Calculating Weekly Realized Volatility</h2>
 <p>Now that we have a <code>week_num</code> associated with each <code>trade_date</code>, we can use <code>.groupby()</code> to calculate the realized volatility.</p>
 <p>These weekly realized volatilities are the labels that we will be predicting later in our analysis.</p>
 <div class="cell">
@@ -1499,8 +1505,8 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 </section>
-<section id="close-to-close-estimator" class="level2" data-number="18.6">
-<h2 data-number="18.6" class="anchored" data-anchor-id="close-to-close-estimator"><span class="header-section-number">18.6</span> Close-to-Close Estimator</h2>
+<section id="close-to-close-estimator" class="level2" data-number="19.6">
+<h2 data-number="19.6" class="anchored" data-anchor-id="close-to-close-estimator"><span class="header-section-number">19.6</span> Close-to-Close Estimator</h2>
 <p>Let’s now implement the close-to-close estimator.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close(r):</span>
@@ -2056,12 +2062,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../../chapters/17_regression_mutual_fund/regression_mutual_fund.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../../chapters/19_garch/garch.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

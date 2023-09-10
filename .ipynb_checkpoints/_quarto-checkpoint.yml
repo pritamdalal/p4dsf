@@ -27,7 +27,8 @@ book:
       - chapters/14_bokeh_advanced/bokeh_advanced.ipynb
     - part: parts/03_data_analysis/data_analysis.ipynb
       chapters:
-      - chapters/15_option_replication/option_replication.ipynb
+      - chapters/15a_option_replication/option_replication.ipynb
+      - chapters/15b_asset_allocation/asset_allocation.ipynb
       - chapters/16_trend_following/trend_following.ipynb
       - chapters/17_regression_mutual_fund/regression_mutual_fund.ipynb
       - chapters/18_close_to_close/close_to_close.ipynb
