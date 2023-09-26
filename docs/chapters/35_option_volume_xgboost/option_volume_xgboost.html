@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 36&nbsp; Option Volume: xgboost</title>
+<title>Python for Data Science in Finance - 38&nbsp; Option Volume: xgboost</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -113,7 +113,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: **xgboost**</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/04_classical_machine_learning/classical_machine_learning.html">Classical Machine Learning</a></li><li class="breadcrumb-item"><a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Option Volume: **xgboost**</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -344,62 +344,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/26_pca/pca.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/26a_pca/pca.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../chapters/26b_principal_components_regression/principal_components_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Principal Components Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26c_principal_components_logistic_regression/principal_components_logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Principal Components Logistic Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/28_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/29_student_loan_overfitting/student_loan_overfitting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/32_student_loan_xgboost/student_loan_xgboost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/33_option_volume_introduction/option_volume_introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
       </ul>
@@ -416,37 +428,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/36_mnist_digit_recognition/mnist_digit_recognition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/37_student_loan_neural_network/student_loan_neural_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/38_exchange_rate/exchange_rate.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/40_numerai/numerai.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
   </div>
 </li>
       </ul>
@@ -463,19 +475,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/43_pipelines_pickles/pipelines_pickles.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/44_columntransformers/columntransformers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
   </div>
 </li>
       </ul>
@@ -496,13 +508,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">36.1</span> Importing Packages</a></li>
-  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">36.2</span> Reading-In Data</a></li>
-  <li><a href="#feature-selection" id="toc-feature-selection" class="nav-link" data-scroll-target="#feature-selection"><span class="header-section-number">36.3</span> Feature Selection</a></li>
-  <li><a href="#user-defined-functions" id="toc-user-defined-functions" class="nav-link" data-scroll-target="#user-defined-functions"><span class="header-section-number">36.4</span> User Defined Functions</a></li>
-  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning"><span class="header-section-number">36.5</span> Hyperparameter Tuning</a></li>
-  <li><a href="#fitting-model" id="toc-fitting-model" class="nav-link" data-scroll-target="#fitting-model"><span class="header-section-number">36.6</span> Fitting Model</a></li>
-  <li><a href="#backtest" id="toc-backtest" class="nav-link" data-scroll-target="#backtest"><span class="header-section-number">36.7</span> Backtest</a></li>
+  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">38.1</span> Importing Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">38.2</span> Reading-In Data</a></li>
+  <li><a href="#feature-selection" id="toc-feature-selection" class="nav-link" data-scroll-target="#feature-selection"><span class="header-section-number">38.3</span> Feature Selection</a></li>
+  <li><a href="#user-defined-functions" id="toc-user-defined-functions" class="nav-link" data-scroll-target="#user-defined-functions"><span class="header-section-number">38.4</span> User Defined Functions</a></li>
+  <li><a href="#hyperparameter-tuning" id="toc-hyperparameter-tuning" class="nav-link" data-scroll-target="#hyperparameter-tuning"><span class="header-section-number">38.5</span> Hyperparameter Tuning</a></li>
+  <li><a href="#fitting-model" id="toc-fitting-model" class="nav-link" data-scroll-target="#fitting-model"><span class="header-section-number">38.6</span> Fitting Model</a></li>
+  <li><a href="#backtest" id="toc-backtest" class="nav-link" data-scroll-target="#backtest"><span class="header-section-number">38.7</span> Backtest</a></li>
   </ul>
 </nav>
     </div>
@@ -511,7 +523,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></h1>
+<h1 class="title"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></h1>
 </div>
 
 
@@ -528,8 +540,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>XGBoost is a general framework for constructing gradient boosted trees; the Python implementation is a package called <strong>xgboost</strong>.</p>
 <p>This chapter is a continuation of the option volume prediction work we have been doing in previous chapters. In particular, we show how to use <strong>xgboost</strong> in that context.</p>
-<section id="importing-packages" class="level2" data-number="36.1">
-<h2 data-number="36.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">36.1</span> Importing Packages</h2>
+<section id="importing-packages" class="level2" data-number="38.1">
+<h2 data-number="38.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">38.1</span> Importing Packages</h2>
 <p>Let’s begin by importing the packages that we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -542,16 +554,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="reading-in-data" class="level2" data-number="36.2">
-<h2 data-number="36.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">36.2</span> Reading-In Data</h2>
+<section id="reading-in-data" class="level2" data-number="38.2">
+<h2 data-number="38.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">38.2</span> Reading-In Data</h2>
 <p>Next, let’s read-in our training data and testing data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> pd.read_csv(<span class="st">'../data/option_train_2017.csv'</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_test <span class="op">=</span> pd.read_csv(<span class="st">'../data/option_test_2018.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="feature-selection" class="level2" data-number="36.3">
-<h2 data-number="36.3" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">36.3</span> Feature Selection</h2>
+<section id="feature-selection" class="level2" data-number="38.3">
+<h2 data-number="38.3" class="anchored" data-anchor-id="feature-selection"><span class="header-section-number">38.3</span> Feature Selection</h2>
 <p>For this exercise we will use all the features available in our training data set.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> [<span class="st">'iv_change_one_lag'</span>, <span class="st">'iv_change_two_lag'</span>, <span class="st">'scaled_return_one_lag'</span>, </span>
@@ -559,8 +571,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">'rank_change_one_lag'</span>, <span class="st">'rank_change_two_lag'</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="user-defined-functions" class="level2" data-number="36.4">
-<h2 data-number="36.4" class="anchored" data-anchor-id="user-defined-functions"><span class="header-section-number">36.4</span> User Defined Functions</h2>
+<section id="user-defined-functions" class="level2" data-number="38.4">
+<h2 data-number="38.4" class="anchored" data-anchor-id="user-defined-functions"><span class="header-section-number">38.4</span> User Defined Functions</h2>
 <p>In this section we import the three custom functions that are needed to execute our backtest. These functions were introduced in a previous chapter.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> top_n_volume(n):</span>
@@ -631,8 +643,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>([df_daily, df_stats])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="hyperparameter-tuning" class="level2" data-number="36.5">
-<h2 data-number="36.5" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">36.5</span> Hyperparameter Tuning</h2>
+<section id="hyperparameter-tuning" class="level2" data-number="38.5">
+<h2 data-number="38.5" class="anchored" data-anchor-id="hyperparameter-tuning"><span class="header-section-number">38.5</span> Hyperparameter Tuning</h2>
 <p>The <code>learning_rate</code> is rate at which successive trees are boosted; a lower <code>learning_rate</code> amounts to slower learning.</p>
 <p>Here we use a 5-fold cross-validation to select the optimal <code>learning_rate</code>. We will use <span class="math inline">\(R^2\)</span> as our goodness of fit metric.</p>
 <div class="cell">
@@ -659,8 +671,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>As we can see, <code>learning_rate = 0.3</code> yields the highest <span class="math inline">\(R^2\)</span>.</p>
 </section>
-<section id="fitting-model" class="level2" data-number="36.6">
-<h2 data-number="36.6" class="anchored" data-anchor-id="fitting-model"><span class="header-section-number">36.6</span> Fitting Model</h2>
+<section id="fitting-model" class="level2" data-number="38.6">
+<h2 data-number="38.6" class="anchored" data-anchor-id="fitting-model"><span class="header-section-number">38.6</span> Fitting Model</h2>
 <p>Now we are ready to fit the our model with <code>learning_rate = 0.3</code>. Notice that we are increasing <code>n_estimators=500</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_features <span class="op">=</span> df_train[features]</span>
@@ -698,8 +710,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="backtest" class="level2" data-number="36.7">
-<h2 data-number="36.7" class="anchored" data-anchor-id="backtest"><span class="header-section-number">36.7</span> Backtest</h2>
+<section id="backtest" class="level2" data-number="38.7">
+<h2 data-number="38.7" class="anchored" data-anchor-id="backtest"><span class="header-section-number">38.7</span> Backtest</h2>
 <p>Let’s run our backtest with the fit model.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>backtest(<span class="dv">25</span>, df_test, xg_model, features)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1008,7 +1020,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

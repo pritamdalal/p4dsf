@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Python for Data Science in Finance - 39&nbsp; Exchange Rate Prediction</title>
+<title>Python for Data Science in Finance - 41&nbsp; Exchange Rate Prediction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -111,7 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/05_neural_networks/neural_networks.html">Neural Networks</a></li><li class="breadcrumb-item"><a href="../../chapters/38_exchange_rate/exchange_rate.html"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/05_neural_networks/neural_networks.html">Neural Networks</a></li><li class="breadcrumb-item"><a href="../../chapters/38_exchange_rate/exchange_rate.html"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -342,62 +342,74 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../chapters/26_pca/pca.html" class="sidebar-item-text sidebar-link">
+  <a href="../../chapters/26a_pca/pca.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../chapters/26b_principal_components_regression/principal_components_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Principal Components Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26c_principal_components_logistic_regression/principal_components_logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Principal Components Logistic Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/28_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/29_student_loan_overfitting/student_loan_overfitting.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/32_student_loan_xgboost/student_loan_xgboost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/33_option_volume_introduction/option_volume_introduction.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
   </div>
 </li>
       </ul>
@@ -414,37 +426,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/36_mnist_digit_recognition/mnist_digit_recognition.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/37_student_loan_neural_network/student_loan_neural_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/38_exchange_rate/exchange_rate.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/40_numerai/numerai.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
   </div>
 </li>
       </ul>
@@ -461,19 +473,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/43_pipelines_pickles/pipelines_pickles.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../chapters/44_columntransformers/columntransformers.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
   </div>
 </li>
       </ul>
@@ -494,20 +506,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#import-packages" id="toc-import-packages" class="nav-link active" data-scroll-target="#import-packages"><span class="header-section-number">39.1</span> Import Packages</a></li>
-  <li><a href="#read-in-and-wrangle-data" id="toc-read-in-and-wrangle-data" class="nav-link" data-scroll-target="#read-in-and-wrangle-data"><span class="header-section-number">39.2</span> Read-In and Wrangle Data</a></li>
-  <li><a href="#adding-features" id="toc-adding-features" class="nav-link" data-scroll-target="#adding-features"><span class="header-section-number">39.3</span> Adding Features</a></li>
-  <li><a href="#dealing-with-class-imbalance" id="toc-dealing-with-class-imbalance" class="nav-link" data-scroll-target="#dealing-with-class-imbalance"><span class="header-section-number">39.4</span> Dealing with Class Imbalance</a></li>
-  <li><a href="#creating-the-neural-network" id="toc-creating-the-neural-network" class="nav-link" data-scroll-target="#creating-the-neural-network"><span class="header-section-number">39.5</span> Creating the Neural Network</a></li>
-  <li><a href="#train-test-split" id="toc-train-test-split" class="nav-link" data-scroll-target="#train-test-split"><span class="header-section-number">39.6</span> Train Test Split</a></li>
-  <li><a href="#normalization" id="toc-normalization" class="nav-link" data-scroll-target="#normalization"><span class="header-section-number">39.7</span> Normalization</a></li>
-  <li><a href="#dropout" id="toc-dropout" class="nav-link" data-scroll-target="#dropout"><span class="header-section-number">39.8</span> Dropout</a></li>
-  <li><a href="#regularization" id="toc-regularization" class="nav-link" data-scroll-target="#regularization"><span class="header-section-number">39.9</span> Regularization</a>
+  <li><a href="#import-packages" id="toc-import-packages" class="nav-link active" data-scroll-target="#import-packages"><span class="header-section-number">41.1</span> Import Packages</a></li>
+  <li><a href="#read-in-and-wrangle-data" id="toc-read-in-and-wrangle-data" class="nav-link" data-scroll-target="#read-in-and-wrangle-data"><span class="header-section-number">41.2</span> Read-In and Wrangle Data</a></li>
+  <li><a href="#adding-features" id="toc-adding-features" class="nav-link" data-scroll-target="#adding-features"><span class="header-section-number">41.3</span> Adding Features</a></li>
+  <li><a href="#dealing-with-class-imbalance" id="toc-dealing-with-class-imbalance" class="nav-link" data-scroll-target="#dealing-with-class-imbalance"><span class="header-section-number">41.4</span> Dealing with Class Imbalance</a></li>
+  <li><a href="#creating-the-neural-network" id="toc-creating-the-neural-network" class="nav-link" data-scroll-target="#creating-the-neural-network"><span class="header-section-number">41.5</span> Creating the Neural Network</a></li>
+  <li><a href="#train-test-split" id="toc-train-test-split" class="nav-link" data-scroll-target="#train-test-split"><span class="header-section-number">41.6</span> Train Test Split</a></li>
+  <li><a href="#normalization" id="toc-normalization" class="nav-link" data-scroll-target="#normalization"><span class="header-section-number">41.7</span> Normalization</a></li>
+  <li><a href="#dropout" id="toc-dropout" class="nav-link" data-scroll-target="#dropout"><span class="header-section-number">41.8</span> Dropout</a></li>
+  <li><a href="#regularization" id="toc-regularization" class="nav-link" data-scroll-target="#regularization"><span class="header-section-number">41.9</span> Regularization</a>
   <ul class="collapse">
-  <li><a href="#l1-regularization" id="toc-l1-regularization" class="nav-link" data-scroll-target="#l1-regularization"><span class="header-section-number">39.9.1</span> <code>l1</code> Regularization</a></li>
-  <li><a href="#l2-regularization" id="toc-l2-regularization" class="nav-link" data-scroll-target="#l2-regularization"><span class="header-section-number">39.9.2</span> <code>l2</code> Regularization</a></li>
+  <li><a href="#l1-regularization" id="toc-l1-regularization" class="nav-link" data-scroll-target="#l1-regularization"><span class="header-section-number">41.9.1</span> <code>l1</code> Regularization</a></li>
+  <li><a href="#l2-regularization" id="toc-l2-regularization" class="nav-link" data-scroll-target="#l2-regularization"><span class="header-section-number">41.9.2</span> <code>l2</code> Regularization</a></li>
   </ul></li>
-  <li><a href="#optimizers" id="toc-optimizers" class="nav-link" data-scroll-target="#optimizers"><span class="header-section-number">39.10</span> Optimizers</a></li>
+  <li><a href="#optimizers" id="toc-optimizers" class="nav-link" data-scroll-target="#optimizers"><span class="header-section-number">41.10</span> Optimizers</a></li>
   </ul>
 </nav>
     </div>
@@ -516,7 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></h1>
+<h1 class="title"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></h1>
 </div>
 
 
@@ -533,8 +545,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>In this tutorial we use dense neural networks to predict directional change in the EUR-USD exchange rate during 2019. This is a classification problem.</p>
 <p>This code is taken from Chpater 7 of <em>Artificial Intelligence in Finance</em> by Yves Hilpisch.</p>
-<section id="import-packages" class="level2" data-number="39.1">
-<h2 data-number="39.1" class="anchored" data-anchor-id="import-packages"><span class="header-section-number">39.1</span> Import Packages</h2>
+<section id="import-packages" class="level2" data-number="41.1">
+<h2 data-number="41.1" class="anchored" data-anchor-id="import-packages"><span class="header-section-number">41.1</span> Import Packages</h2>
 <p>Let’s begin by importing the packages that we will need.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -545,8 +557,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="read-in-and-wrangle-data" class="level2" data-number="39.2">
-<h2 data-number="39.2" class="anchored" data-anchor-id="read-in-and-wrangle-data"><span class="header-section-number">39.2</span> Read-In and Wrangle Data</h2>
+<section id="read-in-and-wrangle-data" class="level2" data-number="41.2">
+<h2 data-number="41.2" class="anchored" data-anchor-id="read-in-and-wrangle-data"><span class="header-section-number">41.2</span> Read-In and Wrangle Data</h2>
 <p>Next, let’s read and wrangle the data.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>raw <span class="op">=</span> pd.read_csv(<span class="st">'../data/eur_usd.csv'</span>)</span>
@@ -717,8 +729,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="adding-features" class="level2" data-number="39.3">
-<h2 data-number="39.3" class="anchored" data-anchor-id="adding-features"><span class="header-section-number">39.3</span> Adding Features</h2>
+<section id="adding-features" class="level2" data-number="41.3">
+<h2 data-number="41.3" class="anchored" data-anchor-id="adding-features"><span class="header-section-number">41.3</span> Adding Features</h2>
 <p>We’ll add a variety of features that are all functions of the price history. We’ll do this via a user-defined function.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>symbol <span class="op">=</span> <span class="st">'EUR_USD'</span></span>
@@ -1118,8 +1130,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="dealing-with-class-imbalance" class="level2" data-number="39.4">
-<h2 data-number="39.4" class="anchored" data-anchor-id="dealing-with-class-imbalance"><span class="header-section-number">39.4</span> Dealing with Class Imbalance</h2>
+<section id="dealing-with-class-imbalance" class="level2" data-number="41.4">
+<h2 data-number="41.4" class="anchored" data-anchor-id="dealing-with-class-imbalance"><span class="header-section-number">41.4</span> Dealing with Class Imbalance</h2>
 <p>Classification with neural networks works best with evenly distributed classes. The <code>.fit()</code> method of networks built with <strong>keras</strong> has a <code>class_weight</code> argument that can adjust for imbalanced classes.</p>
 <p>In this section we calculate the <code>dict</code> of class weights that will be given in the <code>class_weight</code> argument below.</p>
 <div class="cell">
@@ -1161,8 +1173,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="creating-the-neural-network" class="level2" data-number="39.5">
-<h2 data-number="39.5" class="anchored" data-anchor-id="creating-the-neural-network"><span class="header-section-number">39.5</span> Creating the Neural Network</h2>
+<section id="creating-the-neural-network" class="level2" data-number="41.5">
+<h2 data-number="41.5" class="anchored" data-anchor-id="creating-the-neural-network"><span class="header-section-number">41.5</span> Creating the Neural Network</h2>
 <p>In this section we proceed to build the neural network.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
@@ -1243,8 +1255,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="train-test-split" class="level2" data-number="39.6">
-<h2 data-number="39.6" class="anchored" data-anchor-id="train-test-split"><span class="header-section-number">39.6</span> Train Test Split</h2>
+<section id="train-test-split" class="level2" data-number="41.6">
+<h2 data-number="41.6" class="anchored" data-anchor-id="train-test-split"><span class="header-section-number">41.6</span> Train Test Split</h2>
 <p>In this section, we create a holdout <code>test</code> set with 20% of the data, leaving 80% for training. This will give us a sense for how the model performs out-of-sample.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>split <span class="op">=</span> <span class="bu">int</span>(<span class="bu">len</span>(data) <span class="op">*</span> <span class="fl">0.8</span>)</span>
@@ -1309,8 +1321,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="normalization" class="level2" data-number="39.7">
-<h2 data-number="39.7" class="anchored" data-anchor-id="normalization"><span class="header-section-number">39.7</span> Normalization</h2>
+<section id="normalization" class="level2" data-number="41.7">
+<h2 data-number="41.7" class="anchored" data-anchor-id="normalization"><span class="header-section-number">41.7</span> Normalization</h2>
 <p>Normalizing training and test data is often useful when fitting a neural network.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>mu, std <span class="op">=</span> train.mean(), train.std()</span>
@@ -1377,8 +1389,8 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </section>
-<section id="dropout" class="level2" data-number="39.8">
-<h2 data-number="39.8" class="anchored" data-anchor-id="dropout"><span class="header-section-number">39.8</span> Dropout</h2>
+<section id="dropout" class="level2" data-number="41.8">
+<h2 data-number="41.8" class="anchored" data-anchor-id="dropout"><span class="header-section-number">41.8</span> Dropout</h2>
 <p>In this section we implement drop-out regularization.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.layers <span class="im">import</span> Dropout</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1441,11 +1453,11 @@ Wall time: 4.48 s</code></pre>
 </div>
 </div>
 </section>
-<section id="regularization" class="level2" data-number="39.9">
-<h2 data-number="39.9" class="anchored" data-anchor-id="regularization"><span class="header-section-number">39.9</span> Regularization</h2>
+<section id="regularization" class="level2" data-number="41.9">
+<h2 data-number="41.9" class="anchored" data-anchor-id="regularization"><span class="header-section-number">41.9</span> Regularization</h2>
 <p>In this section we implement both Lasso and Ridge regularization.</p>
-<section id="l1-regularization" class="level3" data-number="39.9.1">
-<h3 data-number="39.9.1" class="anchored" data-anchor-id="l1-regularization"><span class="header-section-number">39.9.1</span> <code>l1</code> Regularization</h3>
+<section id="l1-regularization" class="level3" data-number="41.9.1">
+<h3 data-number="41.9.1" class="anchored" data-anchor-id="l1-regularization"><span class="header-section-number">41.9.1</span> <code>l1</code> Regularization</h3>
 <p>Let’s begin with the <code>l1</code> norm, i.e.&nbsp;Lasso regularization.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.regularizers <span class="im">import</span> l1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1510,8 +1522,8 @@ Wall time: 4.19 s</code></pre>
 </div>
 </div>
 </section>
-<section id="l2-regularization" class="level3" data-number="39.9.2">
-<h3 data-number="39.9.2" class="anchored" data-anchor-id="l2-regularization"><span class="header-section-number">39.9.2</span> <code>l2</code> Regularization</h3>
+<section id="l2-regularization" class="level3" data-number="41.9.2">
+<h3 data-number="41.9.2" class="anchored" data-anchor-id="l2-regularization"><span class="header-section-number">41.9.2</span> <code>l2</code> Regularization</h3>
 <p>Next let’s try the <code>l2</code> norm, i.e Ridge regularization.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.regularizers <span class="im">import</span> l2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1567,8 +1579,8 @@ Wall time: 4.94 s</code></pre>
 </div>
 </section>
 </section>
-<section id="optimizers" class="level2" data-number="39.10">
-<h2 data-number="39.10" class="anchored" data-anchor-id="optimizers"><span class="header-section-number">39.10</span> Optimizers</h2>
+<section id="optimizers" class="level2" data-number="41.10">
+<h2 data-number="41.10" class="anchored" data-anchor-id="optimizers"><span class="header-section-number">41.10</span> Optimizers</h2>
 <p>In this section we check the in-sample and out-of-sample accuracy for a variety of different optimizers.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb102"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1844,12 +1856,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../../chapters/37_student_loan_neural_network/student_loan_neural_network.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="../../chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
