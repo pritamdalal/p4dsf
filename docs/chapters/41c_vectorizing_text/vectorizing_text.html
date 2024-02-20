@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Science in Finance - 50&nbsp; Vectorizing Text</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/41d_sentiment_analysis_stock_headlines/sentiment_analysis_stock_headlines.html" rel="next">
+<link href="../../chapters/41b_nltk_introduction/nltk_introduction.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/06_natural_language_processing/natural_language_processing.html">Natural Language Processing</a></li><li class="breadcrumb-item"><a href="../../chapters/41c_vectorizing_text/vectorizing_text.html"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Vectorizing Text</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Science in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/01_part_basic_data_wrangling/part_basic_data_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basic Data Wrangling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 2</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/02_part_visualization/part_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/12_seaborn/seaborn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Visualization with <strong>seaborn</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/13_bokeh_basic/bokeh_basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Basic Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/14_bokeh_advanced/bokeh_advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Advanced Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/03_data_analysis/data_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/15a_option_replication/option_replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/15b_asset_allocation/asset_allocation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Asset Allocation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/16_trend_following/trend_following.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trend Following</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/17_regression_mutual_fund/regression_mutual_fund.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/18_close_to_close/close_to_close.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/19_garch/garch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/20_feed_grains_database/feed_grains_database.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Exploration of the Feed Grains Database</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/04_classical_machine_learning/classical_machine_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Classical Machine Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/21_simple_linear_regression/simple_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Simple Linear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/24_k_nearest_neighbors_cross_validation/k_nearest_neighbors_cross_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">K Nearest Neighbors &amp; Cross-Validation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/25_stock_prediction/stock_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Predicting Stock Returns</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26a_pca/pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26b_principal_components_regression/principal_components_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Principal Components Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26c_principal_components_logistic_regression/principal_components_logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Principal Components Logistic Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/28_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/29_student_loan_overfitting/student_loan_overfitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/32_student_loan_xgboost/student_loan_xgboost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/33_option_volume_introduction/option_volume_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/05_neural_networks/neural_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36a_mnist_digit_recognition/mnist_digit_recognition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36b_imdb_classification/imdb_classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">IMBD Movie Reviews</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36c_reuters_classification/reuters_classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Reuters: Classifying Newswires</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36d_boston_house_price_regression/boston_house_price_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Boston Housing Prices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/37_student_loan_neural_network/student_loan_neural_network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/38_exchange_rate/exchange_rate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/40_numerai/numerai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/06_natural_language_processing/natural_language_processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Natural Language Processing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41a_spacy_introduction/spacy_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Introduction to <strong>spaCy</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41b_nltk_introduction/nltk_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Introduction to <strong>nltk</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41c_vectorizing_text/vectorizing_text.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Vectorizing Text</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41d_sentiment_analysis_stock_headlines/sentiment_analysis_stock_headlines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Sentiment Analysis on Stock Headlines</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/07_miscellaneous/miscellaneous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Miscellaneous</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/43_pipelines_pickles/pipelines_pickles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/44_columntransformers/columntransformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">50.1</span> Importing Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">50.2</span> Reading-In Data</a></li>
+  <li><a href="#cleaning-up-headlines" id="toc-cleaning-up-headlines" class="nav-link" data-scroll-target="#cleaning-up-headlines"><span class="header-section-number">50.3</span> Cleaning up Headlines</a></li>
+  <li><a href="#word-counts---simple-example" id="toc-word-counts---simple-example" class="nav-link" data-scroll-target="#word-counts---simple-example"><span class="header-section-number">50.4</span> Word Counts - Simple Example</a></li>
+  <li><a href="#word-counts---full-data-set" id="toc-word-counts---full-data-set" class="nav-link" data-scroll-target="#word-counts---full-data-set"><span class="header-section-number">50.5</span> Word Counts - Full Data Set</a></li>
+  <li><a href="#tfidf---simple-example" id="toc-tfidf---simple-example" class="nav-link" data-scroll-target="#tfidf---simple-example"><span class="header-section-number">50.6</span> Tfidf - Simple Example</a></li>
+  <li><a href="#tfidf---full-data-set" id="toc-tfidf---full-data-set" class="nav-link" data-scroll-target="#tfidf---full-data-set"><span class="header-section-number">50.7</span> Tfidf - Full Data Set</a></li>
+  <li><a href="#word-embeddings" id="toc-word-embeddings" class="nav-link" data-scroll-target="#word-embeddings"><span class="header-section-number">50.8</span> Word Embeddings</a></li>
+  <li><a href="#word-embedding---simple-example" id="toc-word-embedding---simple-example" class="nav-link" data-scroll-target="#word-embedding---simple-example"><span class="header-section-number">50.9</span> Word Embedding - Simple Example</a></li>
+  <li><a href="#word-embedding---full-data-set" id="toc-word-embedding---full-data-set" class="nav-link" data-scroll-target="#word-embedding---full-data-set"><span class="header-section-number">50.10</span> Word Embedding - Full Data Set</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Vectorizing Text</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>Most machine learning techniques rely on numerical input data. Thus, the first step in any natural language processing exercise is to convert text data into numbers, in particular vectors/arrays of numbers.</p>
+<p>In this chapter we consider three ways of vectorizing text data:</p>
+<ol type="1">
+<li>Word/Token counts</li>
+<li>Tfidf weightings</li>
+<li>Word embeddings</li>
+</ol>
+<section id="importing-packages" class="level2" data-number="50.1">
+<h2 data-number="50.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">50.1</span> Importing Packages</h2>
+<p>Let’s begin by importing the packages that we will need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reading-in-data" class="level2" data-number="50.2">
+<h2 data-number="50.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">50.2</span> Reading-In Data</h2>
+<p>Next we read-in some labeled news data. In this data set, each financial headline is associated with a sentiment, positive or negative. We can think of the headlines as being the features, and the sentiment as being the label. In this chapter, we won’t be concerned with the labels, but rather how to turn our raw text features into meaningful numeric feature vectors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_headline <span class="op">=</span> pd.read_csv(<span class="st">'LabelledNewsData.csv'</span>, encoding<span class="op">=</span><span class="st">'unicode_escape'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_headline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">headline</th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">sentiment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1/16/2020 5:25</td>
+<td>$MMM fell on hard times but could be set to re...</td>
+<td>MMM</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1/11/2020 6:43</td>
+<td>Wolfe Research Upgrades 3M $MMM to ¡§Peer Perf...</td>
+<td>MMM</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1/9/2020 9:37</td>
+<td>3M $MMM Upgraded to ¡§Peer Perform¡¨ by Wolfe ...</td>
+<td>MMM</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1/8/2020 17:01</td>
+<td>$MMM #insideday follow up as it also opened up...</td>
+<td>MMM</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1/8/2020 7:44</td>
+<td>$MMM is best #dividend #stock out there and do...</td>
+<td>MMM</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9465</td>
+<td>4/11/2019 1:24</td>
+<td>$WMT - Walmart shifts to remodeling vs. new st...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9466</td>
+<td>4/10/2019 6:05</td>
+<td>Walmart INC $WMT Holder Texas Permanent School...</td>
+<td>WMT</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9467</td>
+<td>4/9/2019 4:38</td>
+<td>$WMT $GILD:3 Dividend Stocks Perfect for Retir...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9468</td>
+<td>4/9/2019 4:30</td>
+<td>Walmart expanding use of #robots to scan shelv...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9469</td>
+<td>4/9/2019 4:11</td>
+<td>$WMT Walmart plans to add thousands of robot h...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>9470 rows × 4 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="cleaning-up-headlines" class="level2" data-number="50.3">
+<h2 data-number="50.3" class="anchored" data-anchor-id="cleaning-up-headlines"><span class="header-section-number">50.3</span> Cleaning up Headlines</h2>
+<p>Let’s use this user-defined function to clean our data. In particular, we will lowercase all the words and remove punctuation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_text(text):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="bu">str</span>(text).lower()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f"[</span><span class="sc">{</span>re<span class="sc">.</span>escape(string.punctuation)<span class="sc">}</span><span class="ss">]"</span>, <span class="st">" "</span>, text</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">" "</span>.join(text.split())</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can use the <code>.apply()</code> method to clean all the headlines in a single line of code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_headline[<span class="st">'clean_headline'</span>] <span class="op">=</span> df_headline[<span class="st">'headline'</span>].<span class="bu">apply</span>(process_text)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_headline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">headline</th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">sentiment</th>
+<th data-quarto-table-cell-role="th">clean_headline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1/16/2020 5:25</td>
+<td>$MMM fell on hard times but could be set to re...</td>
+<td>MMM</td>
+<td>0</td>
+<td>mmm fell on hard times but could be set to reb...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1/11/2020 6:43</td>
+<td>Wolfe Research Upgrades 3M $MMM to ¡§Peer Perf...</td>
+<td>MMM</td>
+<td>1</td>
+<td>wolfe research upgrades 3m mmm to ¡§peer perfo...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1/9/2020 9:37</td>
+<td>3M $MMM Upgraded to ¡§Peer Perform¡¨ by Wolfe ...</td>
+<td>MMM</td>
+<td>1</td>
+<td>3m mmm upgraded to ¡§peer perform¡¨ by wolfe r...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1/8/2020 17:01</td>
+<td>$MMM #insideday follow up as it also opened up...</td>
+<td>MMM</td>
+<td>1</td>
+<td>mmm insideday follow up as it also opened up w...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1/8/2020 7:44</td>
+<td>$MMM is best #dividend #stock out there and do...</td>
+<td>MMM</td>
+<td>0</td>
+<td>mmm is best dividend stock out there and down ...</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9465</td>
+<td>4/11/2019 1:24</td>
+<td>$WMT - Walmart shifts to remodeling vs. new st...</td>
+<td>WMT</td>
+<td>1</td>
+<td>wmt walmart shifts to remodeling vs new stores</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9466</td>
+<td>4/10/2019 6:05</td>
+<td>Walmart INC $WMT Holder Texas Permanent School...</td>
+<td>WMT</td>
+<td>0</td>
+<td>walmart inc wmt holder texas permanent school ...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9467</td>
+<td>4/9/2019 4:38</td>
+<td>$WMT $GILD:3 Dividend Stocks Perfect for Retir...</td>
+<td>WMT</td>
+<td>1</td>
+<td>wmt gild 3 dividend stocks perfect for retirees</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9468</td>
+<td>4/9/2019 4:30</td>
+<td>Walmart expanding use of #robots to scan shelv...</td>
+<td>WMT</td>
+<td>1</td>
+<td>walmart expanding use of robots to scan shelve...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9469</td>
+<td>4/9/2019 4:11</td>
+<td>$WMT Walmart plans to add thousands of robot h...</td>
+<td>WMT</td>
+<td>1</td>
+<td>wmt walmart plans to add thousands of robot he...</td>
+</tr>
+</tbody>
+</table>
+
+<p>9470 rows × 5 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="word-counts---simple-example" class="level2" data-number="50.4">
+<h2 data-number="50.4" class="anchored" data-anchor-id="word-counts---simple-example"><span class="header-section-number">50.4</span> Word Counts - Simple Example</h2>
+<p>The simplest way of vectorizing text is by creating a vocabulary of all the unique words in the corpus (the collection of all headlines in our case) and then counting how many times each word is used in each headline.</p>
+<p>Let’s start with a simple example, a corpus of two headlines.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>sentences <span class="op">=</span> [</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'The stock price of google jumps on the earning data today'</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Google plunge on China Data!'</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can use the <code>CountVectorizer</code> in <strong>sklearn</strong> to perform this kind of vectorization.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> CountVectorizer()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using the <code>.fit_transform</code> method of our <code>CountVectorizer</code> instance returns a sparse matrix with the word counts in it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(vectorizer.fit_transform(sentences))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>scipy.sparse._csr.csr_matrix</code></pre>
+</div>
+</div>
+<p>However, we can view this as regular matrix as well. Notice that each headline is represented by a row, and each column represents a particular word.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>vectorizer.fit_transform(sentences).todense()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>matrix([[0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 1],
+        [1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0]])</code></pre>
+</div>
+</div>
+<p>The entries in the returned matrix are associated with the <code>.vocabulary_</code> <code>dict</code> that is constructed when <code>.fit_transform()</code> is run. Our vocabulary consists of 12 words. The indexes associated with each work in the vocabulary correspond to the column number in the matrix representation above. Notice that the word <code>'the'</code> appears twice in the first headline.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>vectorizer.vocabulary_</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>{'the': 10,
+ 'stock': 9,
+ 'price': 8,
+ 'of': 5,
+ 'google': 3,
+ 'jumps': 4,
+ 'on': 6,
+ 'earning': 2,
+ 'data': 1,
+ 'today': 11,
+ 'plunge': 7,
+ 'china': 0}</code></pre>
+</div>
+</div>
+</section>
+<section id="word-counts---full-data-set" class="level2" data-number="50.5">
+<h2 data-number="50.5" class="anchored" data-anchor-id="word-counts---full-data-set"><span class="header-section-number">50.5</span> Word Counts - Full Data Set</h2>
+<p>Let’s now vectorize our full headline data set with <code>CountVectorizer</code>. We begin by instantiating a new <code>CountVectorizer</code>, notice that we are explicitly setting the <code>ngram_range</code> input to the constructor. If we were to, for example, set <code>ngram_range=(1, 2)</code> our <code>vectorizer</code> would produce counts for all 1-grams (words) and 2-grams (two-word sequences).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> CountVectorizer(ngram_range<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we run the <code>.fit_transform()</code> method on all of our headlines.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> vectorizer.fit_transform(df_headline[<span class="st">'clean_headline'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can see that our vocabulary consists of 9464 unique words.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(vectorizer.vocabulary_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>9464</code></pre>
+</div>
+</div>
+<p>Here is a list of the first 100 words in our <code>vocabulary_</code>. The ordering is not important.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">list</span>(vectorizer.vocabulary_.keys())[:<span class="dv">100</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>['mmm', 'fell', 'on', 'hard', 'times', 'but', 'could', 'be', 'set', 'to', 'rebound', 'soon', 'wolfe', 'research', 'upgrades', '3m', 'peer', 'perform', 'upgraded', 'by', 'stocks', 'insideday', 'follow', 'up', 'as', 'it', 'also', 'opened', 'with', 'nice', 'candle', 'that', 'closed', 'just', 'over', 'the', 'prior', 'day', 'high', 'and', 'th', 'is', 'best', 'dividend', 'stock', 'out', 'there', 'down', '40', 'in', '2019', 'xli', 'go', 'please', 'fallen', 'king', 'will', 'back', 'read', 'more', 'sign', 'for', 'updates', 'trading', 'economy', 'investing', 'mmmcelebrates', 'new', 'year', 'month', 'close', 'volume', 'above', 'long', 'term', 'support', 'resistance', 'off', 'flag', '180', 'baby', 'going', 'higher', 'mmmhasn', 'really', 'done', 'much', 'this', 'looks', 'like', 'series', 'of', 'highs', 'forming', 'recent', 'ab', 'rating', 'increased', 'neutral', 'at']</code></pre>
+</div>
+</div>
+<p>Our full set of features is a matrix with 9470 rows, one for each of the headlines, and 9464 columns, one for each of the tokens in our vocabulary.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>features.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(9470, 9464)</code></pre>
+</div>
+</div>
+<p>You can see that the feature matrix is sparse, i.e.&nbsp;mostly zeros.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>features.todense()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>matrix([[0, 0, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        ...,
+        [0, 0, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0]])</code></pre>
+</div>
+</div>
+</section>
+<section id="tfidf---simple-example" class="level2" data-number="50.6">
+<h2 data-number="50.6" class="anchored" data-anchor-id="tfidf---simple-example"><span class="header-section-number">50.6</span> Tfidf - Simple Example</h2>
+<p>TF-IDF is a word frequency score that tries to highlight words that are <em>interesting</em>. In particular, it tries to identify words that are frequent in the document (for us a headline) but not across documents (the set of all headlines). Specifially:</p>
+<p><span class="math display">\[\begin{align*}
+TF &amp;= \frac{\text{number of times term appears in the document}}{\text{total number of terms in the document}} \\[12pt]
+IDF &amp;= \ln \bigg( \frac{\text{number of documents}}{\text{number of documents containing the term}} \bigg) \\[12pt]
+TFIDF &amp;= TF * IDF
+\end{align*}\]</span></p>
+<p>Notice that if a term appears in every document, then it gets a TF-IDF score of zero.</p>
+<p>The specific implementation in <strong>sklearn</strong> is a bit more nuanced, and can be found in the <a href="https://scikit-learn.org/stable/modules/feature_extraction.html#tfidf-term-weighting">documentation</a>.</p>
+<p>Let’s explore TF-IDF weighting by way of our simple two headline corpus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sentences <span class="op">=</span> [</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'The stock price of google jumps on the earning data today'</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Google plunge on China Data!'</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As before, we simply import the <code>TfidfVectorizer</code> class from <strong>sklearn</strong>, instantiate it, and then use the <code>.fit_transform()</code> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> TfidfVectorizer()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> vectorizer.fit_transform(sentences)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can view the full vocabulary with the <code>.get_feature_names_out()</code> method.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>vectorizer.get_feature_names_out()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array(['china', 'data', 'earning', 'google', 'jumps', 'of', 'on',
+       'plunge', 'price', 'stock', 'the', 'today'], dtype=object)</code></pre>
+</div>
+</div>
+<p>As above, the resulting <code>features</code> is a sparse matrix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>features</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;2x12 sparse matrix of type '&lt;class 'numpy.float64'&gt;'
+    with 15 stored elements in Compressed Sparse Row format&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>features.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2, 12)</code></pre>
+</div>
+</div>
+<p>But we can also view it as a dense matrix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>features.todense()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>matrix([[0.        , 0.20964166, 0.29464404, 0.20964166, 0.29464404,
+         0.29464404, 0.20964166, 0.        , 0.29464404, 0.29464404,
+         0.58928809, 0.29464404],
+        [0.53309782, 0.37930349, 0.        , 0.37930349, 0.        ,
+         0.        , 0.37930349, 0.53309782, 0.        , 0.        ,
+         0.        , 0.        ]])</code></pre>
+</div>
+</div>
+</section>
+<section id="tfidf---full-data-set" class="level2" data-number="50.7">
+<h2 data-number="50.7" class="anchored" data-anchor-id="tfidf---full-data-set"><span class="header-section-number">50.7</span> Tfidf - Full Data Set</h2>
+<p>Let’s now create TF-IDF scores for our all the headlines in our data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> TfidfVectorizer()</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>features <span class="op">=</span> vectorizer.fit_transform(df_headline[<span class="st">'clean_headline'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We have a total of 9464 words/tokens in our data set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(vectorizer.get_feature_names_out())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>9464</code></pre>
+</div>
+</div>
+<p>Let’s view our features matrix. As you can see it is mostly zeros.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>features.todense()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>matrix([[0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        ...,
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.],
+        [0., 0., 0., ..., 0., 0., 0.]])</code></pre>
+</div>
+</div>
+</section>
+<section id="word-embeddings" class="level2" data-number="50.8">
+<h2 data-number="50.8" class="anchored" data-anchor-id="word-embeddings"><span class="header-section-number">50.8</span> Word Embeddings</h2>
+<p>When using both <code>CountVectorizer</code> and <code>TfidfVectorizer</code> the resulting document matrix was sparse: each headline was represented by a row of length 9464, with most of entries of matrix having a value of zero. And we are dealing with a very small corpus; the problem worsens as you deal with more and more documents. Large, sparse matrices can cause computational strain and instability with a lot of machine learning techniques.</p>
+<p>Another issue with the above vectorizers is that we are making an implicit assumption that all words are independents of one another, which clearly isn’t true when it comes to words in natural language.</p>
+<p>A tool that can help with both of these shortcomings of count-based vectorization is <em>word embeddings</em>. Word embeddings are meaningful vector representations of words such that similar/related words will have similar vector representations. There are a variety of ways training word embeddings, using deep learning or more standard statistical techniques (e.g.&nbsp;singular value decomposition). In practice, data scientists often use pre-trained word embeddings; popular ones that you will see are <strong>word2vec</strong> and <strong>Glove</strong>.</p>
+<p>For our purposes, we will use the word embedding built into the <strong>spaCy</strong> library, which includes 20,000 words each represented by a 300-dimensional vector. In order to use it let’s first import <strong>spaCy</strong> and initialize.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> spacy</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>nlp <span class="op">=</span> spacy.load(<span class="st">'en_core_web_lg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s see the vector representation of a the single word <code>'stock'</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> nlp(<span class="st">'stock'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> token <span class="kw">in</span> doc:</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(token.vector)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[-1.6763e+00 -3.4523e+00 -5.6915e+00  8.3472e+00  4.6024e+00  2.2767e+00
+  2.1329e+00  5.3314e+00 -6.0596e-01 -1.7710e+00  3.3695e+00  2.7222e-01
+ -7.9550e+00 -2.9420e+00 -4.6784e+00 -3.8186e-01  7.3475e+00 -6.1266e-01
+ -2.7009e-01 -3.9311e+00  2.2934e-03  3.7566e+00 -2.2156e+00 -1.7855e+00
+  1.3459e-01  1.8638e+00 -1.5185e+00 -5.1967e+00 -9.7408e-01 -5.9038e-01
+  3.5877e+00 -1.8775e+00 -6.5891e+00  1.9367e+00 -2.6755e+00 -1.4335e+00
+  4.5114e+00  5.2133e+00  1.8360e+00  3.1565e+00 -6.6352e-01  4.3622e+00
+  3.9877e+00  2.5044e-02 -6.4742e-01  4.4283e+00  2.9162e+00 -8.2397e-01
+  3.9111e+00  1.8230e+00  1.5662e+00 -2.8878e+00  5.9252e-01 -4.4401e+00
+ -2.8798e+00  2.1201e+00 -1.9458e+00  9.7731e-01  2.2704e+00  4.8463e-01
+  4.6493e+00 -1.6039e+00  2.9300e+00  6.6515e-01  2.1048e-01 -2.3328e-02
+ -3.1912e-01  1.7723e-01  4.1515e-01  6.2709e+00 -3.2902e+00 -2.3934e+00
+ -6.9308e-01 -5.1802e-02  6.8780e-02  6.7266e+00 -1.6526e+00  1.5962e+00
+  1.7972e+00 -1.4440e+00  6.3026e-01  4.6175e+00  3.3603e+00 -1.1202e+00
+ -1.8589e+00 -6.1743e+00  3.5384e+00  2.3665e+00 -9.8189e-01  4.1655e+00
+ -2.4285e+00  7.5670e-01 -1.7252e+00 -1.5681e+00 -9.4928e-01 -1.2734e+00
+ -1.6606e+00 -2.3173e+00  3.1477e+00  2.6673e+00  2.5674e+00 -3.0276e+00
+  6.4479e-01 -3.1643e+00  2.8483e+00  8.4654e+00 -3.3200e+00  1.2916e-01
+  1.7395e+00 -5.6147e+00  2.4686e+00  1.4046e+00 -1.0230e+00 -1.9217e+00
+ -2.3065e+00  1.2972e+00 -9.6079e-01 -2.4651e+00  1.7355e+00  1.3315e-01
+  6.3507e+00 -2.1148e+00  7.8635e-01  7.2813e+00 -1.8639e+00 -1.5139e+00
+  4.4814e-01 -1.1461e+00  3.2486e+00  2.4795e+00  1.9326e+00 -1.9252e+00
+  3.6193e+00  2.4704e+00 -1.4097e+00  1.7363e+00  1.5612e+00 -4.6142e+00
+ -9.3577e-01  1.3950e+00 -2.3507e+00 -1.0074e+00  1.1132e-03 -3.4705e+00
+ -2.0218e+00  1.6153e+00  2.7409e+00  2.5575e+00 -1.1008e+00  2.2038e+00
+ -8.0433e-01  4.0752e-01  2.4420e+00  4.2802e+00  1.4776e+00 -1.0761e+00
+  2.3264e+00  1.2229e+00  3.1610e+00 -1.3399e+00  1.1327e+00 -5.8715e-01
+  4.7389e+00 -3.1430e+00 -1.9311e+00  1.6331e+00 -3.0877e+00  3.8101e+00
+  3.7124e+00  2.3251e-02 -4.5838e+00  1.3238e-01 -2.0460e+00 -1.7474e+00
+ -3.9481e+00  3.0944e+00 -9.5598e-01 -3.3975e+00 -2.8340e+00  3.8619e+00
+  2.8206e+00  3.5016e+00  1.1840e+00 -1.9005e+00 -1.3859e+00 -1.8144e+00
+ -1.3462e+00 -3.5175e+00  2.0150e+00 -8.7826e-01  3.6011e+00  2.6540e+00
+ -1.4246e+00 -1.2586e+00  6.5926e+00 -2.3686e+00  1.4223e-01  2.1828e+00
+ -1.5752e+00  9.6421e-01 -3.9250e+00 -1.7863e+00  1.1700e+00 -4.5051e-01
+  2.3646e+00  5.7172e-01 -2.2555e+00  3.2422e+00  6.3018e+00  1.4312e+00
+ -7.5344e-01  1.0371e+00  1.6506e-01 -3.0615e+00  3.8182e+00  5.7244e-01
+  2.2231e+00 -5.8718e+00 -3.3305e+00 -2.1815e-01  4.1500e-01 -3.3136e+00
+ -7.2296e+00 -2.6852e+00  8.9851e-01 -3.0010e+00  3.3961e+00  4.4562e+00
+  1.2803e+00  1.0441e-01  4.8864e+00 -4.6059e+00 -8.2632e-01  2.5035e+00
+  1.7968e+00 -5.4523e-01 -6.4587e-01  1.5865e+00  9.7701e-01  3.9274e-01
+ -3.3580e+00 -3.6542e+00 -2.1191e+00 -5.9851e-01 -2.2086e+00 -2.3177e+00
+  2.6334e+00  4.8581e+00  2.7726e+00 -1.5489e-01 -3.2130e+00  6.9719e-02
+ -1.0392e+00 -3.1371e+00  2.1123e+00 -1.9825e+00 -1.3587e+00 -9.0296e-01
+ -1.7229e+00  9.7099e-01 -2.8246e+00  8.9627e+00 -3.2845e+00 -6.5034e-01
+  5.7005e+00  1.7704e+00 -2.9753e+00 -4.8882e-01 -1.0026e+00  2.6338e+00
+  2.3477e+00  2.9636e+00 -3.1404e+00 -2.7079e+00 -2.7956e+00 -3.4416e+00
+ -5.2232e+00 -1.2552e+00 -1.5143e+00  1.1435e+00  5.8795e+00  4.3935e-01
+ -5.5546e-02  2.4019e+00  4.3607e+00  1.6001e-01 -2.4602e+00 -3.1904e+00
+ -4.2920e+00  6.8796e-01 -1.4090e+00  1.2255e+00  4.3329e+00 -1.3141e+00
+ -4.1550e+00 -3.5444e+00  9.1071e-01 -2.7001e+00 -1.9061e+00 -2.6581e+00]</code></pre>
+</div>
+</div>
+</section>
+<section id="word-embedding---simple-example" class="level2" data-number="50.9">
+<h2 data-number="50.9" class="anchored" data-anchor-id="word-embedding---simple-example"><span class="header-section-number">50.9</span> Word Embedding - Simple Example</h2>
+<p>Now let’s calculate the work embedding for each of the words in the first sentence of our simple two headline corpus.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sentences <span class="op">=</span> [</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'The stock price of google jumps on the earning data today'</span>,</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Google plunge on China Data!'</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First, we create a <code>doc</code> object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> nlp(sentences[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, let’s print out the vector representation of each of the words.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> token <span class="kw">in</span> doc:</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(token.vector)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[-7.2681e+00 -8.5717e-01  5.8105e+00  1.9771e+00  8.8147e+00 -5.8579e+00
+  3.7143e+00  3.5850e+00  4.7987e+00 -4.4251e+00  1.7461e+00 -3.7296e+00
+ -5.1407e+00 -1.0792e+00 -2.5555e+00  3.0755e+00  5.0141e+00  5.8525e+00
+  7.3378e+00 -2.7689e+00 -5.1641e+00 -1.9879e+00  2.9782e+00  2.1024e+00
+  4.4306e+00  8.4355e-01 -6.8742e+00 -4.2949e+00 -1.7294e-01  3.6074e+00
+  8.4379e-01  3.3419e-01 -4.8147e+00  3.5683e-02 -1.3721e+01 -4.6528e+00
+ -1.4021e+00  4.8342e-01  1.2549e+00 -4.0644e+00  3.3278e+00 -2.1590e-01
+ -5.1786e+00  3.5360e+00 -3.1575e+00 -3.5273e+00 -3.6753e+00  1.5863e+00
+ -8.1594e+00 -3.4657e+00  1.5262e+00  4.8135e+00 -3.8428e+00 -3.9082e+00
+  6.7549e-01 -3.5787e-01 -1.7806e+00  3.5284e+00 -5.1114e-02 -9.7150e-01
+ -9.0553e-01 -1.5570e+00  1.2038e+00  4.7708e+00  9.8561e-01 -2.3186e+00
+ -7.4899e+00 -9.5389e+00  8.5572e+00  2.7420e+00 -3.6270e+00  2.7456e+00
+ -6.9574e+00 -1.7190e+00 -2.9145e+00  1.1838e+00  3.7864e+00  2.0413e+00
+ -3.5808e+00  1.4319e+00  2.0528e-01 -7.0640e-01 -5.3556e+00 -2.5911e+00
+  4.4922e+00  1.6574e+00  3.9794e+00 -4.3560e+00 -2.7266e+00  1.9581e+00
+ -3.4842e+00 -3.9674e+00  3.2690e+00  6.6683e-01  3.9837e+00 -6.5997e+00
+  4.1630e+00  8.0338e+00  3.8102e-01  8.2656e+00  9.7061e-01 -5.0807e+00
+  4.9522e+00  7.5018e+00  3.8305e+00 -3.3233e+00  4.9126e+00  2.4189e-01
+  3.8218e+00 -3.9717e+00  2.4691e+00  1.3721e+01 -8.9664e+00  1.0610e+01
+  6.9425e-01 -1.1082e+01 -5.6883e+00  2.3287e+00  1.6451e+00  3.6006e+00
+  1.2588e-01 -6.1956e+00  1.1455e+01  5.6682e+00 -5.0251e-01 -9.8515e-01
+  8.8902e-02 -4.0213e+00  3.6134e+00 -9.0936e+00 -1.4555e+01 -2.5591e+00
+  4.0959e+00 -3.5929e-01  1.0219e+00  3.9402e+00  8.0495e-01 -3.6023e+00
+  2.6394e+00 -1.5258e-01 -2.6182e+00 -2.6268e-01 -2.1610e+00  2.3950e+00
+  6.8842e+00  3.6034e+00  1.8058e+00  2.4528e+00  4.4088e+00 -1.0598e+00
+  6.4964e+00  5.9196e+00 -1.0261e+00 -1.7013e+00 -4.4151e+00  4.3043e+00
+ -1.7138e+00 -4.6690e+00 -5.5212e-01  5.3995e+00  1.8311e+00 -3.5820e-01
+ -3.6578e-01 -2.8578e+00 -6.4639e+00 -3.2155e+00  6.7083e-01 -1.2800e+00
+  1.2782e+00  7.8274e-01  1.9839e-01 -1.4163e+00  2.1184e+00  1.5021e+00
+ -1.8212e+00  1.6629e+00  4.0354e+00 -4.4648e+00 -3.4897e+00 -2.5765e+00
+ -3.6317e+00 -4.1619e-02  4.8660e-01  2.0712e+00 -1.9166e+00 -3.4045e+00
+ -7.6609e+00 -2.1940e+00 -2.3919e-03  8.4900e-01  1.3921e+00 -5.7830e+00
+  4.4739e+00  1.0642e+00  5.7864e+00  3.4643e+00 -5.9169e+00 -2.6925e+00
+ -1.1271e-01 -6.0462e+00  3.9285e+00 -3.0423e+00 -6.9939e-02  2.2826e-01
+  8.0214e+00  2.2098e+00 -1.1049e+01  7.6001e-02 -1.5970e+00  2.0524e-01
+  2.8063e+00  3.5245e+00 -3.9300e+00 -9.7995e-01  4.0248e+00  1.8447e+00
+ -2.0452e+00  1.1419e+00 -4.4600e-01 -9.5551e-01 -1.0224e+00  5.9224e+00
+ -6.1688e+00 -8.3840e-01 -7.9102e+00 -8.9575e-02 -2.7741e-01  4.2703e+00
+  4.0212e+00 -1.1166e-01  2.5119e+00 -5.9635e+00 -1.2320e+00  2.8199e-01
+ -4.1062e+00 -6.2923e-01 -5.2420e-01  2.5213e+00 -3.5094e+00  6.4333e+00
+  7.9466e+00 -3.3883e+00  5.2535e+00  9.4524e-02 -3.3336e+00  5.9621e+00
+ -1.0794e+00 -6.0850e+00 -3.6071e+00 -3.8496e-01  7.6137e+00 -9.1081e+00
+ -6.0037e+00 -2.4735e+00 -6.5050e-01 -6.3021e+00  8.5783e+00  1.7250e-01
+  4.3631e+00 -9.3439e+00  2.0984e-01  7.6900e-01  1.0763e+01  4.4598e-01
+ -3.6584e+00 -3.0992e+00 -3.8868e+00  4.3337e+00 -5.8037e+00 -1.1337e+00
+ -6.1562e+00  3.1820e-01 -1.0612e+00 -1.4809e+00  6.0373e+00  4.6015e-01
+ -1.5530e+00 -1.0562e+00  5.8618e-01  3.4431e+00  4.5542e+00 -3.1881e+00
+ -1.5832e+00  3.0859e+00  1.3061e+00 -8.0091e+00  7.7996e+00 -5.0644e+00
+  8.8719e+00  7.2337e-01 -1.2350e+00  1.6209e+00  7.8994e+00  1.0741e+01
+  8.1158e-01  9.0156e+00 -1.5913e+00 -5.3166e+00  3.5032e-01 -2.8850e+00]
+[-1.6763e+00 -3.4523e+00 -5.6915e+00  8.3472e+00  4.6024e+00  2.2767e+00
+  2.1329e+00  5.3314e+00 -6.0596e-01 -1.7710e+00  3.3695e+00  2.7222e-01
+ -7.9550e+00 -2.9420e+00 -4.6784e+00 -3.8186e-01  7.3475e+00 -6.1266e-01
+ -2.7009e-01 -3.9311e+00  2.2934e-03  3.7566e+00 -2.2156e+00 -1.7855e+00
+  1.3459e-01  1.8638e+00 -1.5185e+00 -5.1967e+00 -9.7408e-01 -5.9038e-01
+  3.5877e+00 -1.8775e+00 -6.5891e+00  1.9367e+00 -2.6755e+00 -1.4335e+00
+  4.5114e+00  5.2133e+00  1.8360e+00  3.1565e+00 -6.6352e-01  4.3622e+00
+  3.9877e+00  2.5044e-02 -6.4742e-01  4.4283e+00  2.9162e+00 -8.2397e-01
+  3.9111e+00  1.8230e+00  1.5662e+00 -2.8878e+00  5.9252e-01 -4.4401e+00
+ -2.8798e+00  2.1201e+00 -1.9458e+00  9.7731e-01  2.2704e+00  4.8463e-01
+  4.6493e+00 -1.6039e+00  2.9300e+00  6.6515e-01  2.1048e-01 -2.3328e-02
+ -3.1912e-01  1.7723e-01  4.1515e-01  6.2709e+00 -3.2902e+00 -2.3934e+00
+ -6.9308e-01 -5.1802e-02  6.8780e-02  6.7266e+00 -1.6526e+00  1.5962e+00
+  1.7972e+00 -1.4440e+00  6.3026e-01  4.6175e+00  3.3603e+00 -1.1202e+00
+ -1.8589e+00 -6.1743e+00  3.5384e+00  2.3665e+00 -9.8189e-01  4.1655e+00
+ -2.4285e+00  7.5670e-01 -1.7252e+00 -1.5681e+00 -9.4928e-01 -1.2734e+00
+ -1.6606e+00 -2.3173e+00  3.1477e+00  2.6673e+00  2.5674e+00 -3.0276e+00
+  6.4479e-01 -3.1643e+00  2.8483e+00  8.4654e+00 -3.3200e+00  1.2916e-01
+  1.7395e+00 -5.6147e+00  2.4686e+00  1.4046e+00 -1.0230e+00 -1.9217e+00
+ -2.3065e+00  1.2972e+00 -9.6079e-01 -2.4651e+00  1.7355e+00  1.3315e-01
+  6.3507e+00 -2.1148e+00  7.8635e-01  7.2813e+00 -1.8639e+00 -1.5139e+00
+  4.4814e-01 -1.1461e+00  3.2486e+00  2.4795e+00  1.9326e+00 -1.9252e+00
+  3.6193e+00  2.4704e+00 -1.4097e+00  1.7363e+00  1.5612e+00 -4.6142e+00
+ -9.3577e-01  1.3950e+00 -2.3507e+00 -1.0074e+00  1.1132e-03 -3.4705e+00
+ -2.0218e+00  1.6153e+00  2.7409e+00  2.5575e+00 -1.1008e+00  2.2038e+00
+ -8.0433e-01  4.0752e-01  2.4420e+00  4.2802e+00  1.4776e+00 -1.0761e+00
+  2.3264e+00  1.2229e+00  3.1610e+00 -1.3399e+00  1.1327e+00 -5.8715e-01
+  4.7389e+00 -3.1430e+00 -1.9311e+00  1.6331e+00 -3.0877e+00  3.8101e+00
+  3.7124e+00  2.3251e-02 -4.5838e+00  1.3238e-01 -2.0460e+00 -1.7474e+00
+ -3.9481e+00  3.0944e+00 -9.5598e-01 -3.3975e+00 -2.8340e+00  3.8619e+00
+  2.8206e+00  3.5016e+00  1.1840e+00 -1.9005e+00 -1.3859e+00 -1.8144e+00
+ -1.3462e+00 -3.5175e+00  2.0150e+00 -8.7826e-01  3.6011e+00  2.6540e+00
+ -1.4246e+00 -1.2586e+00  6.5926e+00 -2.3686e+00  1.4223e-01  2.1828e+00
+ -1.5752e+00  9.6421e-01 -3.9250e+00 -1.7863e+00  1.1700e+00 -4.5051e-01
+  2.3646e+00  5.7172e-01 -2.2555e+00  3.2422e+00  6.3018e+00  1.4312e+00
+ -7.5344e-01  1.0371e+00  1.6506e-01 -3.0615e+00  3.8182e+00  5.7244e-01
+  2.2231e+00 -5.8718e+00 -3.3305e+00 -2.1815e-01  4.1500e-01 -3.3136e+00
+ -7.2296e+00 -2.6852e+00  8.9851e-01 -3.0010e+00  3.3961e+00  4.4562e+00
+  1.2803e+00  1.0441e-01  4.8864e+00 -4.6059e+00 -8.2632e-01  2.5035e+00
+  1.7968e+00 -5.4523e-01 -6.4587e-01  1.5865e+00  9.7701e-01  3.9274e-01
+ -3.3580e+00 -3.6542e+00 -2.1191e+00 -5.9851e-01 -2.2086e+00 -2.3177e+00
+  2.6334e+00  4.8581e+00  2.7726e+00 -1.5489e-01 -3.2130e+00  6.9719e-02
+ -1.0392e+00 -3.1371e+00  2.1123e+00 -1.9825e+00 -1.3587e+00 -9.0296e-01
+ -1.7229e+00  9.7099e-01 -2.8246e+00  8.9627e+00 -3.2845e+00 -6.5034e-01
+  5.7005e+00  1.7704e+00 -2.9753e+00 -4.8882e-01 -1.0026e+00  2.6338e+00
+  2.3477e+00  2.9636e+00 -3.1404e+00 -2.7079e+00 -2.7956e+00 -3.4416e+00
+ -5.2232e+00 -1.2552e+00 -1.5143e+00  1.1435e+00  5.8795e+00  4.3935e-01
+ -5.5546e-02  2.4019e+00  4.3607e+00  1.6001e-01 -2.4602e+00 -3.1904e+00
+ -4.2920e+00  6.8796e-01 -1.4090e+00  1.2255e+00  4.3329e+00 -1.3141e+00
+ -4.1550e+00 -3.5444e+00  9.1071e-01 -2.7001e+00 -1.9061e+00 -2.6581e+00]
+[  0.3557     1.3631    -4.0063     1.3047     3.4156     1.248
+   1.7272    -2.0908    -3.2055    -3.2169     6.1828    -1.5574
+  -7.9111     1.4029    -2.5331     1.4355     9.2825     0.20517
+   1.9476    -2.8229    -0.38039    0.12565   -5.5213     3.6202
+  -1.1251     3.7414    -1.2723    -5.3376     0.36756    0.62385
+   6.7624     2.7573    -3.9128    -2.246      5.2641     1.9675
+   6.608      6.9186     2.8072     9.9484    -5.2882     2.8732
+   5.3347     4.3527     2.718      3.0793     5.5571     3.2451
+   3.3494    -1.687     -1.0169    -0.46895   -3.3112    -8.4233
+  -2.9423     0.51347    2.6923    -1.4597     3.6991     4.3762
+   3.3966    -0.45581    1.8202    -6.0146     3.7722    -4.174
+  -2.8997     0.66879   -3.0293     6.1149     0.29193   -0.99942
+  -1.8822     1.8814     2.1888     9.9848     4.9072     0.9667
+   4.275      0.07853   -0.5207     0.19033    1.601     -2.6658
+  -6.9102    -3.2697    -0.91648    2.4396    -4.8288     0.28618
+   0.69694   -3.2119    -0.22179   -1.3917    -1.8215    -4.6469
+   1.2421    -2.9131    -0.054702  -1.733      9.2526    -4.0448
+  -1.6324    -2.593     -3.0746    10.777     -5.1556    -7.8206
+   0.84753    2.6883    -0.49437   -2.6319     1.123      5.272
+  -2.3725     3.7565     0.96254   -1.7556     2.821      2.1598
+   8.5098    -1.0541    -0.022254   2.4784     1.0896    -2.034
+   1.6052     2.592     -2.4199    -0.092394  -3.5682    -4.9826
+   2.9708     2.0527     1.4273    -4.0424    -1.006     -1.0825
+   6.134      0.29101    3.7386    -3.6462     0.95185   -0.32348
+  -1.0776     3.2268     5.2907    -1.7712     1.9233     1.8335
+  -5.6916     2.8653    -2.9311     6.3942     1.8634     3.1235
+   1.7475    -1.5834     0.60824   -4.6574     7.6431     1.0713
+   2.7241    -0.59305   -3.3593     4.0008    -0.96084    1.3567
+  -3.465     -2.9807    -6.5963    -5.8406    -2.8842     3.3399
+  -0.24778    5.2411    -1.1303     3.2103     1.1316    -0.05312
+   0.75668    6.3266     3.6192    -1.0126    -3.1958    -3.9106
+  -1.8257     0.28288    0.31673    5.1804     0.50546   -1.1171
+   0.96381   -2.5305     3.8939    -3.7867     3.4579     1.2807
+   3.5908    -0.61353   -2.9841    -3.5663    -4.5179     6.3934
+  -0.23934   -3.7291    -2.7146     6.3909    -0.96268   -4.7113
+   1.0771    -1.7987     4.224     -3.8159     4.5057    -0.63373
+   7.5862    -9.4451   -12.606     -0.45135   -0.45428   -2.998
+  -5.3169    -6.116      2.4852    -4.6526     0.026633  11.858
+   0.62126    3.0615     2.0035    -6.058      1.9203     4.5115
+   5.1407     4.838      0.78278    3.1427     1.6331     4.624
+  -6.6955    -9.6968    -1.6107     6.2106     0.59678   -3.4263
+   4.489      5.1999     2.7298     0.43538   -5.0758     0.69616
+   2.097     -2.1618     1.4015    -1.8726     1.4163     4.2153
+   1.4484    -0.33199   -2.9034     8.4834    -2.6578     0.35398
+   5.4085     0.19749   -2.2276     3.9314    -1.2313    -1.5076
+  -0.36787    1.5373    -3.3647    -0.8658    -3.1567    -4.8183
+  -2.7521    -1.8892    -2.5976    -2.2553     7.5713    -5.6404
+  -2.7381    -2.0259     6.1568     0.45229   -3.266     -1.9599
+  -2.1476     3.6248    -2.5404     2.0778     9.4407     1.4884
+  -3.2711     3.6786     1.8381    -3.5799    -2.7689     1.4255  ]
+[-12.667     -6.568     -0.61537    4.9492    22.389      2.0801
+   2.3228    11.243      9.9503    -8.4631    15.482      7.1873
+  -5.0023     0.78472   -0.5293     3.687     -0.25719    1.6776
+  -4.9576    -4.4928    -2.8919    -6.0213    -6.5132    12.358
+  14.433     -2.3726     7.4689     5.6612    -0.83442    8.3075
+   1.8904    -8.7446     2.9264   -12.088     -5.9273    -6.8889
+  -1.5864     6.1506    -4.5834     3.9353    -5.0807     1.7025
+  -6.686      2.1081    -7.6174     3.625      3.4636    10.978
+   2.6462     0.16217   -9.3867     9.8213    -0.88525   -9.6741
+   3.9125    -0.84682   -1.2667     1.8843     3.0548   -12.389
+  -2.1142    -3.0401     5.1057    -0.029813  -4.1447     4.6207
+  -3.556     -5.2786     5.2225     4.4204    -2.5684     4.42
+  -5.5672    -7.9199    -1.5292    -4.3125   -12.033     14.956
+ -13.107      4.7516   -13.247     12.929     -1.7277     3.3617
+   5.4739     6.7001   -13.022    -11.402      1.5567     1.357
+  -8.5561    -2.7115     3.1369     1.2579    -5.3425   -12.055
+   3.3399    -1.3634    -6.4028     8.3323     7.5483     6.0207
+   2.711     17.107     -9.2652     6.2524    11.207     -8.1336
+  -0.63469    7.4826     5.9851     7.843    -10.373      2.8563
+   2.3344    -0.79072   10.623     13.145     -8.1474    -0.91547
+  -3.9093    -1.7907    12.998      4.3126    -7.9588   -12.959
+  -4.2593    -5.126      9.9037     1.1696     0.2393     5.3139
+   9.1737     5.1071     4.7454     8.6958    -4.7283    -7.3881
+  -5.353     -6.5763    -0.27503    2.7373     3.3596     5.2776
+   4.4331     2.6809    -8.1981    -3.8707    -2.5763     4.1216
+   2.0074     1.862     -3.4484     7.9878    -4.0771    -2.2948
+  -3.7501    -5.4446    -2.7036     3.7922     1.3469    11.879
+   6.4672     8.5983     3.8564    -0.67028    4.2223    -7.381
+   9.4206     6.688      2.8492   -11.221      9.7632    -3.3357
+  -7.2258    -4.9063     6.8963     5.2122    -7.218     -0.77411
+  -0.9108    -3.3884     5.7078    -0.5396    -0.52968  -10.289
+  -5.5984     9.9026     0.56485    0.033487  -2.4532   -13.305
+   7.4826    -8.3255     0.60487    5.0644    -1.2985     4.2398
+  -0.59503   -1.3722     1.6634    -5.8088    -7.5909    -3.5636
+  12.503      6.9943   -17.327     12.41      13.097     -1.6856
+   3.9169    14.395    -11.583     -2.9242     5.6316     4.5767
+   1.4372    -2.0338    -6.7832     5.1318    -1.8165    15.465
+  -0.87271    3.2441    -5.1716     5.3247     0.62725    5.6402
+   1.8897    -1.8938    11.417     -5.8655     3.8948    11.085
+   7.7894    18.608     -3.1164    -0.64892   -0.096788  -6.2979
+   7.0022    -0.21949   -2.4844     8.2987    -1.7999     4.5687
+ -12.051     -5.9399    -3.8548     3.7942    12.426     -8.4208
+ -16.285      1.4604     0.82687   -6.3887    10.292      3.2191
+  -3.3132     3.3773     3.5908    15.121     13.526      5.2244
+   2.6965     2.3931    -2.5204     2.4566     3.1298     7.3385
+  -3.8662     4.1851     9.5609    -7.1911     4.298      9.0596
+   8.894     -0.62772    4.0362     3.0782     0.82646    6.0641
+   8.9245     2.9563    -1.5334   -12.728     -1.9228     5.9504
+   7.8449    -7.1788    -5.2482     9.6856    -0.45098   -2.2526
+  -4.305      1.1597    -4.9613    -8.0021    -0.31712   -7.7062  ]
+[ 3.7562e+00  3.4803e-02  4.0002e+00 -5.2799e-01 -2.6371e+00  2.5117e+00
+  3.9916e-01 -1.0409e+00 -1.4306e+00  3.6571e-01  4.4401e+00  7.4257e+00
+ -4.8991e+00  3.6940e+00  4.2101e+00 -2.5017e-01  5.0258e+00  7.6315e-01
+  1.1029e+00 -3.1254e+00  2.1470e+00 -1.4717e+00 -5.4909e-01 -2.4578e-01
+ -2.8937e+00 -2.0240e+00 -6.5440e-01 -2.6084e+00 -1.1944e+00  4.4417e+00
+ -1.9446e+00 -1.3871e+00 -3.1931e+00  1.2637e+00  2.9838e+00  1.4758e+00
+ -7.2859e-01 -1.3881e+00  5.7673e+00  1.1898e+00  2.2369e+00 -5.0228e-01
+  1.4391e-01  3.0712e-01 -3.1392e-01  1.8436e+00  2.0167e+00  3.1291e-02
+  2.3520e+00 -1.2220e+00  8.0562e-01 -5.6068e-02 -4.1789e-01 -4.0340e+00
+ -3.2475e+00  2.2961e+00  1.5997e+00  2.7329e+00 -5.1136e-01 -1.3352e+00
+  2.6919e+00  2.0845e+00  5.4995e-01  5.5354e-02 -4.5093e+00  1.7626e+00
+ -1.4643e+00  2.4265e-01 -2.9281e+00  3.2560e+00 -1.1969e+00  8.5225e-01
+  3.3154e+00 -1.2883e+00  2.3801e+00  2.0882e+00  2.0996e+00 -6.0895e-01
+ -1.6119e+00  3.6668e+00  3.2123e+00 -8.4523e-02 -1.0055e+00  2.6612e+00
+ -2.0493e+00  2.1835e+00  4.4001e+00  3.7187e+00  4.2110e+00 -1.0782e+00
+ -2.2224e-01  5.9114e-01  8.3816e-01  2.6305e+00 -1.1104e+00 -1.1614e+00
+  6.9444e-01 -2.1641e+00  1.2863e+00 -6.9882e-01  1.7770e+00  1.8824e+00
+ -3.4370e+00  4.1212e-01  5.7856e-03  4.6937e+00 -9.1218e-01 -2.0725e+00
+ -1.3350e+00  3.7038e+00 -9.9131e-02 -2.7486e-01  2.6787e+00 -5.7369e-01
+  4.5646e-02  3.0808e+00  3.9165e-01 -3.4704e+00 -8.5082e-01 -3.6921e-01
+ -3.9185e+00 -2.1492e+00  1.5389e+00  3.8514e+00  3.0442e+00 -1.9820e+00
+  2.0034e+00  6.6019e-01 -2.9951e+00  1.4453e+00  3.9662e-01  3.0621e+00
+ -3.7669e+00  1.8265e+00  1.4839e+00 -1.2520e-01 -1.4711e+00  1.5144e+00
+  1.4587e+00  1.0615e+00  1.2814e+00  1.0061e+00  2.1538e+00  1.4074e+00
+ -3.2053e+00  7.2722e-01  2.6438e+00  2.4254e+00  1.5829e+00 -2.5160e-01
+ -1.3759e+00  3.6925e+00  2.7448e+00 -1.1481e+00 -2.3910e-01 -4.7128e+00
+  3.1542e+00  2.3102e+00  1.8641e-01 -6.4117e-01 -1.7444e+00 -2.7944e+00
+ -9.8485e-01  8.7328e-01 -3.1924e+00 -1.2416e+00  1.7226e+00  2.3581e+00
+ -3.3320e+00 -2.1890e+00 -2.1090e+00 -4.5392e-01 -4.3516e-01  4.2681e+00
+  8.5564e-01  1.6462e-01 -8.7050e-02 -1.2204e-01  1.2532e+00 -3.8592e-01
+ -3.9586e+00 -3.8751e-01 -2.7934e+00 -3.2662e+00  2.7568e+00 -5.6368e-01
+ -1.7393e+00 -3.7245e+00  2.5803e+00 -1.3199e+00 -1.2522e+00  6.8973e-01
+  2.1079e-01  5.8928e-01 -2.6544e+00  3.0252e+00  1.2452e+00 -2.1458e+00
+  3.7247e+00  2.3491e+00 -4.1666e+00  2.4885e-01 -1.7296e+00 -2.0431e+00
+  4.4783e-01  3.1395e+00 -6.2119e-01  1.4993e+00  4.0942e+00 -2.3410e+00
+  3.0062e+00 -2.0455e+00  2.1208e-01  1.8874e+00 -2.4508e+00 -1.9091e+00
+ -1.1851e+00 -3.1529e+00 -3.8249e-01  2.3645e+00 -2.8707e+00 -7.0267e-01
+ -5.8342e-01  3.6364e-01  6.7889e-01 -5.3429e-01  4.2512e+00 -2.6974e+00
+  2.6619e+00  4.6094e-02 -1.9923e+00 -1.4211e+00 -4.9816e-01 -2.1013e-01
+  6.6052e-01  2.6483e+00  8.7052e-01  2.9066e-01  1.7776e+00  2.1811e+00
+ -5.8400e+00 -2.7271e+00 -1.6872e+00  2.9853e+00  7.4001e-01  2.3683e+00
+  1.1071e+00 -2.2598e+00  4.1640e-01 -3.0519e+00 -1.5452e+00 -1.5713e+00
+ -2.9552e+00 -4.4784e+00 -3.3045e+00 -1.5405e+00  6.7254e-01 -2.9037e-01
+ -4.0867e-01  2.4950e+00  3.9767e+00 -1.4753e+00 -1.8757e+00 -7.3339e-02
+  9.0422e-01  5.2428e+00 -7.6204e-01  2.8163e+00 -1.2522e+00  1.8647e+00
+ -8.1845e-01 -3.6948e+00  4.0117e-01 -3.2185e+00 -3.2638e+00 -3.6831e+00
+  2.0234e+00  2.7771e-01  1.4944e+00  7.8395e-01 -1.0725e+00 -2.5679e-01
+  5.2524e-01  1.8357e-01  9.5195e-01  3.1257e-01  2.1916e-01  9.9122e-01
+ -2.2145e+00  1.3172e+00  2.1119e+00 -2.9454e+00  2.0363e+00  1.3672e+00
+  2.0630e+00  3.5270e+00  4.0723e+00 -2.7806e+00 -1.9204e+00  1.5667e-01]
+[ 2.0422e+00  3.6346e+00  4.9222e-01  7.4497e-02  1.1854e+00  2.8426e+00
+ -4.2565e-02  5.6348e+00  9.4834e-01  4.0261e-01  4.3465e-01  1.7376e+00
+  4.0527e-01  1.1172e+00  5.4746e+00 -2.3276e+00  2.1381e+00  2.3085e+00
+  2.0555e+00 -1.7726e+00  4.2804e+00 -1.4200e+00  2.3052e+00 -6.0744e+00
+ -1.4287e+00  1.2752e+00  3.5857e-01 -4.2725e+00  3.6192e+00  4.8287e+00
+ -3.1139e-02 -9.0207e-01  3.7440e+00 -8.9083e-01 -2.0998e+00 -3.1481e+00
+  1.9391e+00  2.0281e-01  3.7052e+00  7.0365e-01 -1.1994e+00 -1.4727e+00
+  3.8257e+00 -6.9901e-01 -1.1809e+00  3.1240e-01  1.2199e+00 -2.2577e+00
+ -1.8996e+00  6.4813e-01  4.5217e+00  4.2572e-01 -7.3895e-01  5.2566e+00
+ -7.9290e-01 -6.7808e-01  1.8614e-01 -1.7170e-01  1.0292e-01  2.3485e+00
+  1.6793e-02 -3.6535e-01 -6.1471e+00 -9.5033e-01 -1.5207e+00  2.4138e+00
+ -3.7263e+00 -1.5107e-01 -2.0475e+00  7.0573e-01  3.0160e-01  2.4095e-01
+  1.1373e+00 -1.3373e+00 -1.4344e+00  1.5159e+00  2.2226e-01  1.7311e+00
+  1.0218e+00  6.2252e-01 -2.1289e+00 -4.5954e+00  3.0004e+00  3.7559e+00
+ -2.3800e-01 -2.2834e+00  4.3520e+00 -6.3055e-02 -2.9043e+00  1.0590e+00
+  2.8713e-01  2.2957e+00 -3.2069e+00 -2.6453e+00  9.0519e-01  5.1194e-01
+ -9.7198e-01  3.6428e-01  1.7075e+00 -1.1570e+00 -9.8879e-03  5.3510e-01
+  4.8175e+00  2.1203e+00 -9.6235e-01  2.0231e-01 -7.4170e-01  1.5036e+00
+ -2.2327e+00  3.7524e+00 -9.6491e-01 -1.5290e+00 -3.3576e+00 -8.4948e-02
+ -1.4797e+00  1.3899e+00 -9.5358e-01  1.9259e+00  2.7260e-01  9.5617e-01
+ -1.9593e+00  3.1726e-01 -2.7526e+00 -1.3472e-01 -1.8519e+00  7.7540e-02
+ -1.7106e+00  1.0220e+00  2.1262e+00  4.3310e+00 -2.1949e-01 -1.9634e+00
+  4.3043e-01 -3.5626e-01  1.1517e+00 -1.0549e+00 -1.1410e+00 -1.0864e+00
+ -9.8271e-01 -6.7784e-01  3.4532e-01 -3.0567e+00  3.3635e-01  3.5164e-01
+ -1.2283e+00  1.6819e+00 -3.2943e-01  4.5687e-01 -1.9834e-01  3.5895e+00
+ -1.2799e+00  9.1851e-05  2.6489e+00  5.6560e-02 -3.1150e-01  6.4388e-02
+  2.4537e+00  2.0087e+00  3.6751e+00  1.8458e+00  2.5777e+00 -1.0673e+00
+ -4.0811e-01 -5.2377e+00 -2.4283e+00 -1.1013e+00  1.9618e-01 -6.7115e-01
+ -6.1514e-02  1.6295e+00 -5.4137e-01  1.4206e+00  3.0398e+00 -1.1454e+00
+ -2.9884e-01 -1.0886e+00 -6.1042e+00 -3.2982e+00 -2.5653e+00 -3.8787e+00
+  1.3304e+00 -4.2444e-01 -5.6405e-01  3.7064e+00 -4.0894e+00 -2.7264e-01
+  2.0102e+00 -3.8565e+00 -4.5422e+00 -2.8851e+00  1.7712e+00  2.6698e-01
+ -5.8633e-01 -3.1803e+00  2.6766e+00 -3.2201e+00  3.0615e+00 -8.2156e-01
+ -2.1781e+00  1.6617e+00  2.4462e+00  1.1216e+00 -1.4162e+00 -3.7063e+00
+ -1.3161e+00  2.0183e+00  4.6751e-02 -2.2082e+00 -6.3190e-01  8.8167e-01
+ -1.8496e+00  7.5423e-01 -2.1512e+00 -2.7285e+00 -8.0884e-01 -2.4515e+00
+  4.3430e+00  4.3969e-01 -3.2489e+00  1.0244e-01 -2.0012e+00 -2.5771e+00
+  1.8901e-01  1.7906e+00  1.2404e-01 -2.8066e-01  3.2975e+00  2.1132e+00
+  2.0694e-01  2.1942e+00 -3.5933e+00 -2.7637e+00  6.5172e-01  1.9192e+00
+ -1.1689e+00  1.1859e+00 -6.4784e-01  4.1976e+00  3.3291e+00 -4.7149e-01
+  1.0472e+00 -8.6213e-01 -2.6966e+00 -9.9733e-01  4.7274e+00 -2.2283e+00
+ -4.2499e+00  3.0542e+00 -2.1578e+00 -9.2449e-01 -3.6035e+00  1.0427e+00
+ -2.2682e+00  6.7648e-01 -3.7834e+00  4.0890e+00 -1.2867e+00  1.4972e+00
+  1.7077e+00  3.9418e+00 -3.8720e-02  3.2017e-01 -6.5839e-03  2.3846e+00
+ -6.6669e-01 -5.2288e+00 -3.6621e+00 -1.2506e+00 -8.0501e-01  1.2608e+00
+  1.0312e+00 -2.0205e+00 -1.6286e-01 -9.7795e-01 -5.6440e-01 -1.8761e+00
+ -1.6149e+00 -1.0624e+00 -1.8890e+00  1.5189e-01 -3.7796e-02  9.4888e-01
+ -5.9715e-01 -1.3438e+00  3.1229e+00  2.2294e+00 -3.7116e+00 -2.1821e+00
+ -3.6491e+00  1.9087e-01 -5.3816e-01  3.1824e+00  1.9921e+00 -1.4301e+00
+ -1.6458e-01  2.5330e+00 -5.1668e-02  1.0078e+00 -2.9046e-01 -1.6856e+00]
+[ -5.1644     0.37588  -12.979      6.4501    12.282     -6.894
+  -2.1295     6.3783     6.8268    -1.9674    -3.0459    15.604
+  -4.4114     2.6695     6.5306     7.9306     6.462     -4.5929
+   6.6779    -3.3701     0.7235   -14.288     11.688     -1.5876
+   4.6762    -0.12351    0.40614    1.6251    -9.0457     2.2636
+  -9.9742    -0.99827   -7.3057   -16.441     10.57      -8.9467
+  -6.1169     1.0966     1.1533     5.0548     6.9433     2.7976
+   4.0385   -10.254      1.6543    -2.6761     9.4312    -6.7178
+  -1.1029    12.858      0.16087    1.9361   -20.521     -9.4667
+  -3.79       7.6723     4.1902     4.4285    -7.7376     8.0799
+ -13.336      4.2537     0.6928     5.3262   -12.469     -6.8207
+   0.94208   -0.65119   -8.0272     2.5939   -13.054     -6.9314
+ -12.771     -3.9418     1.2421    -3.778      9.7632    -3.0477
+  -6.3561     0.32582    0.23982   -8.7349     1.7952     6.4242
+  -4.1705     0.31118   11.281      1.0591    -7.1079   -11.568
+  -2.4303    -4.8778    -1.9376     0.19282   -4.9268   -10.487
+   6.6852    -8.0822    -1.1265     4.6279    -1.0307    -2.5203
+  10.88       8.8841    10.141     -1.8135    -0.99151    1.7099
+  -4.9591   -13.291      8.7431     5.3298    -7.1581    -5.6555
+  11.085      1.7293    -2.6437    -6.3318    -2.0692    -8.9679
+  -0.96731   -5.0771     7.6998   -12.223      2.9264     5.1296
+  10.782      1.5613     5.2318    -6.3391    -4.2381     3.8213
+  11.121      5.038      6.2836     5.8484    -9.0569    -2.2652
+   4.5106     1.5482     7.0571    -4.4808    -5.1193    -3.8884
+   6.2556    11.714    -11.033     10.66       4.6303     3.4309
+  -3.7548    12.328     -3.8103    -5.1119    -1.6713    -0.29489
+  -0.83736    1.7867    -2.6334     8.4909     1.1187   -11.104
+  -1.1288    -0.4442    -7.2217     4.8274    -7.3283     6.6037
+   1.7418     8.3055    -9.1563    -6.2955     0.70904   -1.5316
+  -3.9727     2.1384   -10.73      -2.5498   -13.581    -13.251
+   7.9649     3.5058     4.5801    -1.2867     0.82607    2.4572
+   0.84826    1.9776     5.7439    -3.0336     7.0412    -2.1809
+  -2.5958    -5.3713    -6.036     -3.6573     2.3026     3.5773
+   2.8893     8.1103   -11.148    -10.017      3.0348   -12.237
+  11.329      3.1368   -12.82      13.55      -6.0564   -10.197
+  -0.13422   -2.2805    -4.8628     1.5579     2.9909    -2.8118
+  -5.1179     1.2207     5.3502    -0.53956   -2.9435    -6.3866
+   1.8024    -5.7598    -0.57791   -4.8671     0.19418   -0.51796
+   2.3978    -8.1706     5.201     -5.3545     3.8467    -1.9522
+   6.2328     3.1725    -7.438      3.9426    -4.1872    -2.1013
+  -5.882     -5.9477    -2.2833    -6.6005    -5.1908     2.3649
+  -2.5351    -2.9763   -11.257     10.302      5.0335     0.50626
+  -7.8366     4.5668     0.79684    1.8886     6.0998     5.546
+   5.6222     9.4147     8.7242    23.678     11.87       1.5342
+  10.826     -3.0042    -5.0521     3.8545    -3.1165     0.44016
+  -4.2141    -7.2481     1.9607    -7.6449     5.5237    -7.5878
+   9.7467     3.4266     3.5488    -1.7198    17.089      4.7331
+  -1.3297     7.8634    -4.4486     8.4561   -10.377      0.37455
+   2.3249     3.2802    -0.63255   -3.8492     2.7231     1.8247
+ -11.873      0.32242   10.403     -0.083841  -5.4552   -11.212   ]
+[-5.1043e+00  2.3496e+00  3.2472e+00  2.8424e+00  1.1459e+01 -2.4137e+00
+  5.1057e-01  7.0312e+00  3.6459e+00  6.2332e-01  1.3633e+01  4.5813e+00
+ -1.0584e+01  1.2630e+00  6.3362e-01  7.4645e+00  6.1468e+00  3.9474e-01
+  1.4378e+00 -4.1540e+00  2.0000e+00 -3.8488e+00  7.3414e-01  2.1209e+00
+  2.1068e+00  1.8713e+00 -7.8175e+00 -4.4352e+00  2.2135e-01  3.9262e+00
+  2.8473e+00  2.0265e+00 -1.8189e+00 -9.2866e+00 -8.2191e+00 -1.7172e+00
+ -1.7196e+00  3.9313e+00  2.5888e+00  8.2825e-01  1.3177e+00  1.1566e+00
+ -5.2680e-01 -5.3276e-01 -1.2835e+00 -2.4743e-01 -3.7231e+00 -4.5196e-01
+ -3.3093e+00 -1.2523e+00 -3.0767e+00  8.5522e+00 -1.6251e+00 -5.5941e+00
+  5.3161e-01  5.5142e-01 -5.0327e-01  1.8156e+00 -2.9011e+00 -1.8576e+00
+  1.4638e+00 -5.4034e+00 -8.1768e-01 -2.0847e+00  1.6838e+00  1.6817e+00
+ -6.3836e+00 -3.2180e+00  7.2152e+00  3.5279e+00 -2.3648e+00  4.0313e-01
+ -5.7476e+00 -1.0917e+00 -1.1058e-01  2.7065e+00 -4.5004e+00  5.5528e+00
+ -7.4396e+00 -1.8884e+00 -5.0159e+00  7.8553e-01 -4.2467e-02  3.2823e+00
+  5.8371e+00  2.8223e+00 -4.7819e+00 -4.0965e+00  3.8425e-01  1.3066e+00
+ -1.5229e+00  4.3565e-01  3.8789e+00 -4.8557e+00  5.8081e+00 -7.7726e-01
+  4.3211e+00  4.6135e+00  4.2278e+00  5.8454e+00  4.0931e+00  7.6313e-01
+  8.2298e+00  3.2500e+00  1.1713e+00  4.9618e+00  3.8678e+00 -4.8282e+00
+ -9.8280e-01 -3.0029e+00  2.0229e+00  4.2098e+00 -7.2674e+00  5.8495e+00
+  1.1730e+00 -1.5662e+00  1.4491e+00  1.4227e+00  1.2867e-01  4.0703e+00
+  4.9251e-01 -4.4845e+00  4.0733e+00  3.0339e+00 -3.3840e+00 -5.2706e+00
+  3.3339e+00 -7.2218e+00  5.6753e+00 -4.5924e+00 -1.1599e+01 -1.0203e+00
+  5.8945e+00  1.7762e+00 -1.0363e+00  2.5350e+00  1.4402e+00 -3.1572e+00
+  2.4663e+00 -4.5771e+00 -7.4574e+00 -6.9813e-01 -1.9212e+00  6.5128e+00
+  6.4388e+00  6.4317e+00 -6.9971e+00  1.8715e+00  6.2365e+00 -2.5091e-01
+ -1.7363e+00  9.5132e+00  1.4306e+00 -2.5112e+00  4.0763e-01  3.7422e+00
+  8.8706e-01 -4.8168e+00 -7.4616e-01 -7.8736e-02 -7.9536e-01 -6.0894e+00
+  2.7413e+00  2.1358e+00 -2.7505e+00 -1.1987e+00 -6.4908e+00  1.3424e+00
+  1.4893e+00 -1.8716e+00  2.8296e+00 -5.3080e+00  5.1784e+00 -1.8339e-01
+  3.5250e-01  1.8829e+00  6.9355e-01 -4.1332e+00 -2.2120e+00 -2.8912e-01
+ -5.2159e+00 -3.3565e+00 -2.6745e-01  3.9148e+00 -2.7248e+00  3.7187e-01
+ -6.4571e+00 -9.2446e-02  2.0403e+00  5.5114e-01  1.1552e+00 -1.9635e+00
+  7.6531e+00 -3.4696e+00  4.7709e+00  1.0621e+00 -6.7008e+00 -1.9478e+00
+ -2.0715e+00 -5.2312e-01  1.4389e+00 -5.0093e+00  4.3909e-01 -7.2692e+00
+  8.7121e+00 -7.6601e-01 -8.1995e+00  1.4594e+00 -2.6537e-01  3.5587e+00
+  5.4031e+00  3.7896e+00 -9.2572e+00  3.4277e+00  2.5215e+00  4.1383e+00
+  1.8763e-01 -4.2169e+00  4.0743e-01 -1.1800e+00 -5.2174e+00  8.7247e+00
+ -2.5949e+00  1.4874e+00 -7.0560e+00 -1.6384e+00  2.9549e-03  6.3286e+00
+  1.4910e+00  4.4328e-01  6.1122e+00 -8.0740e+00 -1.7362e+00  6.3054e+00
+  2.6566e+00 -6.5135e-01 -9.6859e-01  5.0822e-01 -1.1677e+00 -4.1731e-01
+  1.4866e+00  1.3182e+00  1.3838e+00  6.2296e-01  1.3744e+00  5.9588e+00
+ -5.2347e+00 -2.6428e+00  9.5187e-01 -5.3128e-01  2.2787e+00 -1.0626e+01
+ -1.2064e+01 -1.6146e-02  2.7706e+00 -4.3249e+00  6.7169e+00 -2.9383e-01
+  1.1804e+00 -1.6421e+00  3.7709e+00  1.2545e+01  9.6831e+00  3.1599e+00
+  3.0962e+00 -4.5380e+00 -5.6059e-01  4.3790e+00 -7.2785e+00  2.7534e-01
+  1.0549e-02 -2.9399e-01  8.3850e-01 -3.7402e+00  3.6582e+00  3.0861e-01
+  1.3038e-01 -5.0155e+00 -7.4336e-01  3.2874e+00  1.0577e-01  3.7003e+00
+  2.4759e+00  3.9932e+00  2.7957e+00 -4.1682e+00  3.0442e+00  1.2622e+00
+  1.0991e-01 -3.9761e-01  1.3023e-01  1.3929e+00  3.3822e-01  7.0100e+00
+ -1.6916e+00  3.6008e+00 -1.2658e+00 -7.6875e+00 -2.5128e+00  6.9342e-01]
+[-2.6573    -2.2333     0.24297    1.0893     2.6696     2.8717
+  2.3943     4.515      1.285     -2.1434     7.1599     2.209
+ -3.2531     1.2878    -1.5959     2.762      2.1417     2.035
+ -2.3278     4.2454     0.72451    3.1563    -1.8469     0.60129
+  2.1329    -1.4862    -2.4525     0.82174    1.1064     2.9941
+  2.2801     0.97022   -0.94543   -4.0298     2.116      3.0328
+  4.4398     1.6577    -1.5098     1.0423    -1.6867    -1.1772
+  0.05132    1.9956    -4.4841     1.8187    -0.07756   -1.211
+  1.7472     0.55819   -1.7786     5.3067    -3.8526    -1.6331
+ -0.48314    2.7069    -2.0914     1.8936     0.8116     0.53803
+  2.1251     3.605      2.0399    -0.2849     6.1807     1.3722
+ -1.8512    -1.1725     1.2391     4.0021     1.341     -1.9913
+ -0.38604    1.4614     0.75746    1.9254     0.32269    2.0928
+  0.85716    0.23886   -2.5459    -0.26838   -0.69352    2.4137
+ -1.4295     2.3808    -3.3158    -4.2146    -1.9733     2.7123
+  0.99122    2.1041     1.4529    -2.9534    -1.0998    -1.9947
+ -3.3274    -3.3428     3.3945     0.14719    2.2184    -3.5532
+  2.7752     4.1941    -2.3031     7.1906    -1.4513    -4.6422
+ -4.3084    -4.7511     4.0886     0.85352   -6.8752    -0.36999
+ -0.82232    2.9039    -3.5014     2.4729     0.089301  -0.69415
+ -2.1801    -1.4528     0.20236   -1.7719     0.062285  -2.0696
+  0.15126   -0.95776    0.17609   -1.7372     2.6623    -0.43102
+  4.6213     1.996     -0.8106     2.1821    -2.6667     0.5609
+  0.068      0.17101    0.95314    2.9501    -1.1563     4.6308
+ -0.34141    3.1117    -7.2582    -3.9503     2.181      2.1172
+ -2.6645     0.69881    4.0974     4.5322    -1.5001    -0.84013
+  3.2086     3.8295    -0.48351   -5.7707     0.42409   -0.85428
+  0.81668   -1.1723     0.055825  -1.4835     0.84162   -0.89602
+ -1.3832     2.0191    -0.19713    3.2358    -0.54111   -2.4256
+  3.203      1.8766    -1.2918    -0.024341  -2.332     -1.931
+ -4.9661    -0.050245   4.5246    -0.28508   -4.0573     5.5033
+  1.0877    -0.4062     1.3483     2.0855     3.5651     1.7818
+ -4.4976    -2.294      0.85486   -2.7657    -5.3997    -4.826
+  0.63104    0.63905    0.70116   -0.0085923 -1.9124    -1.1782
+  6.7943    -1.0679    -4.746      2.576      2.4306    -2.6342
+  1.9347     1.5216     0.2828     4.0907     1.9828     1.1614
+  2.5657    -2.5352    -3.8284     2.2401    -1.6832     2.0061
+  2.5767    -2.1239    -0.45356    0.3444     1.172      0.50635
+  1.0608     2.6211     4.4951    -1.6358    -3.7337     4.3311
+  0.019937   3.3425     1.1097    -0.14822   -4.3812     2.5143
+ -5.0601    -0.59193   -0.073379   3.8859     2.0429     1.6931
+ -1.979     -0.53888    0.23195    0.22736    0.3455    -1.0801
+  0.74794    2.2799    -1.2702     0.35309    3.7984    -1.8064
+  1.5222     2.9657    -0.92432    3.2568     0.43544    2.3663
+  0.76823   -2.6215    -2.4762     1.4601     0.97098    0.43849
+  0.035409   0.78302    3.9008    -0.51365   -3.7536    -0.98216
+ -1.9535    -2.144      1.2227     0.81662    6.4869     1.0549
+  0.69135   -1.3061    -0.90899   -0.54174    2.018      0.30658
+ -4.6192    -3.1059    -0.51138    2.1492    -3.7527    -1.5615
+  0.0081658  2.1216     0.82213   -0.45668   -1.9818     0.64121  ]
+[  8.433     -0.62196    4.5699     4.2771     7.5471    -3.4932
+  -2.7744    11.539     -0.41976   -5.7145    13.106      5.9285
+  -5.0834     2.0165    -1.3187    -3.1088     8.6808    -0.37767
+ -12.834     -7.7306    -1.3145     0.19578  -12.683     -4.448
+ -12.181     -6.8301     3.1909    -4.2021    -1.1167     5.6552
+   4.5593     1.1842    -8.839      5.1291     8.8025    -7.7602
+  -7.9684    -7.8937    10.286      5.7079     3.1926    -0.52753
+  -2.0976     6.7266    -5.971     -0.52903    8.3433    -1.7521
+   4.4892    -2.456      5.7153    -0.29028   -2.1078    -4.7923
+  -2.8459     2.5139    -7.3703     0.25596    5.1344   -12.615
+   5.0602     6.3371    -6.1839     0.71782    5.8044     4.7112
+   0.20968   -3.2077    -0.62559    0.22191    2.8759     5.6576
+  -4.5906     5.0782    -4.0207     2.1161     1.1608    -0.98217
+  -3.0099    -4.3483    -3.1446     0.84766    1.8647     3.0901
+   4.6203    -3.0004    -0.85704   -5.1906    10.277     -3.6286
+  -5.7289     6.3868     3.8284    -1.4642    -4.3758    -1.4041
+   1.4546    -0.60059   -0.97276    1.7021     2.4357    -0.03073
+  -2.2956    -3.2183     0.15623    7.0984     0.12684   -3.8298
+   0.53441    1.1493     6.4126     4.8323    -0.094176   1.9462
+   4.7889     0.67953   -8.7185     1.0232    -6.4934    -6.6018
+  -6.4868    -1.3891     0.60352   -1.9618    -0.83308   -3.1635
+   2.0983    -2.6888     2.5529    -4.9758     0.55982    2.3738
+  -2.209      1.207      2.2095     4.4969    -6.5407     0.20055
+   3.2746    -2.978     -4.1244    -2.7862     0.71469    1.871
+   2.8257     3.665      2.7051     6.5865    -4.0485    13.891
+ -10.094      7.6961     3.9371     4.3329     5.7443    -2.7688
+   2.6549     7.1357    -0.91995   -3.7897    -2.269     -0.32706
+   1.1645     7.8238    -4.0648    -1.5901    -2.4371     4.4673
+  -0.03972  -11.881    -12.262     -3.1402     0.20803   -0.63618
+  17.097      4.5217    -1.2882    -3.4139     1.2379    -6.8088
+   4.0803     5.2487     2.3712    -9.4767     1.3788    -0.70852
+  -5.7741    -3.1941     5.0739    -1.0391     4.5978    -0.87431
+  -0.7292    -4.7764     2.4639    11.421    -12.604      2.7578
+   0.45109   -0.44204   -6.4576    -7.993      3.0739    -1.5658
+  15.768      4.377     -3.5032    -5.8835     5.3726    -0.48193
+   0.89183   -1.4306     2.4475     6.7812     5.7412     2.988
+  11.668     -8.2028    -4.0986     3.8376     0.20099    1.5494
+  -4.7032    -1.3643     7.3142    -9.5133     5.4749     0.43895
+   2.405     -6.0876     4.2026    -8.6914    -4.7631     6.0201
+   4.0167     1.1332    13.218     -4.2672    11.077      1.6958
+  -8.4125    -2.4895    -2.8994     4.3663    -2.147      2.4737
+  -4.8413     7.8004    -1.1266    -0.61805    3.4348    -2.6864
+  -7.3901   -10.186      1.0281    -1.7216     7.3696    -3.9895
+   3.0035     4.8118    -2.8967    14.909     -1.1002    -3.6253
+   4.3881     0.38806   -0.34066    8.0022    -5.9174    -8.3849
+  -0.44124   -0.92531    2.9864     1.8466    -2.0044    -2.7273
+   0.2723    -1.7172    -2.0582     5.6129     6.0383     4.9308
+   4.895     -2.3096     2.9366    -7.4218    -2.0618    -1.1766
+  -7.5635    -0.69364    2.3743     0.99954    6.5449     3.7741
+   0.91835    5.4069     6.4281    -9.2167     6.6996    10.385   ]
+[ 1.5333e+00  1.6226e+00  1.0552e+00 -1.3615e+00  9.7952e-01 -8.2806e-01
+  1.4854e+00  2.8817e+00 -3.5400e-01  3.4457e-01  1.1555e+00 -7.7349e-01
+ -4.4370e+00 -7.4365e-01 -1.8453e+00  6.6557e-01  4.5156e+00  1.1663e-01
+ -1.1103e+00 -3.7642e+00  3.5045e+00 -3.5772e-01 -1.4795e-01 -1.0267e+00
+ -1.8431e+00  1.6858e+00 -4.1045e-01 -1.7576e+00 -4.4430e-01  1.3732e+00
+  4.4730e+00 -8.4136e-01 -1.2591e+00 -4.5007e+00  9.9301e-02 -1.8817e+00
+ -1.0262e+00 -2.8644e-01 -3.1175e-01  6.6088e-02 -2.0104e+00  6.3836e+00
+  1.0506e+00 -8.3638e-01 -1.0489e+00  1.1551e+00  1.1049e+00 -1.0953e+00
+ -5.2687e-01  2.7210e+00 -8.4603e-01 -6.3820e-01 -1.5794e+00 -2.8231e+00
+ -2.0703e+00 -1.6891e-01  4.4551e-01  3.5131e+00 -2.3713e+00  2.1279e+00
+  1.9854e+00  3.3579e+00  3.7267e+00  2.5286e-01  3.9620e-01  2.9198e+00
+ -3.9707e+00 -2.8748e+00 -1.7798e+00  4.0547e+00 -1.2656e+00 -1.0919e+00
+ -2.4868e+00 -5.4464e-01  6.3169e-01  1.6076e+00 -1.8257e+00 -2.4311e-02
+ -2.6166e+00  8.4514e-01  8.9733e-01  2.2244e-01  2.8666e+00 -3.6442e+00
+  3.4054e+00 -2.2138e-01  2.5062e+00 -1.4775e+00  3.1202e-01 -2.5424e+00
+ -4.2573e+00  1.0585e+00  5.4167e-01 -1.9668e+00 -2.7912e+00  2.5255e-01
+  8.3470e-01 -3.5377e+00  1.6103e+00 -1.6252e+00  3.9974e+00  7.8686e-01
+  7.7480e-02 -2.8996e+00 -1.2887e+00 -7.4930e-02 -2.0082e+00  1.1402e+00
+  2.7711e+00 -2.7484e+00  1.4476e+00 -1.0817e+00  7.9127e-01 -3.0431e+00
+ -7.4377e-01  3.0145e+00 -2.0162e+00 -3.1396e+00  2.3760e+00  1.2135e+00
+  3.4358e-01 -1.0964e+00  7.9150e-01  2.7684e+00  2.8317e+00 -2.3924e+00
+  4.2739e+00 -1.8818e+00  4.4559e+00 -4.8621e+00 -4.3723e+00  2.2087e-03
+ -1.0028e+00 -1.0392e+00 -8.0561e-01 -2.3396e-01 -6.4389e-01  6.5302e-01
+  4.3187e+00  5.2496e-01 -7.6312e-01 -1.8412e-01  1.6807e+00  1.0531e+00
+ -1.9743e+00  7.1533e-02 -3.8678e+00 -3.3721e-01 -4.5415e-01  7.8711e-01
+  3.6046e-01  2.3413e+00  2.3752e+00  6.2192e-01  1.4567e+00  4.2083e-01
+  4.5502e+00  1.4567e+00 -1.4848e+00 -8.0541e-01  1.3399e+00 -1.4840e+00
+ -4.0671e+00  2.1042e+00 -4.5714e+00  3.1372e-01 -3.2736e+00 -2.3693e-01
+ -5.6649e-01  4.5668e+00  5.9184e-03 -7.2018e-01 -1.0209e-01 -7.1549e-01
+  1.1501e+00  6.2826e-01 -4.1710e-01  1.6110e+00  2.2790e+00  5.1121e-01
+ -4.5710e-01  3.6609e+00  4.9027e+00  8.2970e-01  2.9291e-01  1.1920e+00
+ -1.9468e+00 -2.0846e+00  3.8010e+00  4.1106e+00 -6.6125e-01  1.6773e+00
+  7.6820e-01 -6.0399e-01 -1.4137e+00 -2.0390e-01 -1.8717e+00  1.9584e+00
+ -4.6047e+00  3.1937e+00 -1.8786e+00 -1.5766e+00 -4.2211e+00 -1.5822e+00
+  1.1744e+00  7.0951e-01 -1.0602e+00  4.1790e+00 -1.6788e+00  8.4937e-01
+  2.3151e+00 -1.4950e+00 -2.0715e-01 -1.5350e-01  1.7614e+00  1.5534e+00
+  1.6782e+00 -2.0392e+00 -2.8717e+00 -3.1403e+00 -6.7740e-01  8.1072e-01
+ -1.9641e+00  1.3971e+00 -3.5342e+00 -2.3179e+00  2.4111e+00  2.2855e+00
+  1.7346e+00  4.0629e-01  1.1109e+00  1.9651e+00 -1.8063e+00 -2.7924e+00
+ -3.0214e+00  2.9043e+00 -2.5850e+00 -9.3914e-01  2.6608e+00  2.5745e+00
+ -3.4091e+00 -3.3903e+00  2.0456e+00 -1.4286e+00 -3.5824e+00 -3.0827e-02
+ -1.4285e+00 -7.8142e-01  3.9295e+00  2.4841e+00 -5.8915e-01  6.4438e-01
+ -7.0542e+00  4.7075e-01 -2.0759e+00 -4.3141e+00 -2.6736e-01 -1.5867e+00
+ -7.6548e-01  3.5318e+00  2.2463e-02  1.6463e+00  3.3072e+00  2.4164e+00
+  2.5735e+00  1.6752e+00 -2.9857e+00  1.1735e+00 -4.2637e+00  1.6798e+00
+ -9.0915e-01  3.9030e-01 -9.7496e-01 -6.2360e+00  1.2844e+00 -3.2688e+00
+  6.2895e-01 -3.0321e+00 -6.7734e-01  1.8979e+00  1.1453e+00 -5.7289e-01
+ -2.4477e+00 -2.7195e+00  2.2955e-01 -6.7627e-01  2.5683e+00  4.5139e-01
+ -1.4533e+00 -6.7582e-01  3.2434e+00 -1.5378e+00  2.3661e+00 -2.5112e+00
+ -1.2672e+00 -1.4808e+00 -1.2825e+00  1.4143e+00 -2.5045e+00  2.7744e+00]</code></pre>
+</div>
+</div>
+<p>We can use the following code to put all the word vectors into a document <code>array</code>. Notice that there are 11 total words, and each word is represented by a 300-dimensional vector.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>np.array([token.vector <span class="cf">for</span> token <span class="kw">in</span> doc]).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(11, 300)</code></pre>
+</div>
+</div>
+<p>Now we have a matrix representing a headline, but we would like a single vector to represent a headline (like we get with a count-based vectorization). A simple way to do this is to take the mean of all the word vectors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>np.array([token.vector <span class="cf">for</span> token <span class="kw">in</span> doc]).mean(axis<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([-1.67427254e+00, -3.95649701e-01, -3.52179974e-01,  2.67473698e+00,
+        6.60974836e+00, -5.14187276e-01,  8.85469437e-01,  5.00070000e+00,
+        1.94902003e+00, -2.36047196e+00,  5.78760433e+00,  3.53501201e+00,
+       -5.29743910e+00,  8.60979080e-01,  1.62974551e-01,  1.90474904e+00,
+        5.13615561e+00,  7.06369221e-01, -8.54807645e-02, -3.06247258e+00,
+        3.30119342e-01, -2.01464462e+00, -1.07013643e+00,  5.12255311e-01,
+        7.67499208e-01, -1.41396359e-01, -8.70485485e-01, -2.18154192e+00,
+       -7.69820929e-01,  3.40282440e+00,  1.39036822e+00, -6.79862797e-01,
+       -2.90976644e+00, -3.73797679e+00, -2.55181849e-01, -2.72300005e+00,
+       -2.77262658e-01,  1.46237183e+00,  2.09034085e+00,  2.50623512e+00,
+        9.90345255e-02,  1.39819002e+00,  3.58493626e-01,  6.11728609e-01,
+       -1.93930364e+00,  8.43867302e-01,  2.41608524e+00,  1.39169157e-01,
+        3.17911834e-01,  7.89771795e-01, -1.64458126e-01,  2.41038370e+00,
+       -3.48086071e+00, -4.50294542e+00, -1.26656735e+00,  1.48386467e+00,
+       -5.31292677e-01,  1.76347911e+00,  1.36431456e-01, -1.01937628e+00,
+        4.57578391e-01,  6.55694544e-01,  4.47306365e-01,  2.20349222e-01,
+       -3.28209937e-01,  5.58670223e-01, -2.77355099e+00, -2.27309918e+00,
+        3.82878214e-01,  3.44640374e+00, -2.05058837e+00,  8.29191133e-02,
+       -3.32992935e+00, -8.61222029e-01, -2.49131814e-01,  1.97858167e+00,
+        2.04586312e-01,  2.20670629e+00, -2.70643091e+00,  3.89133662e-01,
+       -1.94709170e+00,  4.72986996e-01,  5.14855802e-01,  1.36070907e+00,
+        6.52045429e-01,  1.00554533e-01,  6.51261926e-01, -1.92875946e+00,
+       -3.43801945e-01, -5.42956293e-01, -2.42319536e+00, -1.03637286e-01,
+        8.95858169e-01, -1.09974086e+00, -1.06548071e+00, -3.60317922e+00,
+        1.52500546e+00, -1.02814627e+00,  6.54396117e-01,  2.39761543e+00,
+        3.07453823e+00, -7.51740038e-01,  2.52026987e+00,  2.87220168e+00,
+        1.14469536e-01,  4.03908014e+00,  5.03068209e-01, -2.41837740e+00,
+       -4.30759043e-01, -1.32758176e+00,  2.91629004e+00,  2.97059655e+00,
+       -3.68380952e+00,  1.35318828e+00,  1.12694609e+00,  4.01155502e-01,
+       -1.00510728e+00,  4.68718171e-01, -7.72059023e-01, -4.92273688e-01,
+       -3.27167302e-01, -2.40791273e+00,  3.39762497e+00,  1.20934391e+00,
+       -5.85454941e-01, -2.46936440e+00,  1.71046376e+00, -1.56436992e+00,
+        2.86989927e+00, -2.02429032e+00, -2.97831368e+00,  1.53789893e-01,
+        3.17711186e+00,  1.79265010e+00,  1.29646277e+00,  2.17984033e+00,
+       -2.13165832e+00, -1.84245694e+00,  1.59989274e+00, -9.06376421e-01,
+       -3.83026332e-01, -8.57157290e-01, -1.05426975e-01,  1.43790543e+00,
+        1.54442632e+00,  3.50267768e+00, -2.04521155e+00,  1.55283272e+00,
+        1.14406455e+00,  2.76475453e+00, -1.68518817e+00,  4.30222034e+00,
+        7.69100010e-01,  1.61211622e+00, -1.14960879e-01, -3.02092806e-02,
+        1.33466375e+00,  2.94236302e-01, -1.72071755e-01,  2.22307593e-01,
+        1.14594817e+00, -1.06504452e+00,  1.06345820e+00,  7.35211790e-01,
+       -2.91556144e+00,  2.49127466e-02, -1.44770992e+00,  8.61200094e-01,
+        7.99488842e-01,  4.62962925e-01, -2.68752646e+00, -2.69153810e+00,
+        1.36439180e+00, -2.37332776e-01,  4.67620164e-01,  1.38327086e+00,
+       -9.43580031e-01, -1.03366172e+00, -2.57548189e+00, -2.32501435e+00,
+       -1.98847294e-01,  1.32680786e+00,  2.15920925e+00, -6.58661783e-01,
+       -1.14953637e+00, -1.03990626e+00, -2.58203077e+00, -6.27887785e-01,
+        1.72178984e+00,  3.32196981e-01,  1.75113726e+00, -1.65036392e+00,
+        1.06535184e+00, -2.74151921e+00,  1.59453893e+00,  7.30427206e-01,
+       -2.14383364e+00,  3.23921800e-01,  1.36081520e-02,  7.20088184e-01,
+       -1.85288537e+00, -3.40343118e+00, -1.24911356e+00, -2.45220470e+00,
+        5.95992708e+00,  1.59944725e+00, -5.84085846e+00,  3.39010024e+00,
+        1.82764065e+00, -1.37498629e+00,  1.69217908e+00,  1.45197570e+00,
+       -2.24181008e+00,  3.71031761e-01,  2.70167804e+00,  8.20800960e-01,
+        2.12189364e+00, -3.15412831e+00, -2.89437795e+00,  6.53779089e-01,
+       -1.64278102e+00,  1.68185008e+00, -2.26050162e+00, -9.64069009e-01,
+       -1.20023906e+00, -1.92961133e+00,  1.87058246e+00,  3.15290356e+00,
+        1.79731822e+00, -6.71526015e-01,  3.30500007e+00, -4.40620899e+00,
+       -3.89296353e-01,  2.90936899e+00,  1.81972325e+00,  3.27335382e+00,
+        5.00913104e-03,  9.26009119e-01,  7.37483799e-01,  1.01161277e+00,
+       -1.92496371e+00, -2.87720466e+00, -6.51925325e-01,  1.53084946e+00,
+       -7.98255503e-01,  1.58058846e+00, -2.28812742e+00, -2.83182096e-02,
+       -9.97380018e-01,  1.05249739e+00,  1.55504990e+00, -2.77577114e+00,
+       -5.45920515e+00, -1.18169224e+00, -1.95299134e-01, -2.01057363e+00,
+        3.82100701e+00,  5.25485456e-01,  1.14884090e+00,  1.83555448e+00,
+        9.73378420e-01,  8.01964188e+00,  3.69635987e+00,  1.23061645e+00,
+        2.91242385e+00, -6.20422781e-01, -2.49540854e+00,  2.78798914e+00,
+       -2.41546655e+00,  4.45944607e-01, -1.21348667e+00, -3.64107251e-01,
+        9.94940758e-01, -2.97548199e+00,  4.78463680e-01, -1.68698168e+00,
+        7.81730056e-01, -1.28138268e+00,  1.28043652e-01,  1.47639644e+00,
+        4.41694880e+00,  1.11029530e+00,  7.96417594e-01,  9.79942858e-01,
+        1.36084640e+00, -1.99406707e+00, -7.40921795e-01, -3.85187328e-01,
+       -6.17053688e-01, -2.02488199e-01, -3.86805505e-01,  1.27285814e+00,
+        3.04273129e+00,  1.55780935e+00, -2.08421683e+00,  2.39458346e+00,
+        1.39288843e+00, -3.40017486e+00, -1.14612353e+00, -9.15518224e-01],
+      dtype=float32)</code></pre>
+</div>
+</div>
+</section>
+<section id="word-embedding---full-data-set" class="level2" data-number="50.10">
+<h2 data-number="50.10" class="anchored" data-anchor-id="word-embedding---full-data-set"><span class="header-section-number">50.10</span> Word Embedding - Full Data Set</h2>
+<p>We can use the following nested <code>list comprehension</code> to calculate all the vector representations of all of our headlines at once. (This code takes about 45 seconds to run.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>all_vectors <span class="op">=</span> np.array([np.array([token.vector <span class="cf">for</span> token <span class="kw">in</span> nlp(s)]).mean(axis<span class="op">=</span><span class="dv">0</span>) <span class="cf">for</span> s <span class="kw">in</span> df_headline[<span class="st">'clean_headline'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 49.6 s, sys: 28.2 ms, total: 49.7 s
+Wall time: 49.6 s</code></pre>
+</div>
+</div>
+<p>Notice that we now have an <code>array</code> that represents our 9470 headlines, each with a 300-dimensional vector. And each 300-dimensional vector is the mean of the vector representations of each of the words in the headline.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>all_vectors.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(9470, 300)</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/41b_nltk_introduction/nltk_introduction.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Introduction to <strong>nltk</strong></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/41d_sentiment_analysis_stock_headlines/sentiment_analysis_stock_headlines.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Sentiment Analysis on Stock Headlines</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

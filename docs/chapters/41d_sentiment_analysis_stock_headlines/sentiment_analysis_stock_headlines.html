@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Python for Data Science in Finance - 51&nbsp; Sentiment Analysis on Stock Headlines</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../parts/07_miscellaneous/miscellaneous.html" rel="next">
+<link href="../../chapters/41c_vectorizing_text/vectorizing_text.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../parts/06_natural_language_processing/natural_language_processing.html">Natural Language Processing</a></li><li class="breadcrumb-item"><a href="../../chapters/41d_sentiment_analysis_stock_headlines/sentiment_analysis_stock_headlines.html"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Sentiment Analysis on Stock Headlines</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Python for Data Science in Finance</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01_jumpstart/jumpstart.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Python Jumpstart</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/01_part_basic_data_wrangling/part_basic_data_wrangling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Basic Data Wrangling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02_dataframe_basics/dataframe_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Basics</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03_index_slice/index_slice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Indexing and Slicing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04_query/query.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title"><code>DataFrame</code> Querying</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05_functions_apply/functions_apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Functions and the <code>DataFrame.apply()</code> Method</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/06_merge/merge.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Merging <code>DataFrames</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/07_groupby_aggregation_part_1/groupby_aggregation_part_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/08_groupby_aggregation_part_2/groupby_aggregation_part_2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title"><code>.groupby()</code> and <code>.agg()</code> - 2</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/02_part_visualization/part_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visualization</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/09_pandas_line_graphs/pandas_line_graphs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Line Graphs with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/10_pandas_bar_charts/pandas_bar_charts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Bar Charts with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/11_pandas_scatter_plots/pandas_scatter_plots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Scatter Plots with <strong>pandas</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/12_seaborn/seaborn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Visualization with <strong>seaborn</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/13_bokeh_basic/bokeh_basic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Basic Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/14_bokeh_advanced/bokeh_advanced.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Advanced Plotting with <strong>bokeh</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/03_data_analysis/data_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/15a_option_replication/option_replication.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Black-Scholes-Merton Option Replication</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/15b_asset_allocation/asset_allocation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Asset Allocation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/16_trend_following/trend_following.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Trend Following</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/17_regression_mutual_fund/regression_mutual_fund.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Regression: Mutual Fund Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/18_close_to_close/close_to_close.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Volatility Forecasting: Close-to-Close Estimator</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/19_garch/garch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Volatility Forecasting: GARCH</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/20_feed_grains_database/feed_grains_database.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Exploration of the Feed Grains Database</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/04_classical_machine_learning/classical_machine_learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Classical Machine Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/21_simple_linear_regression/simple_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Simple Linear Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/22_categorical_linear_regression/categorical_linear_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Linear Regression with Categorical Variables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/23_ridge_lasso_regression/ridge_lasso_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ridge and Lasso Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/24_k_nearest_neighbors_cross_validation/k_nearest_neighbors_cross_validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">K Nearest Neighbors &amp; Cross-Validation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/25_stock_prediction/stock_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Predicting Stock Returns</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26a_pca/pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Principal Components Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26b_principal_components_regression/principal_components_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Principal Components Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/26c_principal_components_logistic_regression/principal_components_logistic_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Principal Components Logistic Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/27_k_means_clustering/k_means_clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">K-Means Clustering</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/28_pca_visualization/pca_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Visualizing Principal Components Analysis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/29_student_loan_overfitting/student_loan_overfitting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Student Loan: Overfitting</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/30_student_loan_alternative_metric/student_loan_alternative_metric.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Student Loan: Alternative Metric &amp; Cross-Validation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/31_student_loan_hyperparameter_tuning/student_loan_hyperparameter_tuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Student Loan: Hyperparameter Tuning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/32_student_loan_xgboost/student_loan_xgboost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Student Loan: <strong>xgboost</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/33_option_volume_introduction/option_volume_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Option Volume: Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/34_option_volume_feature_selection/option_volume_feature_selection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Option Volume: Feature Selection and Hyperparameter Tuning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/35_option_volume_xgboost/option_volume_xgboost.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Option Volume: <strong>xgboost</strong></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/05_neural_networks/neural_networks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Neural Networks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36a_mnist_digit_recognition/mnist_digit_recognition.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">MNIST Digit Recognition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36b_imdb_classification/imdb_classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">IMBD Movie Reviews</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36c_reuters_classification/reuters_classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Reuters: Classifying Newswires</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/36d_boston_house_price_regression/boston_house_price_regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Boston Housing Prices</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/37_student_loan_neural_network/student_loan_neural_network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Student Loan: Neural Network</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/38_exchange_rate/exchange_rate.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Exchange Rate Prediction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Stock Returns: Neural Network</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/40_numerai/numerai.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Numerai</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41_exchange_rate_rnn/exchange_rate_rnn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">Exchange Rate: Recurrent Neural Network</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/06_natural_language_processing/natural_language_processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Natural Language Processing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41a_spacy_introduction/spacy_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">Introduction to <strong>spaCy</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41b_nltk_introduction/nltk_introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">Introduction to <strong>nltk</strong></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41c_vectorizing_text/vectorizing_text.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Vectorizing Text</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/41d_sentiment_analysis_stock_headlines/sentiment_analysis_stock_headlines.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Sentiment Analysis on Stock Headlines</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../parts/07_miscellaneous/miscellaneous.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Miscellaneous</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/42_virtual_environments/virtual_environments.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">52</span>&nbsp; <span class="chapter-title">Virtual Enviroments</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/43_pipelines_pickles/pipelines_pickles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">53</span>&nbsp; <span class="chapter-title"><code>Pipelines</code> and <code>pickles</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/44_columntransformers/columntransformers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">54</span>&nbsp; <span class="chapter-title"><code>ColumnTransformers</code></span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#importing-packages" id="toc-importing-packages" class="nav-link active" data-scroll-target="#importing-packages"><span class="header-section-number">51.1</span> Importing Packages</a></li>
+  <li><a href="#reading-in-data" id="toc-reading-in-data" class="nav-link" data-scroll-target="#reading-in-data"><span class="header-section-number">51.2</span> Reading-In Data</a></li>
+  <li><a href="#using-textblob" id="toc-using-textblob" class="nav-link" data-scroll-target="#using-textblob"><span class="header-section-number">51.3</span> Using <strong>textblob</strong></a></li>
+  <li><a href="#supervised-techniques---sklearn" id="toc-supervised-techniques---sklearn" class="nav-link" data-scroll-target="#supervised-techniques---sklearn"><span class="header-section-number">51.4</span> Supervised Techniques - <strong>sklearn</strong></a></li>
+  <li><a href="#ltsm---keras" id="toc-ltsm---keras" class="nav-link" data-scroll-target="#ltsm---keras"><span class="header-section-number">51.5</span> LTSM - <strong>keras</strong></a></li>
+  <li><a href="#ltsm-model-correlations-with-eventret" id="toc-ltsm-model-correlations-with-eventret" class="nav-link" data-scroll-target="#ltsm-model-correlations-with-eventret"><span class="header-section-number">51.6</span> LTSM Model Correlations with <code>eventRet</code></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">51</span>&nbsp; <span class="chapter-title">Sentiment Analysis on Stock Headlines</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In this tutorial we use various methods to calculate the sentiment (positive or negative) associated with headlines related to various stocks. We compare this sentiment to the <em>event return</em> of the stock, which is the return of the stock around the date of the headline. Ultimately we are interested in seeing if there is a positive correlation with the sentiments calculated and the event return. If there is a significant positive correlation, we could build a trading strategy around the sentiment analysis.</p>
+<section id="importing-packages" class="level2" data-number="51.1">
+<h2 data-number="51.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">51.1</span> Importing Packages</h2>
+<p>Let’s begin my importing some initial packages.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reading-in-data" class="level2" data-number="51.2">
+<h2 data-number="51.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">51.2</span> Reading-In Data</h2>
+<p>Next, let’s read in and examine our data. It consists of 2,768 headlines related to various stocks. Associated with each headline is the <em>event return</em> of the relevant stock. Event return is defined as:</p>
+<p><span class="math display">\[\begin{align*}
+R_{t–1} + R_{t} + R_{t+1}
+\end{align*}\]</span></p>
+<p>where <span class="math inline">\(R_{t–1}\)</span>, <span class="math inline">\(R_{t+1}\)</span> are the returns the days before and after the news data, and <span class="math inline">\(R_t\)</span> is the return on the day of the news. We do this because at times the news is reported late (i.e., after market participants are already aware of the announcement) or after market close. Having a slightly wider window ensures that we capture the essence of the event.</p>
+<p>Ultimately, we are interested to see if we can calculate sentiments for the headlines that are positively correlated with the <code>eventRet</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_news_return <span class="op">=</span> pd.read_csv(<span class="st">'Step3_NewsAndReturnData.csv'</span>, delimiter<span class="op">=</span><span class="st">'|'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_news_return</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">headline</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">eventRet</th>
+<th data-quarto-table-cell-role="th">Close</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMZN</td>
+<td>Whole Foods (WFMI) -5.2% following a downgrade...</td>
+<td>2011-05-02</td>
+<td>0.017650</td>
+<td>201.19</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>NFLX</td>
+<td>Netflix (NFLX +1.1%) shares post early gains a...</td>
+<td>2011-05-02</td>
+<td>-0.013003</td>
+<td>33.88</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>MSFT</td>
+<td>The likely winners in Microsoft's (MSFT -1.4%)...</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>MSFT</td>
+<td>Microsoft (MSFT -1.2%) and Skype signed their ...</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>MSFT</td>
+<td>NaN</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2763</td>
+<td>TSLA</td>
+<td>Responding to a comment on Twitter, Elon Musk ...</td>
+<td>2018-12-24</td>
+<td>0.041608</td>
+<td>295.39</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2764</td>
+<td>AMZN</td>
+<td>Amazon (NASDAQ:AMZN) is among the companies th...</td>
+<td>2018-12-24</td>
+<td>0.013062</td>
+<td>1343.96</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2765</td>
+<td>AAPL</td>
+<td>Chinese companies urge employees to boycott (N...</td>
+<td>2018-12-24</td>
+<td>0.005634</td>
+<td>143.92</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2766</td>
+<td>TSLA</td>
+<td>Elon Musk tweets that Tesla's (NASDAQ:TSLA) Su...</td>
+<td>2018-12-26</td>
+<td>-0.002856</td>
+<td>326.09</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2767</td>
+<td>FB</td>
+<td>"Backing up the sleigh," on Facebook (NASDAQ:F...</td>
+<td>2018-12-26</td>
+<td>0.076984</td>
+<td>134.18</td>
+</tr>
+</tbody>
+</table>
+
+<p>2768 rows × 5 columns</p>
+</div>
+</div>
+</div>
+</section>
+<section id="using-textblob" class="level2" data-number="51.3">
+<h2 data-number="51.3" class="anchored" data-anchor-id="using-textblob"><span class="header-section-number">51.3</span> Using <strong>textblob</strong></h2>
+<p>We’ll begin by calculating sentiments using the built-in sentiment analyzer in the <strong>textblob</strong> package.</p>
+<p>The <strong>texblob</strong> sentiment function is pretrained model based on Naïve-Bayes classification algorithm to convert a sentence to a numerical value of sentiment between -1 to +1 and map adjectives frequently found in movie reviews (source code: https://textblob.readthedocs.io/en/dev/_modules/textblob/en/sentiments.html) to sentiment polarity scores, ranging from -1 to +1 (negative ↔︎ positive) and a similar subjectivity score (objective ↔︎ subjective).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> textblob <span class="im">import</span> TextBlob</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s apply the <code>TextBlob()</code> function to an example headline.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>example_headline <span class="op">=</span> <span class="st">"Bayer (OTCPK:BAYRY) started the week up 3.5% to €74/share in Frankfurt, touching their </span><span class="ch">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">highest level in 14 months, after the U.S. government said a $25M glyphosate decision against the </span><span class="ch">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">company should be reversed."</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>TextBlob(example_headline).sentiment.polarity</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.5</code></pre>
+</div>
+</div>
+<p>Let’s compute the sentiment for all the headlines in the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_news_return[<span class="st">'sentiment_textblob'</span>] <span class="op">=</span> [TextBlob(<span class="bu">str</span>(s)).sentiment.polarity <span class="cf">for</span> s <span class="kw">in</span> df_news_return[<span class="st">'headline'</span>]]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_news_return</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">headline</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">eventRet</th>
+<th data-quarto-table-cell-role="th">Close</th>
+<th data-quarto-table-cell-role="th">sentiment_textblob</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMZN</td>
+<td>Whole Foods (WFMI) -5.2% following a downgrade...</td>
+<td>2011-05-02</td>
+<td>0.017650</td>
+<td>201.19</td>
+<td>0.262500</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>NFLX</td>
+<td>Netflix (NFLX +1.1%) shares post early gains a...</td>
+<td>2011-05-02</td>
+<td>-0.013003</td>
+<td>33.88</td>
+<td>-0.043750</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>MSFT</td>
+<td>The likely winners in Microsoft's (MSFT -1.4%)...</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+<td>0.166667</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>MSFT</td>
+<td>Microsoft (MSFT -1.2%) and Skype signed their ...</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+<td>-0.030556</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>MSFT</td>
+<td>NaN</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2763</td>
+<td>TSLA</td>
+<td>Responding to a comment on Twitter, Elon Musk ...</td>
+<td>2018-12-24</td>
+<td>0.041608</td>
+<td>295.39</td>
+<td>-0.156250</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2764</td>
+<td>AMZN</td>
+<td>Amazon (NASDAQ:AMZN) is among the companies th...</td>
+<td>2018-12-24</td>
+<td>0.013062</td>
+<td>1343.96</td>
+<td>0.200000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2765</td>
+<td>AAPL</td>
+<td>Chinese companies urge employees to boycott (N...</td>
+<td>2018-12-24</td>
+<td>0.005634</td>
+<td>143.92</td>
+<td>-0.012500</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2766</td>
+<td>TSLA</td>
+<td>Elon Musk tweets that Tesla's (NASDAQ:TSLA) Su...</td>
+<td>2018-12-26</td>
+<td>-0.002856</td>
+<td>326.09</td>
+<td>0.000000</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2767</td>
+<td>FB</td>
+<td>"Backing up the sleigh," on Facebook (NASDAQ:F...</td>
+<td>2018-12-26</td>
+<td>0.076984</td>
+<td>134.18</td>
+<td>0.000000</td>
+</tr>
+</tbody>
+</table>
+
+<p>2768 rows × 6 columns</p>
+</div>
+</div>
+</div>
+<p>Let’s see how the <code>TextBlob()</code> sentiments correlate with the <code>eventRet</code>. As we can see the correlation is +4.2%, which is directionally correct but quite low.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>correlation <span class="op">=</span> df_news_return[<span class="st">'eventRet'</span>].corr(df_news_return[<span class="st">'sentiment_textblob'</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(correlation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.04257233738490116</code></pre>
+</div>
+</div>
+</section>
+<section id="supervised-techniques---sklearn" class="level2" data-number="51.4">
+<h2 data-number="51.4" class="anchored" data-anchor-id="supervised-techniques---sklearn"><span class="header-section-number">51.4</span> Supervised Techniques - <strong>sklearn</strong></h2>
+<p>Next, we develop our own models for sentiment analysis, based on some labeled financial headline data from Kaggle. Let’s read-in the data that we will use to train our models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_news_labeled <span class="op">=</span> pd.read_csv(<span class="st">'LabelledNewsData.csv'</span>, encoding<span class="op">=</span><span class="st">'unicode_escape'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_news_labeled</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">datetime</th>
+<th data-quarto-table-cell-role="th">headline</th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">sentiment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>1/16/2020 5:25</td>
+<td>$MMM fell on hard times but could be set to re...</td>
+<td>MMM</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>1/11/2020 6:43</td>
+<td>Wolfe Research Upgrades 3M $MMM to ¡§Peer Perf...</td>
+<td>MMM</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>1/9/2020 9:37</td>
+<td>3M $MMM Upgraded to ¡§Peer Perform¡¨ by Wolfe ...</td>
+<td>MMM</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>1/8/2020 17:01</td>
+<td>$MMM #insideday follow up as it also opened up...</td>
+<td>MMM</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>1/8/2020 7:44</td>
+<td>$MMM is best #dividend #stock out there and do...</td>
+<td>MMM</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9465</td>
+<td>4/11/2019 1:24</td>
+<td>$WMT - Walmart shifts to remodeling vs. new st...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9466</td>
+<td>4/10/2019 6:05</td>
+<td>Walmart INC $WMT Holder Texas Permanent School...</td>
+<td>WMT</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9467</td>
+<td>4/9/2019 4:38</td>
+<td>$WMT $GILD:3 Dividend Stocks Perfect for Retir...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9468</td>
+<td>4/9/2019 4:30</td>
+<td>Walmart expanding use of #robots to scan shelv...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">9469</td>
+<td>4/9/2019 4:11</td>
+<td>$WMT Walmart plans to add thousands of robot h...</td>
+<td>WMT</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>9470 rows × 4 columns</p>
+</div>
+</div>
+</div>
+<p>As we can see, the Kaggle data is fairly balanced with about 58% positive sentiments, consists of 30 tickers, each of which are fairly uniformly represented.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_news_labeled[<span class="st">'sentiment'</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>0.5788806758183738</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of Tickers: "</span>, <span class="bu">len</span>(df_news_labeled[<span class="st">'ticker'</span>].unique()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of Tickers:  30</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_news_labeled[<span class="st">'ticker'</span>].value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>ticker
+HD      350
+UTX     350
+JPM     349
+INTC    348
+MMM     347
+IBM     346
+MRK     345
+WMT     344
+CVX     343
+UNH     339
+PFE     337
+CSCO    337
+VZ      335
+PG      334
+CAT     332
+V       326
+TRV     326
+MCD     326
+MSFT    324
+JNJ     322
+AXP     320
+BA      318
+KO      309
+DIS     300
+WBA     283
+NKE     273
+AAPL    271
+XOM     259
+DOW     190
+GS      187
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+<p>In order to run a supervised learning model, we first need to convert the news headlines into a vector feature representation. For this exercise, we will use the word embedding built into the <strong>spaCy</strong> package. The word embedding model includes 20,000 unique vectors with 300 dimensions. We apply this model to all the <code>headlines</code> in <code>df_news_labeled</code>.</p>
+<p>Let’s first import the <strong>spaCy</strong> package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> spacy</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>nlp <span class="op">=</span> spacy.load(<span class="st">'en_core_web_lg'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, let’s see the word embedding for a single word.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>doc <span class="op">=</span> nlp(<span class="st">'fell'</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(doc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>spacy.tokens.doc.Doc</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> token <span class="kw">in</span> doc:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(token.vector)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[  1.1734    -7.2025     0.27734   -5.4665     2.8386    -2.496
+   1.1509     9.5497     4.8894    -2.7378    -1.0221     3.1214
+  -1.5272     1.2968     0.78371    3.3423    -4.3773    -6.473
+   3.9741     2.4101    -0.91515   -4.1784    -1.9259    -5.7423
+  -5.1056    -2.5617     3.7718    -4.4208     9.0647     1.4237
+   1.2726     0.5712    -1.4489    -2.7199    -5.1065    -1.6203
+  -3.0038     1.116     -0.44994    1.5537     2.9035     2.288
+   6.2687    -0.10803    0.36491   -2.2931    -3.9193     2.7295
+   1.989      1.8773    -0.70424    2.7992    -4.6728     1.1616
+  -0.06419    2.7225     4.4624    -4.8996     2.086      4.1729
+  -1.074     -3.9116     1.0264     2.848     -0.97624    0.48979
+   2.5099     4.0977     2.7164    -2.7599     2.1031     0.16324
+  -1.5091     3.9319     1.5492     3.1728     0.44398    5.1455
+  -1.7672    -0.12588   -3.2237    -0.96587    2.5144     2.616
+   1.7276     0.3823     2.1233    -1.3669    -1.9021     1.01
+   0.13405    3.0058    -3.887      3.9119     1.2379     7.797
+   1.0274   -10.084      6.5854    -1.3986     0.058625  -0.6915
+   2.0257     0.85324   -3.1623     3.5685     2.3699     3.3838
+  -6.4677    -0.73642   -0.75226   -5.686     -3.8741    -1.7943
+   0.40222    2.8348    -2.6308     4.0367    -7.4351     2.396
+   2.5281    -1.6755    -2.4794     2.5454    -2.026      2.7354
+   1.8119     2.4876     0.82002    3.4847    -0.23689   -0.1508
+   4.5248     2.1016    -0.83938    0.86797    1.4937    -6.4949
+   1.0099    -2.7664    -4.861      1.9063    -2.6432     5.9116
+   2.7117     4.0489    -8.2296    -5.1775    -2.5998    -2.6773
+  -0.41113   -2.8494     6.1497    -0.4032    -1.4203    -3.6775
+  -2.2973     2.2945     1.5869    -1.1298     1.9766    -1.3601
+   0.9683    -6.2481    -0.040676   3.6518     0.75282    1.628
+  -2.7672     5.6425     4.4535    -0.75748    3.4292    -7.3582
+   0.23872   -5.1985    -2.373     -4.378     -0.97711    0.24911
+  -2.4109    -4.1346     0.018835   9.3948    -3.5975    -5.4591
+   5.7961     2.9058    -2.4857    -5.5542     3.1893    -2.4025
+  -5.3554    -2.7439     1.2465   -12.615      2.2201    -1.4977
+  -2.9704     5.3191     3.2996    -1.3074     1.8646    -4.9133
+  -1.7506     0.48      -2.021     -0.96144   -2.5537     1.667
+  -4.3866     3.3491    -2.9308     1.3915     2.426      1.8428
+  -0.2902     1.5573    -5.8349    -3.1051    -1.3296    -1.6882
+   0.63074    3.8912    -4.129      3.1995     1.9571     5.7802
+   0.13258   -2.5778     0.65669    0.26942    5.4798     3.1075
+  -2.7361     9.4319    -2.4395    -1.693      4.2018    -0.3257
+   6.0126     5.0842     0.27366   -2.3441     1.6358    -0.90506
+  -6.7565     6.9635     2.3309    -2.2213    -6.1234    -5.0523
+  -0.7981    -1.5737     5.1085     2.6834    -1.4149    -4.6759
+   6.3007     5.3383     1.841      0.38306   -2.2447    -0.53224
+   0.034658  -4.1074     1.3425    -1.5725     1.1915     1.6954
+   7.0669     0.72362   -7.5257    -1.9819    -0.35572   -0.75719
+   0.82741   -6.3317     6.7808     1.3056     1.494      1.5701
+  -1.1684    -2.2983    -0.38407    0.60411   -5.5468    -2.7808
+  -6.7024     2.9155    -5.426      2.5842    -1.2399     0.63733
+  -2.3217     3.1628    -1.0898     1.7661     2.2106    -0.079949]</code></pre>
+</div>
+</div>
+<p>In order to associate a single vector with headline, we will calculate the mean vector of all the words in the headline. In the following code we are calculating the word-embedding for each of the words in the headline and taking the average of all of them. This results in a single 300-dimensional vector for each headline.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>time</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>all_vectors <span class="op">=</span> np.array([np.array([token.vector <span class="cf">for</span> token <span class="kw">in</span> nlp(s)]).mean(axis<span class="op">=</span><span class="dv">0</span>) <span class="cf">for</span> s <span class="kw">in</span> df_news_labeled[<span class="st">'headline'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 50 s, sys: 23.9 ms, total: 50.1 s
+Wall time: 50.1 s</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>all_vectors.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(9470, 300)</code></pre>
+</div>
+</div>
+<p>Now we have our headlines <em>featurized</em> and we can use them as training data for a variety of classification models.</p>
+<p>We next import the functions that we will need from <strong>sklearn</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neural_network <span class="im">import</span> MLPClassifier</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsClassifier</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, cross_val_score, KFold</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s organize our features and our labels as well as create a training and test sets.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> all_vectors</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>Y <span class="op">=</span> df_news_labeled[<span class="st">'sentiment'</span>]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>X_train, X_test, Y_train, Y_test <span class="op">=</span> train_test_split(X, Y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, let’s create a <code>list</code> of models that we are going to fit to our data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> []</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>models.append((<span class="st">'LR'</span>, LogisticRegression(max_iter<span class="op">=</span><span class="dv">1000</span>)))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>models.append((<span class="st">'KNN'</span>, KNeighborsClassifier(n_jobs<span class="op">=-</span><span class="dv">1</span>)))</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>models.append((<span class="st">'CART'</span>, DecisionTreeClassifier()))</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>models.append((<span class="st">'SVM'</span>, SVC()))</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>models.append((<span class="st">'NN'</span>, MLPClassifier()))</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>models.append((<span class="st">'RF'</span>, RandomForestClassifier(n_jobs<span class="op">=-</span><span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following <code>for</code>-loop iterates through all the models, fits each one, and stores the results for further analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#results = []</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> []</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>test_results <span class="op">=</span> []</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>train_results <span class="op">=</span> []</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model <span class="kw">in</span> models:</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># collecting names of models</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    names.append(name)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># fitting on training data</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train, Y_train)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    train_result <span class="op">=</span> accuracy_score(model.predict(X_train), Y_train)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    train_results.append(train_result)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># checking accuracy on testing data</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    test_result <span class="op">=</span> accuracy_score(model.predict(X_test), Y_test)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    test_results.append(test_result)    </span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    msg <span class="op">=</span> <span class="ss">f'</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>train_result<span class="sc">:.4f}</span><span class="ss"> </span><span class="sc">{</span>test_result<span class="sc">:.4f}</span><span class="ss">'</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(msg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>LR: 0.8979 0.8793
+KNN: 0.8457 0.7628
+CART: 0.9998 0.6948
+SVM: 0.8603 0.8434
+NN: 0.9988 0.9109
+RF: 0.9998 0.7941</code></pre>
+</div>
+</div>
+<p>Let’s compare the various models by plotting their training and testing accuracy. As you can see the neural network model seems to perform the best.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare algorithms</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> pyplot.figure()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>ind <span class="op">=</span> np.arange(<span class="bu">len</span>(names))  <span class="co"># the x locations for the groups</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="fl">0.35</span>  <span class="co"># the width of the bars</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Algorithm Comparison'</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.add_subplot(<span class="dv">111</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>pyplot.bar(ind <span class="op">-</span> width<span class="op">/</span><span class="dv">2</span>, train_results,  width<span class="op">=</span>width, label<span class="op">=</span><span class="st">'Train Error'</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>pyplot.bar(ind <span class="op">+</span> width<span class="op">/</span><span class="dv">2</span>, test_results, width<span class="op">=</span>width, label<span class="op">=</span><span class="st">'Test Error'</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>fig.set_size_inches(<span class="dv">8</span>,<span class="dv">5</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>pyplot.legend()</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(ind)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>ax.set_xticklabels(names)</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>pyplot.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="sentiment_analysis_stock_headlines_files/figure-html/cell-21-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="ltsm---keras" class="level2" data-number="51.5">
+<h2 data-number="51.5" class="anchored" data-anchor-id="ltsm---keras"><span class="header-section-number">51.5</span> LTSM - <strong>keras</strong></h2>
+<p>We will also include LSTM, which is an RNN-based model, in the list of models considered. RNNs process sequences of data (in our case words in a headline) and thus are well suited for NLP. In particular, LSTMs maintain a memory of past information, which enables the model to predict the current output conditioned on long distance features and looks at the words in the context of the entire sentence, rather than simply looking at the individual words.</p>
+<p>Let’s begin by importing some of the <strong>keras</strong> objects that we will need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.preprocessing.text <span class="im">import</span> Tokenizer</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.preprocessing.sequence <span class="im">import</span> pad_sequences</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.models <span class="im">import</span> Sequential</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#from keras.layers import Dense, Flatten, LSTM, Dropout, Activation</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.layers <span class="im">import</span> Dense, LSTM</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> keras.layers <span class="im">import</span> Embedding</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2023-11-24 19:08:29.794136: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2023-11-24 19:08:29.824234: E tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:9342] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+2023-11-24 19:08:29.824264: E tensorflow/compiler/xla/stream_executor/cuda/cuda_fft.cc:609] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+2023-11-24 19:08:29.824295: E tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:1518] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+2023-11-24 19:08:29.830129: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2023-11-24 19:08:29.830633: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-11-24 19:08:30.570094: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT</code></pre>
+</div>
+</div>
+<p>As with any NLP modeling excercise, we will need to process our <code>headlines</code> to be usable in our LSTM model. For us to be able to feed the data into our LSTM model, all input documents must have the same length. We use the <strong>keras</strong> <code>Tokenizer</code> function to tokenize the strings and then use <code>.texts_to_sequences()</code> to make sequences of words. We will limit the maximum review length to <code>maxlen=50</code> by truncating longer reviews and pad shorter reviews with a null value (0). We can accomplish this using the <code>pad_sequences</code> function, also in <strong>keras</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>vocabulary_size <span class="op">=</span> <span class="dv">20000</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> Tokenizer(num_words<span class="op">=</span> vocabulary_size)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>tokenizer.fit_on_texts(df_news_labeled[<span class="st">'headline'</span>])</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>sequences <span class="op">=</span> tokenizer.texts_to_sequences(df_news_labeled[<span class="st">'headline'</span>])</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>X_LSTM <span class="op">=</span> pad_sequences(sequences, maxlen<span class="op">=</span><span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s separate out our labels and create a holdout set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>Y_LSTM <span class="op">=</span> df_news_labeled[<span class="st">'sentiment'</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>X_train_LSTM, X_test_LSTM, Y_train_LSTM, Y_test_LSTM <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    train_test_split(X_LSTM, Y_LSTM, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the following code snippet, we use the <strong>keras</strong> library to build an artificial neural network classifier based on an LSTM model.</p>
+<p>Notice that the network starts with an <code>Embedding</code> layer. Unlike our previous models where we were using the pre-trained embedding in the <strong>spaCy</strong> package, in this model we are learning our own word embedding. The <code>Embedding</code> layer lets the system expand each token to a larger vector, allowing the network to represent a word in a meaningful way. The layer takes 20,000 as the first argument (i.e., the size of our vocabulary) and 300 as the second input parameter (i.e., the dimension of the embedding).</p>
+<p>Finally, given that this is a classification problem and the output needs to be labeled as zero or one, the <code>KerasClassifier()</code> function is used as a wrapper over the LSTM model to produce a binary (zero or one) output.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scikeras.wrappers <span class="im">import</span> KerasClassifier</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_model(input_length<span class="op">=</span><span class="dv">50</span>):</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> Sequential()</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    model.add(Embedding(<span class="dv">20000</span>, <span class="dv">300</span>, input_length<span class="op">=</span><span class="dv">50</span>))</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    model.add(LSTM(<span class="dv">100</span>, dropout<span class="op">=</span><span class="fl">0.2</span>, recurrent_dropout<span class="op">=</span><span class="fl">0.2</span>))</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    model.add(Dense(<span class="dv">1</span>, activation<span class="op">=</span><span class="st">'sigmoid'</span>))</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    model.<span class="bu">compile</span>(loss<span class="op">=</span><span class="st">'binary_crossentropy'</span>, optimizer<span class="op">=</span><span class="st">'adam'</span>, metrics<span class="op">=</span>[<span class="st">'accuracy'</span>])    </span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> model    </span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>model_LSTM <span class="op">=</span> KerasClassifier(model<span class="op">=</span>create_model, epochs<span class="op">=</span><span class="dv">3</span>, verbose<span class="op">=</span><span class="va">True</span>, validation_split<span class="op">=</span><span class="fl">0.4</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>model_LSTM.fit(X_train_LSTM, Y_train_LSTM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Epoch 1/3
+125/125 [==============================] - 15s 102ms/step - loss: 0.4835 - accuracy: 0.7978 - val_loss: 0.1638 - val_accuracy: 0.9434
+Epoch 2/3
+125/125 [==============================] - 13s 101ms/step - loss: 0.0674 - accuracy: 0.9811 - val_loss: 0.0982 - val_accuracy: 0.9679
+Epoch 3/3
+125/125 [==============================] - 13s 102ms/step - loss: 0.0212 - accuracy: 0.9945 - val_loss: 0.1040 - val_accuracy: 0.9661</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>KerasClassifier(
+    model=&lt;function create_model at 0x7f2c8b7d3a30&gt;
+    build_fn=None
+    warm_start=False
+    random_state=None
+    optimizer=rmsprop
+    loss=None
+    metrics=None
+    batch_size=None
+    validation_batch_size=None
+    verbose=True
+    callbacks=None
+    validation_split=0.4
+    shuffle=True
+    run_eagerly=False
+    epochs=3
+    class_weight=None
+)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">KerasClassifier</label><div class="sk-toggleable__content"><pre>KerasClassifier(
+    model=&lt;function create_model at 0x7f2c8b7d3a30&gt;
+    build_fn=None
+    warm_start=False
+    random_state=None
+    optimizer=rmsprop
+    loss=None
+    metrics=None
+    batch_size=None
+    validation_batch_size=None
+    verbose=True
+    callbacks=None
+    validation_split=0.4
+    shuffle=True
+    run_eagerly=False
+    epochs=3
+    class_weight=None
+)</pre></div></div></div></div></div>
+</div>
+</div>
+<p>Let’s calculate the a in-sample and out-of-sample accuracy and store them for plotting below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>train_result_LSTM <span class="op">=</span> accuracy_score(model_LSTM.predict(X_train_LSTM), Y_train_LSTM)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>test_result_LSTM <span class="op">=</span> accuracy_score(model_LSTM.predict(X_test_LSTM), Y_test_LSTM)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>train_results.append(train_result_LSTM)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>test_results.append(test_result_LSTM)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>names.append(<span class="st">'LSTM'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>208/208 [==============================] - 2s 10ms/step
+89/89 [==============================] - 1s 9ms/step</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'LTSM Training Accuracy: '</span>, train_result_LSTM)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'LTSM Testing Accuracy: '</span>, test_result_LSTM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>LTSM Training Accuracy:  0.9855181777040277
+LTSM Testing Accuracy:  0.966913058782119</code></pre>
+</div>
+</div>
+<p>Let’s add in our LSTM model results to our previous results and plot again.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare algorithms</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> pyplot.figure()</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>ind <span class="op">=</span> np.arange(<span class="bu">len</span>(names))  <span class="co"># the x locations for the groups</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>width <span class="op">=</span> <span class="fl">0.35</span>  <span class="co"># the width of the bars</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">'Algorithm Comparison'</span>)</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.add_subplot(<span class="dv">111</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>pyplot.bar(ind <span class="op">-</span> width<span class="op">/</span><span class="dv">2</span>, train_results,  width<span class="op">=</span>width, label<span class="op">=</span><span class="st">'Train Error'</span>)</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>pyplot.bar(ind <span class="op">+</span> width<span class="op">/</span><span class="dv">2</span>, test_results, width<span class="op">=</span>width, label<span class="op">=</span><span class="st">'Test Error'</span>)</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>fig.set_size_inches(<span class="dv">9</span>, <span class="dv">5</span>)</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>pyplot.legend()</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>ax.set_xticks(ind)</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>ax.set_xticklabels(names)</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>pyplot.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="sentiment_analysis_stock_headlines_files/figure-html/cell-28-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The LSTM model has the best performance on the test set as compared to all other models. The performance of the ANN is comparable to the LSTM-based model. The performances of random forest (RF), SVM, and logistic regression (LR) are reasonable as well. CART and KNN do not perform as well as other models. CART shows significant overfitting.</p>
+</section>
+<section id="ltsm-model-correlations-with-eventret" class="level2" data-number="51.6">
+<h2 data-number="51.6" class="anchored" data-anchor-id="ltsm-model-correlations-with-eventret"><span class="header-section-number">51.6</span> LTSM Model Correlations with <code>eventRet</code></h2>
+<p>Of all the custom sentiment models that we fit to our Kaggle data, the LTSM seems to perform the best. So in this final section, let’s use our LSTM model to predict sentiments on our <code>headlines</code> in <code>df_news_return</code> and check the correlation with the <code>eventRet</code>.</p>
+<p>As a first step, we need to get the <code>headlines</code> in a format that can be fed into the LSTM model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>sequences_LSTM <span class="op">=</span> tokenizer.texts_to_sequences(df_news_return[<span class="st">'headline'</span>].astype(<span class="bu">str</span>))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>X_LSTM <span class="op">=</span> pad_sequences(sequences_LSTM, maxlen<span class="op">=</span><span class="dv">50</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>X_LSTM</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[   0,    0,    0, ...,   46, 3856,  307],
+       [   1,   36,   16, ...,  273,    1,  801],
+       [   0,    0,    0, ...,  159,  224, 3293],
+       ...,
+       [   0,    0,    0, ..., 7131, 2035, 1422],
+       [   0,    0,    0, ..., 1881,  232,  154],
+       [   0,    0,    0, ..., 9673, 5060, 2057]], dtype=int32)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>X_LSTM.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(2768, 50)</code></pre>
+</div>
+</div>
+<p>Next, we use the <code>.predict()</code> method of our fitted model make our predictions and store them in <code>df_news_return</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>Y_LSTM <span class="op">=</span> model_LSTM.predict(X_LSTM)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>df_news_return[<span class="st">'sentiment_LSTM'</span>] <span class="op">=</span> Y_LSTM </span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>df_news_return.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>87/87 [==============================] - 1s 9ms/step</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ticker</th>
+<th data-quarto-table-cell-role="th">headline</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">eventRet</th>
+<th data-quarto-table-cell-role="th">Close</th>
+<th data-quarto-table-cell-role="th">sentiment_textblob</th>
+<th data-quarto-table-cell-role="th">sentiment_LSTM</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AMZN</td>
+<td>Whole Foods (WFMI) -5.2% following a downgrade...</td>
+<td>2011-05-02</td>
+<td>0.017650</td>
+<td>201.19</td>
+<td>0.262500</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>NFLX</td>
+<td>Netflix (NFLX +1.1%) shares post early gains a...</td>
+<td>2011-05-02</td>
+<td>-0.013003</td>
+<td>33.88</td>
+<td>-0.043750</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>MSFT</td>
+<td>The likely winners in Microsoft's (MSFT -1.4%)...</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+<td>0.166667</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>MSFT</td>
+<td>Microsoft (MSFT -1.2%) and Skype signed their ...</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+<td>-0.030556</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>MSFT</td>
+<td>NaN</td>
+<td>2011-05-10</td>
+<td>-0.019823</td>
+<td>20.63</td>
+<td>0.000000</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Let’s now check the correlation between <code>sentiment_LSTM</code> and <code>eventRet</code>. As we can see, there is improvement over the <code>Textblob</code> approach.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>correlation <span class="op">=</span> df_news_return[<span class="st">'eventRet'</span>].corr(df_news_return[<span class="st">'sentiment_LSTM'</span>])</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(correlation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>0.1125490450070999</code></pre>
+</div>
+</div>
+<p>Let’s also check the correlation with the predicted probabilities - the correlation is quite similar.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> model_LSTM.predict_proba(X_LSTM)[:, <span class="dv">1</span>]</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>np.corrcoef(df_news_return[<span class="st">'eventRet'</span>], probs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>87/87 [==============================] - 1s 11ms/step</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[1.        , 0.11716146],
+       [0.11716146, 1.        ]])</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/41c_vectorizing_text/vectorizing_text.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">Vectorizing Text</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../parts/07_miscellaneous/miscellaneous.html" class="pagination-link">
+        <span class="nav-page-text">Miscellaneous</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

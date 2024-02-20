@@ -57,12 +57,20 @@ book:
       chapters:
       - chapters/36a_mnist_digit_recognition/mnist_digit_recognition.ipynb
       - chapters/36b_imdb_classification/imdb_classification.ipynb
+      - chapters/36c_reuters_classification/reuters_classification.ipynb
+      - chapters/36d_boston_house_price_regression/boston_house_price_regression.ipynb
       - chapters/37_student_loan_neural_network/student_loan_neural_network.ipynb
       - chapters/38_exchange_rate/exchange_rate.ipynb
       - chapters/39_stock_prediction_neural_network/stock_prediction_neural_network.ipynb
       - chapters/40_numerai/numerai.ipynb
       - chapters/41_exchange_rate_rnn/exchange_rate_rnn.ipynb
-    - part: parts/06_miscellaneous/miscellaneous.ipynb
+    - part: parts/06_natural_language_processing/natural_language_processing.ipynb
+      chapters:
+      - chapters/41a_spacy_introduction/spacy_introduction.ipynb
+      - chapters/41b_nltk_introduction/nltk_introduction.ipynb
+      - chapters/41c_vectorizing_text/vectorizing_text.ipynb
+      - chapters/41d_sentiment_analysis_stock_headlines/sentiment_analysis_stock_headlines.ipynb
+    - part: parts/07_miscellaneous/miscellaneous.ipynb
       chapters:
       - chapters/42_virtual_environments/virtual_environments.ipynb
       - chapters/43_pipelines_pickles/pipelines_pickles.ipynb
