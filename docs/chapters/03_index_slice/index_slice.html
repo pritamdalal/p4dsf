@@ -605,40 +605,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="importing-packages" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">3.1</span> Importing Packages</h2>
 <p>Let’s begin by importing the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-data" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">3.2</span> Reading-In Data</h2>
 <p>Next, lets grab some data from Yahoo finance. In particular, we’ll grab <code>SPY</code> price data from July 2021.</p>
-<div id="cell-7" class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start<span class="op">=</span><span class="st">'2021-06-30'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-7" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(<span class="st">'SPY'</span>, start<span class="op">=</span><span class="st">'2021-06-30'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>, auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">Price</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Close</th>
 <th data-quarto-table-cell-role="th">High</th>
 <th data-quarto-table-cell-role="th">Low</th>
-<th data-quarto-table-cell-role="th">Close</th>
-<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Open</th>
 <th data-quarto-table-cell-role="th">Volume</th>
 </tr>
 <tr class="even">
+<th data-quarto-table-cell-role="th">Ticker</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+</tr>
+<tr class="header">
 <th data-quarto-table-cell-role="th">Date</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -651,47 +657,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-02</td>
-<td>431.67</td>
+<td>409.86</td>
+<td>433.72</td>
 <td>434.10</td>
 <td>430.52</td>
-<td>433.72</td>
-<td>420.77</td>
+<td>431.67</td>
 <td>57697700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 </tbody>
@@ -700,12 +706,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>The following code resets the index so that <code>Date</code> is a regular column; it also puts the column names into snake-case.</p>
-<div id="cell-9" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy.reset_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<p>The following code:</p>
+<ul>
+<li>removes the <code>SPY</code> level of the column index</li>
+<li>resets the index so that <code>Date</code> is a regular column</li>
+<li>puts the column names into snake-case.</li>
+</ul>
+<div id="cell-9" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.reset_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -714,11 +727,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -726,51 +739,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2021-07-02</td>
-<td>431.67</td>
+<td>409.86</td>
+<td>433.72</td>
 <td>434.10</td>
 <td>430.52</td>
-<td>433.72</td>
-<td>420.77</td>
+<td>431.67</td>
 <td>57697700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 </tbody>
@@ -780,15 +793,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>It is often useful to look at the data type of each of the columns of a new data set. We can do so with the <code>DataFrame.dtypes</code> attribute.</p>
-<div id="cell-11" class="cell">
+<div id="cell-11" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy.dtypes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>date         datetime64[ns]
-open                float64
+adj_close           float64
+close               float64
 high                float64
 low                 float64
-close               float64
-adj_close           float64
+open                float64
 volume                int64
 dtype: object</code></pre>
 </div>
@@ -798,9 +811,9 @@ dtype: object</code></pre>
 <h2 data-number="3.3" class="anchored" data-anchor-id="row-slicing"><span class="header-section-number">3.3</span> Row Slicing</h2>
 <p>The simplest way to slice a <code>DataFrame</code> is to use square brackets: <code>[]</code>. The syntax <code>df[i:j]</code> will generate a <code>DataFrame</code> who’s first row is the <code>i</code>th row of <code>df</code> and who’s last row is the <code>(j-1)</code>th row of <code>df</code>. Let’s demonstrate this with a some examples:</p>
 <p>Starting from the 0th row, and ending with the 0th row:</p>
-<div id="cell-16" class="cell">
+<div id="cell-16" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="dv">0</span>:<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -809,11 +822,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -821,11 +834,11 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 </tbody>
@@ -835,9 +848,9 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>Starting with the 3rd row, and ending with the 6th row:</p>
-<div id="cell-18" class="cell">
+<div id="cell-18" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="dv">3</span>:<span class="dv">7</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -846,11 +859,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -858,41 +871,41 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2021-07-08</td>
-<td>428.78</td>
+<td>407.21</td>
+<td>430.92</td>
 <td>431.73</td>
 <td>427.52</td>
-<td>430.92</td>
-<td>418.05</td>
+<td>428.78</td>
 <td>97595200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">6</td>
 <td>2021-07-09</td>
-<td>432.53</td>
+<td>411.56</td>
+<td>435.52</td>
 <td>435.84</td>
 <td>430.71</td>
-<td>435.52</td>
-<td>422.51</td>
+<td>432.53</td>
 <td>76238600</td>
 </tr>
 </tbody>
@@ -903,12 +916,12 @@ dtype: object</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Retrieve the 15th, 16th, and 17th rows of <code>df_spy</code>.</p>
-<div id="cell-21" class="cell">
+<div id="cell-21" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="dv">15</span>:<span class="dv">18</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -917,11 +930,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -929,31 +942,31 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">15</td>
 <td>2021-07-22</td>
-<td>434.74</td>
+<td>411.50</td>
+<td>435.46</td>
 <td>435.72</td>
 <td>433.69</td>
-<td>435.46</td>
-<td>422.46</td>
+<td>434.74</td>
 <td>47878500</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">16</td>
 <td>2021-07-23</td>
-<td>437.52</td>
+<td>415.74</td>
+<td>439.94</td>
 <td>440.30</td>
 <td>436.79</td>
-<td>439.94</td>
-<td>426.80</td>
+<td>437.52</td>
 <td>63766600</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">17</td>
 <td>2021-07-26</td>
-<td>439.31</td>
+<td>416.76</td>
+<td>441.02</td>
 <td>441.03</td>
 <td>439.26</td>
-<td>441.02</td>
-<td>427.85</td>
+<td>439.31</td>
 <td>43719200</td>
 </tr>
 </tbody>
@@ -964,9 +977,9 @@ dtype: object</code></pre>
 </div>
 <hr>
 <p>Using the syntax <code>df[:n]</code> automatically starts the indexing at <code>0</code>. For example, the following code retrieves all of <code>df_spy</code> (notice that <code>len(df_spy)</code> gives the number of rows of <code>df_spy</code>):</p>
-<div id="cell-24" class="cell">
+<div id="cell-24" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_spy[:<span class="bu">len</span>(df_spy)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -975,11 +988,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -987,51 +1000,51 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2021-07-02</td>
-<td>431.67</td>
+<td>409.86</td>
+<td>433.72</td>
 <td>434.10</td>
 <td>430.52</td>
-<td>433.72</td>
-<td>420.77</td>
+<td>431.67</td>
 <td>57697700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 <tr class="even">
@@ -1047,51 +1060,51 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">17</td>
 <td>2021-07-26</td>
-<td>439.31</td>
+<td>416.76</td>
+<td>441.02</td>
 <td>441.03</td>
 <td>439.26</td>
-<td>441.02</td>
-<td>427.85</td>
+<td>439.31</td>
 <td>43719200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">18</td>
 <td>2021-07-27</td>
-<td>439.91</td>
+<td>414.86</td>
+<td>439.01</td>
 <td>439.94</td>
 <td>435.99</td>
-<td>439.01</td>
-<td>425.90</td>
+<td>439.91</td>
 <td>67397100</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">19</td>
 <td>2021-07-28</td>
-<td>439.68</td>
+<td>414.69</td>
+<td>438.83</td>
 <td>440.30</td>
 <td>437.31</td>
-<td>438.83</td>
-<td>425.73</td>
+<td>439.68</td>
 <td>52472400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">20</td>
 <td>2021-07-29</td>
-<td>439.82</td>
+<td>416.41</td>
+<td>440.65</td>
 <td>441.80</td>
 <td>439.81</td>
-<td>440.65</td>
-<td>427.49</td>
+<td>439.82</td>
 <td>47435300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">21</td>
 <td>2021-07-30</td>
-<td>437.91</td>
+<td>414.39</td>
+<td>438.51</td>
 <td>440.06</td>
 <td>437.77</td>
-<td>438.51</td>
-<td>425.42</td>
+<td>437.91</td>
 <td>68951200</td>
 </tr>
 </tbody>
@@ -1103,12 +1116,12 @@ dtype: object</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Retrieve the first five rows of <code>df_spy</code>.</p>
-<div id="cell-27" class="cell">
+<div id="cell-27" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_spy[:<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -1117,11 +1130,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1129,51 +1142,51 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2021-07-02</td>
-<td>431.67</td>
+<td>409.86</td>
+<td>433.72</td>
 <td>434.10</td>
 <td>430.52</td>
-<td>433.72</td>
-<td>420.77</td>
+<td>431.67</td>
 <td>57697700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 </tbody>
@@ -1185,9 +1198,9 @@ dtype: object</code></pre>
 <hr>
 <p>There are a couple of row slicing tricks that involve negative numbers that are worth mentioning.</p>
 <p>The syntax <code>df[-n:]</code> retrieves the last <code>n</code> rows of <code>df</code>. The following code retrieves the last five rows of <code>df_spy</code>.</p>
-<div id="cell-30" class="cell">
+<div id="cell-30" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="op">-</span><span class="dv">5</span>:]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1196,11 +1209,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1208,51 +1221,51 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">17</td>
 <td>2021-07-26</td>
-<td>439.31</td>
+<td>416.76</td>
+<td>441.02</td>
 <td>441.03</td>
 <td>439.26</td>
-<td>441.02</td>
-<td>427.85</td>
+<td>439.31</td>
 <td>43719200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">18</td>
 <td>2021-07-27</td>
-<td>439.91</td>
+<td>414.86</td>
+<td>439.01</td>
 <td>439.94</td>
 <td>435.99</td>
-<td>439.01</td>
-<td>425.90</td>
+<td>439.91</td>
 <td>67397100</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">19</td>
 <td>2021-07-28</td>
-<td>439.68</td>
+<td>414.69</td>
+<td>438.83</td>
 <td>440.30</td>
 <td>437.31</td>
-<td>438.83</td>
-<td>425.73</td>
+<td>439.68</td>
 <td>52472400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">20</td>
 <td>2021-07-29</td>
-<td>439.82</td>
+<td>416.41</td>
+<td>440.65</td>
 <td>441.80</td>
 <td>439.81</td>
-<td>440.65</td>
-<td>427.49</td>
+<td>439.82</td>
 <td>47435300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">21</td>
 <td>2021-07-30</td>
-<td>437.91</td>
+<td>414.39</td>
+<td>438.51</td>
 <td>440.06</td>
 <td>437.77</td>
-<td>438.51</td>
-<td>425.42</td>
+<td>437.91</td>
 <td>68951200</td>
 </tr>
 </tbody>
@@ -1262,9 +1275,9 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>The syntax <code>df[:-n]</code> retrieves all but the last <code>n</code> rows of <code>df</code>. The following code retrieves all but the last 10 rows of <code>df_spy</code>:</p>
-<div id="cell-32" class="cell">
+<div id="cell-32" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_spy[:<span class="op">-</span><span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
 
@@ -1273,11 +1286,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1285,51 +1298,51 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2021-07-02</td>
-<td>431.67</td>
+<td>409.86</td>
+<td>433.72</td>
 <td>434.10</td>
 <td>430.52</td>
-<td>433.72</td>
-<td>420.77</td>
+<td>431.67</td>
 <td>57697700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 <tr class="even">
@@ -1345,51 +1358,51 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">7</td>
 <td>2021-07-12</td>
-<td>435.43</td>
+<td>413.03</td>
+<td>437.08</td>
 <td>437.35</td>
 <td>434.97</td>
-<td>437.08</td>
-<td>424.03</td>
+<td>435.43</td>
 <td>52889600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">8</td>
 <td>2021-07-13</td>
-<td>436.24</td>
+<td>411.63</td>
+<td>435.59</td>
 <td>437.84</td>
 <td>435.31</td>
-<td>435.59</td>
-<td>422.58</td>
+<td>436.24</td>
 <td>52911300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">9</td>
 <td>2021-07-14</td>
-<td>437.40</td>
+<td>412.24</td>
+<td>436.24</td>
 <td>437.92</td>
 <td>434.91</td>
-<td>436.24</td>
-<td>423.21</td>
+<td>437.40</td>
 <td>64130400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">10</td>
 <td>2021-07-15</td>
-<td>434.81</td>
+<td>410.83</td>
+<td>434.75</td>
 <td>435.53</td>
 <td>432.72</td>
-<td>434.75</td>
-<td>421.77</td>
+<td>434.81</td>
 <td>55126400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">11</td>
 <td>2021-07-16</td>
-<td>436.01</td>
+<td>407.61</td>
+<td>431.34</td>
 <td>436.06</td>
 <td>430.92</td>
-<td>431.34</td>
-<td>418.46</td>
+<td>436.01</td>
 <td>75874700</td>
 </tr>
 </tbody>
@@ -1401,12 +1414,12 @@ dtype: object</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Retrieve the first row of <code>df_spy</code> with negative indexing.</p>
-<div id="cell-35" class="cell">
+<div id="cell-35" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_spy[:<span class="op">-</span>(<span class="bu">len</span>(df_spy)<span class="op">-</span><span class="dv">1</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
@@ -1415,11 +1428,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1427,11 +1440,11 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 </tbody>
@@ -1442,12 +1455,12 @@ dtype: object</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Use simple slicing to select the last three rows of a <code>df_spy</code>: 1) without explicitly using row numbers; 2) with explicitly using row numbers.</p>
-<div id="cell-38" class="cell">
+<div id="cell-38" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="bu">len</span>(df_spy)<span class="op">-</span><span class="dv">3</span>:<span class="bu">len</span>(df_spy)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1456,11 +1469,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1468,31 +1481,31 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">19</td>
 <td>2021-07-28</td>
-<td>439.68</td>
+<td>414.69</td>
+<td>438.83</td>
 <td>440.30</td>
 <td>437.31</td>
-<td>438.83</td>
-<td>425.73</td>
+<td>439.68</td>
 <td>52472400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">20</td>
 <td>2021-07-29</td>
-<td>439.82</td>
+<td>416.41</td>
+<td>440.65</td>
 <td>441.80</td>
 <td>439.81</td>
-<td>440.65</td>
-<td>427.49</td>
+<td>439.82</td>
 <td>47435300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">21</td>
 <td>2021-07-30</td>
-<td>437.91</td>
+<td>414.39</td>
+<td>438.51</td>
 <td>440.06</td>
 <td>437.77</td>
-<td>438.51</td>
-<td>425.42</td>
+<td>437.91</td>
 <td>68951200</td>
 </tr>
 </tbody>
@@ -1501,12 +1514,12 @@ dtype: object</code></pre>
 </div>
 </div>
 </div>
-<div id="cell-39" class="cell">
+<div id="cell-39" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="op">-</span><span class="dv">3</span>:]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -1515,11 +1528,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1527,31 +1540,31 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">19</td>
 <td>2021-07-28</td>
-<td>439.68</td>
+<td>414.69</td>
+<td>438.83</td>
 <td>440.30</td>
 <td>437.31</td>
-<td>438.83</td>
-<td>425.73</td>
+<td>439.68</td>
 <td>52472400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">20</td>
 <td>2021-07-29</td>
-<td>439.82</td>
+<td>416.41</td>
+<td>440.65</td>
 <td>441.80</td>
 <td>439.81</td>
-<td>440.65</td>
-<td>427.49</td>
+<td>439.82</td>
 <td>47435300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">21</td>
 <td>2021-07-30</td>
-<td>437.91</td>
+<td>414.39</td>
+<td>438.51</td>
 <td>440.06</td>
 <td>437.77</td>
-<td>438.51</td>
-<td>425.42</td>
+<td>437.91</td>
 <td>68951200</td>
 </tr>
 </tbody>
@@ -1569,28 +1582,28 @@ dtype: object</code></pre>
 <p><code>row</code> - whenever a <code>DataFrame</code> is created, there is an explicit row index that is created. If one isn’t specified, then a sequence of non-negative integers is used.</p>
 <p><code>implicit</code> - each row has an implicit row-number, and each column has an implicit column-number.</p>
 <p>Let’s take a look at the <code>columns</code> index of <code>df_spy</code>.</p>
-<div id="cell-44" class="cell">
+<div id="cell-44" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_spy.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>Index(['date', 'open', 'high', 'low', 'close', 'adj_close', 'volume'], dtype='object')</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>Index(['date', 'adj_close', 'close', 'high', 'low', 'open', 'volume'], dtype='object')</code></pre>
 </div>
 </div>
-<div id="cell-45" class="cell">
+<div id="cell-45" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy.columns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>pandas.core.indexes.base.Index</code></pre>
 </div>
 </div>
 <p>Next, let’s take a look at the explicit row <code>index</code> attribute of <code>df_spy</code>.</p>
-<div id="cell-47" class="cell">
+<div id="cell-47" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_spy.index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>RangeIndex(start=0, stop=22, step=1)</code></pre>
 </div>
 </div>
-<div id="cell-48" class="cell">
+<div id="cell-48" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy.index)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>pandas.core.indexes.range.RangeIndex</code></pre>
 </div>
 </div>
@@ -1602,9 +1615,9 @@ dtype: object</code></pre>
 <h2 data-number="3.5" class="anchored" data-anchor-id="indexing-with-dataframe.iloc"><span class="header-section-number">3.5</span> Indexing with <code>DataFrame.iloc</code></h2>
 <p>The indexer <code>DataFrame.iloc</code> can be used to access rows and columns using their implicit row and column numbers.</p>
 <p>Here is an example of <code>iloc</code> that retrieves the first two rows of <code>df_spy</code>.</p>
-<div id="cell-52" class="cell">
+<div id="cell-52" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_spy.iloc[<span class="dv">0</span>:<span class="dv">2</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
 
@@ -1613,11 +1626,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1625,21 +1638,21 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 </tbody>
@@ -1650,9 +1663,9 @@ dtype: object</code></pre>
 </div>
 <p>Notice, that because we didn’t specify any column numbers, the code above retrieves all columns.</p>
 <p>The following code grabs the first three row and the first three columns of <code>df_spy</code>.</p>
-<div id="cell-54" class="cell">
+<div id="cell-54" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_spy.iloc[<span class="dv">0</span>:<span class="dv">3</span>, <span class="dv">0</span>:<span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -1661,28 +1674,28 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
-<td>428.78</td>
+<td>404.51</td>
+<td>428.06</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2021-07-01</td>
-<td>428.87</td>
-<td>430.60</td>
+<td>406.75</td>
+<td>430.43</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2021-07-02</td>
-<td>431.67</td>
-<td>434.10</td>
+<td>409.86</td>
+<td>433.72</td>
 </tr>
 </tbody>
 </table>
@@ -1691,11 +1704,11 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>We can also supply <code>.iloc</code> with <code>lists</code> rather than ranges to specify custom sets of columns and rows:</p>
-<div id="cell-56" class="cell">
+<div id="cell-56" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lst_row <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">2</span>] <span class="co"># 0th and 2nd row</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>lst_col <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">6</span>] <span class="co"># date and adj_close columns</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>df_spy.iloc[lst_row, lst_col]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -1727,12 +1740,12 @@ dtype: object</code></pre>
 <p>Using <code>lists</code> as a means of indexing is sometimes referred to as <em>fancy indexing</em>.</p>
 <hr>
 <p><strong>Code Challenge</strong> Use fancy indexing to grab the 14th, 0th, and 5th rows of <code>df_spy</code> - in that order.</p>
-<div id="cell-60" class="cell">
+<div id="cell-60" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df_spy.iloc[[<span class="dv">14</span>, <span class="dv">0</span>, <span class="dv">5</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <div>
 
 
@@ -1741,11 +1754,11 @@ dtype: object</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1753,31 +1766,31 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">14</td>
 <td>2021-07-21</td>
-<td>432.34</td>
+<td>410.64</td>
+<td>434.55</td>
 <td>434.70</td>
 <td>431.01</td>
-<td>434.55</td>
-<td>421.57</td>
+<td>432.34</td>
 <td>64724400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5</td>
 <td>2021-07-08</td>
-<td>428.78</td>
+<td>407.21</td>
+<td>430.92</td>
 <td>431.73</td>
 <td>427.52</td>
-<td>430.92</td>
-<td>418.05</td>
+<td>428.78</td>
 <td>97595200</td>
 </tr>
 </tbody>
@@ -1792,10 +1805,10 @@ dtype: object</code></pre>
 <h2 data-number="3.6" class="anchored" data-anchor-id="indexing-with-dataframe.loc"><span class="header-section-number">3.6</span> Indexing with <code>DataFrame.loc</code></h2>
 <p>Rather than using the implicit row or column numbers, it is often more useful to access data by using the explicit row or column indices.</p>
 <p>Let’s use the <code>DataFrame.set_index()</code> method to set the <code>date</code> column as our new index. The <code>dates</code> will be a more interesting explicit index.</p>
-<div id="cell-65" class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df_spy.set_index(<span class="st">'date'</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<div id="cell-65" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df_spy.set_index(<span class="st">'date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="23">
 <div>
 
 
@@ -1803,11 +1816,11 @@ dtype: object</code></pre>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 <tr class="even">
@@ -1823,47 +1836,47 @@ dtype: object</code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-06-30</td>
-<td>427.21</td>
+<td>404.51</td>
+<td>428.06</td>
 <td>428.78</td>
 <td>427.18</td>
-<td>428.06</td>
-<td>415.28</td>
+<td>427.21</td>
 <td>64827900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-01</td>
-<td>428.87</td>
+<td>406.75</td>
+<td>430.43</td>
 <td>430.60</td>
 <td>428.80</td>
-<td>430.43</td>
-<td>417.58</td>
+<td>428.87</td>
 <td>53441000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-02</td>
-<td>431.67</td>
+<td>409.86</td>
+<td>433.72</td>
 <td>434.10</td>
 <td>430.52</td>
-<td>433.72</td>
-<td>420.77</td>
+<td>431.67</td>
 <td>57697700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-06</td>
-<td>433.78</td>
+<td>409.11</td>
+<td>432.93</td>
 <td>434.01</td>
 <td>430.01</td>
-<td>432.93</td>
-<td>420.00</td>
+<td>433.78</td>
 <td>68710400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-07</td>
-<td>433.66</td>
+<td>410.56</td>
+<td>434.46</td>
 <td>434.76</td>
 <td>431.51</td>
-<td>434.46</td>
-<td>421.49</td>
+<td>433.66</td>
 <td>63549500</td>
 </tr>
 </tbody>
@@ -1873,9 +1886,9 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>To see the effect of the above code, we can have a look at the <code>index</code> of <code>df_spy</code>.</p>
-<div id="cell-67" class="cell">
+<div id="cell-67" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df_spy.index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <pre><code>DatetimeIndex(['2021-06-30', '2021-07-01', '2021-07-02', '2021-07-06',
                '2021-07-07', '2021-07-08', '2021-07-09', '2021-07-12',
                '2021-07-13', '2021-07-14', '2021-07-15', '2021-07-16',
@@ -1886,17 +1899,17 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>And notice that <code>date</code> is no longer column of <code>df_spy</code>.</p>
-<div id="cell-70" class="cell">
+<div id="cell-70" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df_spy.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>Index(['open', 'high', 'low', 'close', 'adj_close', 'volume'], dtype='object')</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<pre><code>Index(['adj_close', 'close', 'high', 'low', 'open', 'volume'], dtype='object')</code></pre>
 </div>
 </div>
 <p>Now that we have successfully set the row <code>index</code> of <code>df_spy</code> to be the <code>date</code>, let’s see how we can use this <code>index</code> to access the data via <code>.loc</code>.</p>
 <p>Here is an example of how we can grab a slice of rows, associated with a date-range.</p>
-<div id="cell-72" class="cell">
+<div id="cell-72" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df_spy.loc[<span class="st">'2021-07-23'</span>:<span class="st">'2021-07-31'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <div>
 
 
@@ -1904,11 +1917,11 @@ dtype: object</code></pre>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 <tr class="even">
@@ -1924,56 +1937,56 @@ dtype: object</code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-23</td>
-<td>437.52</td>
+<td>415.74</td>
+<td>439.94</td>
 <td>440.30</td>
 <td>436.79</td>
-<td>439.94</td>
-<td>426.80</td>
+<td>437.52</td>
 <td>63766600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
-<td>439.31</td>
+<td>416.76</td>
+<td>441.02</td>
 <td>441.03</td>
 <td>439.26</td>
-<td>441.02</td>
-<td>427.85</td>
+<td>439.31</td>
 <td>43719200</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
-<td>439.91</td>
+<td>414.86</td>
+<td>439.01</td>
 <td>439.94</td>
 <td>435.99</td>
-<td>439.01</td>
-<td>425.90</td>
+<td>439.91</td>
 <td>67397100</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
-<td>439.68</td>
+<td>414.69</td>
+<td>438.83</td>
 <td>440.30</td>
 <td>437.31</td>
-<td>438.83</td>
-<td>425.73</td>
+<td>439.68</td>
 <td>52472400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
-<td>439.82</td>
+<td>416.41</td>
+<td>440.65</td>
 <td>441.80</td>
 <td>439.81</td>
-<td>440.65</td>
-<td>427.49</td>
+<td>439.82</td>
 <td>47435300</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
-<td>437.91</td>
+<td>414.39</td>
+<td>438.51</td>
 <td>440.06</td>
 <td>437.77</td>
-<td>438.51</td>
-<td>425.42</td>
+<td>437.91</td>
 <td>68951200</td>
 </tr>
 </tbody>
@@ -1983,9 +1996,9 @@ dtype: object</code></pre>
 </div>
 </div>
 <p>If we want to select only the <code>volume</code> and <code>adjusted</code> columns for these dates, we would type the following:</p>
-<div id="cell-74" class="cell">
+<div id="cell-74" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_spy.loc[<span class="st">'2021-07-23'</span>:<span class="st">'2021-07-31'</span>, [<span class="st">'volume'</span>, <span class="st">'adj_close'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="27">
 <div>
 
 
@@ -2006,32 +2019,32 @@ dtype: object</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-23</td>
 <td>63766600</td>
-<td>426.80</td>
+<td>415.74</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
 <td>43719200</td>
-<td>427.85</td>
+<td>416.76</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
 <td>67397100</td>
-<td>425.90</td>
+<td>414.86</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
 <td>52472400</td>
-<td>425.73</td>
+<td>414.69</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
 <td>47435300</td>
-<td>427.49</td>
+<td>416.41</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
 <td>68951200</td>
-<td>425.42</td>
+<td>414.39</td>
 </tr>
 </tbody>
 </table>
@@ -2041,12 +2054,12 @@ dtype: object</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Use <code>.loc</code> to grab the <code>date</code>, <code>volume</code>, and <code>close</code> columns from <code>df_spy</code>.</p>
-<div id="cell-78" class="cell">
+<div id="cell-78" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df_spy.loc[:,[<span class="st">'volume'</span>, <span class="st">'close'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <div>
 
 

@@ -614,41 +614,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="loading-packages" class="level2" data-number="8.1">
 <h2 data-number="8.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">8.1</span> Loading Packages</h2>
 <p>Let’s load the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-data" class="level2" data-number="8.2">
 <h2 data-number="8.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">8.2</span> Reading-In Data</h2>
 <p>In this chapter we will be working with price data for the Select Sector SPDR ETFs. Each of these funds tracks a particular subset (sector) of the SP&amp;500 Index. For example, XLF tracks the financial sector and has major holdings in JP Morgan, Wells Fargo, and Bank of America.</p>
 <p>Let’s use <strong>pandas_datareader</strong> to grab the data from Yahoo Finance.</p>
-<div id="cell-7" class="cell">
+<div id="cell-7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">25</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lst_symbols <span class="op">=</span> [<span class="st">'XLY'</span>, <span class="st">'XLP'</span>, <span class="st">'XLE'</span>, <span class="st">'XLF'</span>, <span class="st">'XLV'</span>, <span class="st">'XLI'</span>, <span class="st">'XLB'</span>, <span class="st">'XLRE'</span>, <span class="st">'XLK'</span>, <span class="st">'XLU'</span>,]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> pdr.get_data_yahoo(lst_symbols, start<span class="op">=</span><span class="st">'2020-01-01'</span>, end<span class="op">=</span><span class="st">'2020-12-31'</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> df_etf.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> yf.download(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    lst_symbols, start<span class="op">=</span><span class="st">'2020-01-01'</span>, end<span class="op">=</span><span class="st">'2020-12-31'</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  10 of 10 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th colspan="10" data-quarto-table-cell-role="th" data-halign="left">Adj Close</th>
 <th data-quarto-table-cell-role="th">...</th>
 <th colspan="10" data-quarto-table-cell-role="th" data-halign="left">Volume</th>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">XLB</th>
 <th data-quarto-table-cell-role="th">XLE</th>
 <th data-quarto-table-cell-role="th">XLF</th>
@@ -699,16 +699,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-02</td>
-<td>56.50</td>
-<td>51.06</td>
-<td>28.88</td>
-<td>78.28</td>
-<td>90.25</td>
-<td>57.09</td>
-<td>34.06</td>
-<td>57.12</td>
-<td>96.64</td>
-<td>123.04</td>
+<td>54.30</td>
+<td>47.82</td>
+<td>27.97</td>
+<td>75.93</td>
+<td>88.95</td>
+<td>54.08</td>
+<td>31.81</td>
+<td>53.65</td>
+<td>93.51</td>
+<td>121.00</td>
 <td>...</td>
 <td>7357400</td>
 <td>11944700</td>
@@ -723,16 +723,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-01-03</td>
-<td>55.58</td>
-<td>50.90</td>
-<td>28.58</td>
-<td>78.13</td>
-<td>89.24</td>
-<td>57.00</td>
-<td>34.31</td>
-<td>57.24</td>
-<td>95.80</td>
-<td>122.00</td>
+<td>53.43</td>
+<td>47.68</td>
+<td>27.68</td>
+<td>75.79</td>
+<td>87.95</td>
+<td>54.00</td>
+<td>32.04</td>
+<td>53.76</td>
+<td>92.69</td>
+<td>119.97</td>
 <td>...</td>
 <td>12423200</td>
 <td>29502900</td>
@@ -747,16 +747,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-06</td>
-<td>55.34</td>
-<td>51.30</td>
-<td>28.56</td>
-<td>78.15</td>
-<td>89.45</td>
-<td>57.12</td>
-<td>34.32</td>
-<td>57.29</td>
-<td>96.39</td>
-<td>122.34</td>
+<td>53.19</td>
+<td>48.05</td>
+<td>27.66</td>
+<td>75.81</td>
+<td>88.16</td>
+<td>54.11</td>
+<td>32.05</td>
+<td>53.81</td>
+<td>93.27</td>
+<td>120.31</td>
 <td>...</td>
 <td>15764400</td>
 <td>22458100</td>
@@ -771,16 +771,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-01-07</td>
-<td>55.28</td>
-<td>51.16</td>
-<td>28.37</td>
-<td>77.99</td>
-<td>89.41</td>
-<td>56.68</td>
-<td>33.94</td>
-<td>57.21</td>
-<td>96.20</td>
-<td>122.14</td>
+<td>53.13</td>
+<td>47.93</td>
+<td>27.48</td>
+<td>75.66</td>
+<td>88.12</td>
+<td>53.69</td>
+<td>31.70</td>
+<td>53.74</td>
+<td>93.08</td>
+<td>120.12</td>
 <td>...</td>
 <td>20266900</td>
 <td>11462500</td>
@@ -795,16 +795,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-08</td>
-<td>55.47</td>
-<td>50.32</td>
-<td>28.56</td>
-<td>78.26</td>
-<td>90.37</td>
-<td>56.89</td>
-<td>34.11</td>
-<td>57.19</td>
-<td>96.83</td>
-<td>122.51</td>
+<td>53.32</td>
+<td>47.14</td>
+<td>27.66</td>
+<td>75.91</td>
+<td>89.06</td>
+<td>53.89</td>
+<td>31.86</td>
+<td>53.71</td>
+<td>93.69</td>
+<td>120.48</td>
 <td>...</td>
 <td>8079600</td>
 <td>19021400</td>
@@ -825,21 +825,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>This data is not as tidy as we would like. Let’s use method chaining to perform a series of data munging operations.</p>
-<div id="cell-9" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df_etf</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .stack() <span class="co">#pivot the table</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .reset_index() <span class="co">#turn date into a column</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'level_1'</span>:<span class="st">'Symbols'</span>}) <span class="co">#renaming a column</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .sort_values(by<span class="op">=</span>[<span class="st">'Symbols'</span>, <span class="st">'Date'</span>]) <span class="co">#sort</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>, <span class="st">'Symbols'</span>:<span class="st">'symbol'</span>, <span class="st">'Adj Close'</span>:<span class="st">'adj_close'</span>,<span class="st">'Close'</span>:<span class="st">'close'</span>, </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'High'</span>:<span class="st">'high'</span>, <span class="st">'Low'</span>:<span class="st">'low'</span>, <span class="st">'Open'</span>:<span class="st">'open'</span>, <span class="st">'Volume'</span>:<span class="st">'volume'</span>}) <span class="co">#renaming columns</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        [[<span class="st">'date'</span>, <span class="st">'symbol'</span>,<span class="st">'open'</span>, <span class="st">'high'</span>, <span class="st">'low'</span>, <span class="st">'close'</span>, <span class="st">'volume'</span>, <span class="st">'adj_close'</span>]] <span class="co">#reordering columns</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        .reset_index(drop<span class="op">=</span><span class="va">True</span>)    </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>df_etf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-9" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    df_etf</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .stack()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>, <span class="st">'Ticker'</span>:<span class="st">'symbol'</span>, <span class="st">'Adj Close'</span>:<span class="st">'adj_close'</span>,<span class="st">'Close'</span>:<span class="st">'close'</span>, </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'High'</span>:<span class="st">'high'</span>, <span class="st">'Low'</span>:<span class="st">'low'</span>, <span class="st">'Open'</span>:<span class="st">'open'</span>, <span class="st">'Volume'</span>:<span class="st">'volume'</span>}) <span class="co">#renaming columns</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    .sort_values([<span class="st">'symbol'</span>, <span class="st">'date'</span>])</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df_etf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -849,12 +846,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
 </tr>
 </thead>
 <tbody>
@@ -862,56 +859,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-01-02</td>
 <td>XLB</td>
-<td>61.83</td>
+<td>54.30</td>
+<td>60.70</td>
 <td>61.94</td>
 <td>60.63</td>
-<td>60.70</td>
+<td>61.83</td>
 <td>7357400</td>
-<td>56.50</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">10</td>
 <td>2020-01-03</td>
 <td>XLB</td>
-<td>60.08</td>
+<td>53.43</td>
+<td>59.72</td>
 <td>60.44</td>
 <td>59.70</td>
-<td>59.72</td>
+<td>60.08</td>
 <td>12423200</td>
-<td>55.58</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">20</td>
 <td>2020-01-06</td>
 <td>XLB</td>
-<td>59.55</td>
+<td>53.19</td>
+<td>59.46</td>
 <td>59.83</td>
 <td>59.41</td>
-<td>59.46</td>
+<td>59.55</td>
 <td>15764400</td>
-<td>55.34</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">30</td>
 <td>2020-01-07</td>
 <td>XLB</td>
-<td>59.36</td>
+<td>53.13</td>
+<td>59.39</td>
 <td>59.80</td>
 <td>59.20</td>
-<td>59.39</td>
+<td>59.36</td>
 <td>20266900</td>
-<td>55.28</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<td data-quarto-table-cell-role="th">40</td>
 <td>2020-01-08</td>
 <td>XLB</td>
-<td>59.40</td>
+<td>53.32</td>
+<td>59.60</td>
 <td>59.84</td>
 <td>59.20</td>
-<td>59.60</td>
+<td>59.40</td>
 <td>8079600</td>
-<td>55.47</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -925,59 +922,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2515</td>
+<td data-quarto-table-cell-role="th">2479</td>
 <td>2020-12-23</td>
 <td>XLY</td>
-<td>157.24</td>
+<td>151.90</td>
+<td>157.55</td>
 <td>158.05</td>
 <td>156.57</td>
-<td>157.55</td>
+<td>157.24</td>
 <td>2173000</td>
-<td>154.46</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2516</td>
+<td data-quarto-table-cell-role="th">2489</td>
 <td>2020-12-24</td>
 <td>XLY</td>
-<td>157.70</td>
+<td>152.22</td>
+<td>157.88</td>
 <td>158.12</td>
 <td>157.21</td>
-<td>157.88</td>
+<td>157.70</td>
 <td>1048800</td>
-<td>154.79</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2517</td>
+<td data-quarto-table-cell-role="th">2499</td>
 <td>2020-12-28</td>
 <td>XLY</td>
-<td>159.42</td>
+<td>153.96</td>
+<td>159.68</td>
 <td>160.32</td>
 <td>158.60</td>
-<td>159.68</td>
+<td>159.42</td>
 <td>2912400</td>
-<td>156.55</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">2518</td>
+<td data-quarto-table-cell-role="th">2509</td>
 <td>2020-12-29</td>
 <td>XLY</td>
-<td>160.24</td>
+<td>154.00</td>
+<td>159.73</td>
 <td>160.53</td>
 <td>158.98</td>
-<td>159.73</td>
+<td>160.24</td>
 <td>2431200</td>
-<td>156.60</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2519</td>
 <td>2020-12-30</td>
 <td>XLY</td>
-<td>160.30</td>
+<td>154.93</td>
+<td>160.69</td>
 <td>160.93</td>
 <td>160.13</td>
-<td>160.69</td>
+<td>160.30</td>
 <td>2440700</td>
-<td>157.54</td>
 </tr>
 </tbody>
 </table>
@@ -988,12 +985,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <hr>
 <p><strong>Coding Challenge:</strong> Use a <code>DataFrame</code> attribute to determine the number of rows and columns in <code>df_etf</code>.</p>
-<div id="cell-12" class="cell">
+<div id="cell-12" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_etf.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>(2520, 8)</code></pre>
 </div>
 </div>
@@ -1003,7 +1000,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="8.3" class="anchored" data-anchor-id="exploring-and-cleaning-the-data"><span class="header-section-number">8.3</span> Exploring and Cleaning the Data</h2>
 <p>As we can see from the coding challenge, this data set is large (by our standards). Whenever I encounter a new data set that I can’t look at in its entirety, I like to do a bit of exploration via the built-in <strong>pandas</strong> methods.</p>
 <p>We know we have a variety of ETFs in our data, but it would be useful to know how many (especially if we were expecting a certain number).</p>
-<div id="cell-16" class="cell">
+<div id="cell-16" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'symbol'</span>].unique())</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'symbol'</span>].unique().size)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1013,32 +1010,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <hr>
 <p><strong>Coding Challenge:</strong> What <code>DataFrame</code> attribute could we use to check the data types of the columns of <code>df_etf</code>?</p>
-<div id="cell-19" class="cell">
+<div id="cell-19" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_etf.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
-RangeIndex: 2520 entries, 0 to 2519
+Index: 2520 entries, 0 to 2519
 Data columns (total 8 columns):
  #   Column     Non-Null Count  Dtype         
 ---  ------     --------------  -----         
  0   date       2520 non-null   datetime64[ns]
  1   symbol     2520 non-null   object        
- 2   open       2520 non-null   float64       
- 3   high       2520 non-null   float64       
- 4   low        2520 non-null   float64       
- 5   close      2520 non-null   float64       
- 6   volume     2520 non-null   int64         
- 7   adj_close  2520 non-null   float64       
+ 2   adj_close  2520 non-null   float64       
+ 3   close      2520 non-null   float64       
+ 4   high       2520 non-null   float64       
+ 5   low        2520 non-null   float64       
+ 6   open       2520 non-null   float64       
+ 7   volume     2520 non-null   int64         
 dtypes: datetime64[ns](1), float64(5), int64(1), object(1)
-memory usage: 157.6+ KB</code></pre>
+memory usage: 177.2+ KB</code></pre>
 </div>
 </div>
 <hr>
 <p>When I work with a time series of daily prices that I expect to come from a certain date range, I like to check the first and last trade dates that are represented in the data.</p>
-<div id="cell-22" class="cell">
+<div id="cell-22" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'date'</span>].<span class="bu">min</span>())</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_etf[<span class="st">'date'</span>].<span class="bu">max</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1064,7 +1061,7 @@ memory usage: 157.6+ KB</code></pre>
 <p>In a previous tutorial we calculated daily returns in a simple vectorized fashion. Unfortunately, we can’t use the exact same approach here because there are multiple ETFs in the data set.</p>
 <p>To overcome this challenge we will use our first application of <code>.groupby()</code>.</p>
 <p>Here is the <code>.groupby()</code> code that calculates daily returns for each ETF.</p>
-<div id="cell-27" class="cell">
+<div id="cell-27" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sorting values to get everything in the right order</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_etf.sort_values([<span class="st">'symbol'</span>, <span class="st">'date'</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1072,7 +1069,7 @@ memory usage: 157.6+ KB</code></pre>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'dly_ret'</span>] <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    df_etf[<span class="st">'close'</span>].groupby(df_etf[<span class="st">'symbol'</span>]).pct_change()</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -1082,12 +1079,12 @@ memory usage: 157.6+ KB</code></pre>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 </tr>
 </thead>
@@ -1096,60 +1093,60 @@ memory usage: 157.6+ KB</code></pre>
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-01-02</td>
 <td>XLB</td>
-<td>61.83</td>
+<td>54.30</td>
+<td>60.70</td>
 <td>61.94</td>
 <td>60.63</td>
-<td>60.70</td>
+<td>61.83</td>
 <td>7357400</td>
-<td>56.50</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">10</td>
 <td>2020-01-03</td>
 <td>XLB</td>
-<td>60.08</td>
+<td>53.43</td>
+<td>59.72</td>
 <td>60.44</td>
 <td>59.70</td>
-<td>59.72</td>
+<td>60.08</td>
 <td>12423200</td>
-<td>55.58</td>
 <td>-0.016145</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">20</td>
 <td>2020-01-06</td>
 <td>XLB</td>
-<td>59.55</td>
+<td>53.19</td>
+<td>59.46</td>
 <td>59.83</td>
 <td>59.41</td>
-<td>59.46</td>
+<td>59.55</td>
 <td>15764400</td>
-<td>55.34</td>
 <td>-0.004354</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">30</td>
 <td>2020-01-07</td>
 <td>XLB</td>
-<td>59.36</td>
+<td>53.13</td>
+<td>59.39</td>
 <td>59.80</td>
 <td>59.20</td>
-<td>59.39</td>
+<td>59.36</td>
 <td>20266900</td>
-<td>55.28</td>
 <td>-0.001177</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<td data-quarto-table-cell-role="th">40</td>
 <td>2020-01-08</td>
 <td>XLB</td>
-<td>59.40</td>
+<td>53.32</td>
+<td>59.60</td>
 <td>59.84</td>
 <td>59.20</td>
-<td>59.60</td>
+<td>59.40</td>
 <td>8079600</td>
-<td>55.47</td>
 <td>0.003536</td>
 </tr>
 </tbody>
@@ -1163,11 +1160,11 @@ memory usage: 157.6+ KB</code></pre>
 <h2 data-number="8.5" class="anchored" data-anchor-id="adding-year-and-month-columns"><span class="header-section-number">8.5</span> Adding <code>year</code> and <code>month</code> Columns</h2>
 <p>The ultimate goal is to calculate monthly statistics for each of the ETFs in our data set.</p>
 <p>As a preliminary step let’s add a <code>month</code> and <code>year</code> column to the <code>df_etf</code> by utilizing the <code>.dt</code> attribute that <strong>pandas</strong> provides for date columns.</p>
-<div id="cell-30" class="cell">
+<div id="cell-30" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'year'</span>] <span class="op">=</span> df_etf[<span class="st">'date'</span>].dt.year</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'month'</span>] <span class="op">=</span> df_etf[<span class="st">'date'</span>].dt.month</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>df_etf[[<span class="st">'date'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>]].head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -1188,25 +1185,25 @@ memory usage: 157.6+ KB</code></pre>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">10</td>
 <td>2020-01-03</td>
 <td>2020</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">20</td>
 <td>2020-01-06</td>
 <td>2020</td>
 <td>1</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">30</td>
 <td>2020-01-07</td>
 <td>2020</td>
 <td>1</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<td data-quarto-table-cell-role="th">40</td>
 <td>2020-01-08</td>
 <td>2020</td>
 <td>1</td>
@@ -1219,11 +1216,11 @@ memory usage: 157.6+ KB</code></pre>
 </div>
 <p>Let’s do a quick data-integrity check: There are 10 ETFs in our data set and there are 12 months in a year, so the number of symbol-year-month combinations should be 120.</p>
 <p>The following code counts the number of rows associated with each symbol-year-month combination and puts that data into a <code>DataFrame</code>.</p>
-<div id="cell-32" class="cell">
+<div id="cell-32" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_num_rows <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>]).size().reset_index()</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>df_num_rows.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1281,12 +1278,12 @@ memory usage: 157.6+ KB</code></pre>
 </div>
 <hr>
 <p><strong>Coding Challenge:</strong> Confirm that there are the correct number of symbol-year-month combinations in <code>df_num_rows</code>.</p>
-<div id="cell-35" class="cell">
+<div id="cell-35" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_num_rows.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>(120, 4)</code></pre>
 </div>
 </div>
@@ -1301,12 +1298,12 @@ memory usage: 157.6+ KB</code></pre>
 <li><p>grouping by <code>symbol</code>, <code>month</code>, and <code>year</code></p></li>
 <li><p>applying the built-in <code>np.mean()</code> function to the <code>volume</code> column</p></li>
 </ol>
-<div id="cell-40" class="cell">
+<div id="cell-40" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_volume <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>])[<span class="st">'volume'</span>].agg([np.mean]).reset_index()</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>df_volume.rename(columns<span class="op">=</span>{<span class="st">'mean'</span>:<span class="st">'avg_volume'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>df_volume.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
@@ -1364,12 +1361,12 @@ memory usage: 157.6+ KB</code></pre>
 </div>
 <hr>
 <p><strong>Coding Challenge:</strong> Calculate the maximum daily volume for each symbol, <em>over the entire year</em>.</p>
-<div id="cell-44" class="cell">
+<div id="cell-44" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'year'</span>])[<span class="st">'volume'</span>].agg([np.<span class="bu">max</span>]).reset_index()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1462,16 +1459,16 @@ memory usage: 157.6+ KB</code></pre>
 <p>In the previous section, we used simple built-in aggregation funtions available through <code>numpy</code>, such as <code>np.max</code> and <code>np.mean</code>. Calculating monthly returns from daily returns is a little more complicated.</p>
 <p>Thus, we are going to have to first create a custom function for calculating monthly returns from daily returns, and then use this custom function in <code>.agg()</code>.</p>
 <p>The following code defines our monthly returns function in terms of daily returns:</p>
-<div id="cell-48" class="cell">
+<div id="cell-48" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> monthly_ret(dly_ret):</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.prod(<span class="dv">1</span> <span class="op">+</span> dly_ret) <span class="op">-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we can apply our <code>monthly_ret()</code> function for all of our ETFs using the following code.</p>
-<div id="cell-50" class="cell">
+<div id="cell-50" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df_ret <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'month'</span>, <span class="st">'year'</span>])[<span class="st">'dly_ret'</span>].agg([monthly_ret]).reset_index()</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df_ret.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <div>
 
 
@@ -1530,12 +1527,12 @@ memory usage: 157.6+ KB</code></pre>
 <p>We can see from our calculation that in March of 2020 XLB had a monthly return of -14.6%.</p>
 <hr>
 <p><strong>Coding Challenge:</strong> Which ETF had the highest single monthly return in all of 2020? What was the month?</p>
-<div id="cell-54" class="cell">
+<div id="cell-54" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_ret.sort_values(by<span class="op">=</span>[<span class="st">'monthly_ret'</span>], ascending<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -1640,16 +1637,16 @@ memory usage: 157.6+ KB</code></pre>
 <h2 data-number="8.8" class="anchored" data-anchor-id="monthly-volatility"><span class="header-section-number">8.8</span> Monthly Volatility</h2>
 <p>Let’s use a similar process to calculate the monthly volatility for each of the ETFs.</p>
 <p>We begin by defining a custom function that calculates the monthly volatility from daily returns. Recall that industry convention is to state these volatilities in annualized terms.</p>
-<div id="cell-58" class="cell">
+<div id="cell-58" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> monthly_vol(dly_ret):</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.std(dly_ret) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now use our <code>monthly_vol()</code> function in to perform an aggregating calculation.</p>
-<div id="cell-60" class="cell">
+<div id="cell-60" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_vol <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>, <span class="st">'month'</span>, <span class="st">'year'</span>])[<span class="st">'dly_ret'</span>].agg([monthly_vol]).reset_index()</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>df_vol.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -1707,12 +1704,12 @@ memory usage: 157.6+ KB</code></pre>
 </div>
 <hr>
 <p><strong>Coding Challenge:</strong> What was the volatility for XLF in December 2018?</p>
-<div id="cell-63" class="cell">
+<div id="cell-63" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_vol.query(<span class="st">'symbol == "XLF" &amp; month == 12'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
 
@@ -1746,7 +1743,7 @@ memory usage: 157.6+ KB</code></pre>
 <h2 data-number="8.9" class="anchored" data-anchor-id="combining-metrics---inner-.merge"><span class="header-section-number">8.9</span> Combining Metrics - inner <code>.merge()</code></h2>
 <p>Now, suppose that we want to combine our three metrics into one report - meaning that we want them organized into one <code>DataFrame</code> in an easy to read fashion.</p>
 <p>One way to do this is to use the <code>pandas.merge()</code> method that we learned in the previous tutorial to join together <code>df_volume</code> (average daily volume), <code>df_ret</code> (monthly returns), and <code>df_vol</code> (monthly volatility).</p>
-<div id="cell-67" class="cell">
+<div id="cell-67" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_joined <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    df_volume</span>
@@ -1754,7 +1751,7 @@ memory usage: 157.6+ KB</code></pre>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>        .merge(df_vol, on<span class="op">=</span>[<span class="st">'symbol'</span>, <span class="st">'year'</span>, <span class="st">'month'</span>])</span>
 <span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>df_joined.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -1827,7 +1824,7 @@ memory usage: 157.6+ KB</code></pre>
 <h2 data-number="8.10" class="anchored" data-anchor-id="combining-metrics---multiple-aggregation"><span class="header-section-number">8.10</span> Combining Metrics - multiple aggregation</h2>
 <p>Another way to combine all our statistics into a single <code>DataFrame</code> is to supply all of our custom aggregation functions as arguments to the <code>.agg()</code> function at the same time.</p>
 <p>Here is what that looks like:</p>
-<div id="cell-70" class="cell">
+<div id="cell-70" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># defining aggregations</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>agg_funcs <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    {<span class="st">'volume'</span>:[np.mean], <span class="st">'dly_ret'</span>:[monthly_ret, monthly_vol]}</span>
@@ -1838,7 +1835,7 @@ memory usage: 157.6+ KB</code></pre>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># looking at the data frame</span></span>
 <span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>df_joined.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -1918,7 +1915,7 @@ memory usage: 157.6+ KB</code></pre>
 <p><code>'column_name':[list_of_aggregating_functions</code>].</p>
 <hr>
 <p><strong>Code Challenge:</strong> Modify the code above to add maximum daily volume to the report.</p>
-<div id="cell-74" class="cell">
+<div id="cell-74" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># defining aggregations</span></span>
@@ -1932,7 +1929,7 @@ memory usage: 157.6+ KB</code></pre>
 <span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="co"># looking at the data frame</span></span>
 <span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>df_joined.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <div>
 
 

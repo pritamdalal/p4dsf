@@ -607,40 +607,46 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="importing-packages" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">2.1</span> Importing Packages</h2>
 <p>Let’s begin by importing the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pd.set_option(<span class="st">'display.max_rows'</span>, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-data" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">2.2</span> Reading-In Data</h2>
 <p>Next, let’s use <strong>pandas_datareader</strong> to read-in SPY prices from March 2020. SPY is an ETF that tracks the S&amp;P500 index.</p>
-<div id="cell-8" class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start<span class="op">=</span><span class="st">'2020-02-28'</span>, end<span class="op">=</span><span class="st">'2020-03-31'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-8" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(<span class="st">'SPY'</span>, start<span class="op">=</span><span class="st">'2020-02-28'</span>, end<span class="op">=</span><span class="st">'2020-03-31'</span>, auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">Price</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Close</th>
 <th data-quarto-table-cell-role="th">High</th>
 <th data-quarto-table-cell-role="th">Low</th>
-<th data-quarto-table-cell-role="th">Close</th>
-<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Open</th>
 <th data-quarto-table-cell-role="th">Volume</th>
 </tr>
 <tr class="even">
+<th data-quarto-table-cell-role="th">Ticker</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+</tr>
+<tr class="header">
 <th data-quarto-table-cell-role="th">Date</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -653,47 +659,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 </tr>
 </tbody>
@@ -702,12 +708,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Let’s also make the <code>Date</code> a regular column, instead of an index, and also make the column names snake-case.</p>
-<div id="cell-10" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy.reset_index(drop<span class="op">=</span><span class="va">False</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<p>As a bit of clean-up, let’s do the following:</p>
+<ul>
+<li>drop the <code>SPY</code> level of the column index</li>
+<li>make the <code>Date</code> a regular column instead of an index</li>
+<li>make the column names snake-case.</li>
+</ul>
+<div id="cell-10" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.reset_index(drop<span class="op">=</span><span class="va">False</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -716,11 +729,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -728,51 +741,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 </tr>
 </tbody>
@@ -786,37 +799,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="2.3" class="anchored" data-anchor-id="exploring-a-dataframe"><span class="header-section-number">2.3</span> Exploring a <code>DataFrame</code></h2>
 <p>We can explore our <code>df_spy</code> <code>DataFrame</code> in a variety of ways.</p>
 <p>First, we can first use the <code>type()</code> method to make sure what we have created is in fact a <code>DataFrame</code>.</p>
-<div id="cell-13" class="cell">
+<div id="cell-13" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>pandas.core.frame.DataFrame</code></pre>
 </div>
 </div>
 <p>Next, we can use the <code>.dtypes</code> attribute of the <code>DataFrame</code> to see the data types of each of the columns.</p>
-<div id="cell-15" class="cell">
+<div id="cell-15" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy.dtypes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>date         datetime64[ns]
-open                float64
+adj_close           float64
+close               float64
 high                float64
 low                 float64
-close               float64
-adj_close           float64
+open                float64
 volume                int64
 dtype: object</code></pre>
 </div>
 </div>
 <p>We can also check the number of rows and columns by using the <code>.shape</code> attribute.</p>
-<div id="cell-17" class="cell">
+<div id="cell-17" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>(22, 7)</code></pre>
 </div>
 </div>
 <p>As we can see, our <code>DataFrame</code> <code>df_spy</code> consists of 22 rows and 7 columns.</p>
 <hr>
 <p><strong>Code Challenge:</strong> Try the <code>DataFrame.info()</code> and <code>DataFrame.describe()</code> methods on <code>df_spy</code>.</p>
-<div id="cell-21" class="cell">
+<div id="cell-21" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_spy.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -828,22 +841,22 @@ Data columns (total 7 columns):
  #   Column     Non-Null Count  Dtype         
 ---  ------     --------------  -----         
  0   date       22 non-null     datetime64[ns]
- 1   open       22 non-null     float64       
- 2   high       22 non-null     float64       
- 3   low        22 non-null     float64       
- 4   close      22 non-null     float64       
- 5   adj_close  22 non-null     float64       
+ 1   adj_close  22 non-null     float64       
+ 2   close      22 non-null     float64       
+ 3   high       22 non-null     float64       
+ 4   low        22 non-null     float64       
+ 5   open       22 non-null     float64       
  6   volume     22 non-null     int64         
 dtypes: datetime64[ns](1), float64(5), int64(1)
 memory usage: 1.3 KB</code></pre>
 </div>
 </div>
-<div id="cell-22" class="cell">
+<div id="cell-22" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_spy.describe().<span class="bu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -852,11 +865,11 @@ memory usage: 1.3 KB</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -874,71 +887,71 @@ memory usage: 1.3 KB</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">mean</td>
 <td>2020-03-14 12:00:00</td>
-<td>265.03</td>
+<td>246.07</td>
+<td>266.54</td>
 <td>272.89</td>
 <td>258.81</td>
-<td>266.54</td>
-<td>252.62</td>
+<td>265.03</td>
 <td>2.780051e+08</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">min</td>
 <td>2020-02-28 00:00:00</td>
-<td>228.19</td>
+<td>206.68</td>
+<td>222.95</td>
 <td>229.68</td>
 <td>218.26</td>
-<td>222.95</td>
-<td>212.18</td>
+<td>228.19</td>
 <td>1.713695e+08</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">25%</td>
 <td>2020-03-06 18:00:00</td>
-<td>243.12</td>
+<td>226.22</td>
+<td>244.06</td>
 <td>256.22</td>
 <td>237.14</td>
-<td>244.06</td>
-<td>232.24</td>
+<td>243.12</td>
 <td>2.362968e+08</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">50%</td>
 <td>2020-03-14 12:00:00</td>
-<td>255.85</td>
+<td>242.35</td>
+<td>261.42</td>
 <td>264.73</td>
 <td>250.05</td>
-<td>261.42</td>
-<td>248.80</td>
+<td>255.85</td>
 <td>2.828830e+08</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">75%</td>
 <td>2020-03-22 06:00:00</td>
-<td>287.68</td>
+<td>271.23</td>
+<td>294.30</td>
 <td>295.55</td>
 <td>282.53</td>
-<td>294.30</td>
-<td>278.46</td>
+<td>287.68</td>
 <td>3.218732e+08</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">max</td>
 <td>2020-03-30 00:00:00</td>
-<td>309.50</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.84</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>309.50</td>
 <td>3.922207e+08</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">std</td>
 <td>NaN</td>
-<td>26.43</td>
+<td>25.07</td>
+<td>27.55</td>
 <td>25.44</td>
 <td>26.98</td>
-<td>27.55</td>
-<td>25.74</td>
+<td>26.43</td>
 <td>6.134551e+07</td>
 </tr>
 </tbody>
@@ -951,9 +964,9 @@ memory usage: 1.3 KB</code></pre>
 <section id="dataframe-columns" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="dataframe-columns"><span class="header-section-number">2.4</span> <code>DataFrame</code> Columns</h2>
 <p>In order to isolate a particular column of a <code>DataFrame</code> we can use square brackets (<code>[ ]</code>). The following code isolates the <code>close</code> price column of <code>df_spy</code>.</p>
-<div id="cell-26" class="cell">
+<div id="cell-26" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <pre><code>0     296.26
 1     309.09
 2     300.24
@@ -970,12 +983,12 @@ Name: close, Length: 22, dtype: float64</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Isolate the <code>date</code> column of <code>df_spy</code>.</p>
-<div id="cell-29" class="cell">
+<div id="cell-29" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>0    2020-02-28
 1    2020-03-02
 2    2020-03-03
@@ -992,9 +1005,9 @@ Name: date, Length: 22, dtype: datetime64[ns]</code></pre>
 </div>
 <hr>
 <p>As we can see from the following code, each column of a <code>DataFrame</code> is actually a different kind of <strong>pandas</strong> structure called a <code>Series</code>.</p>
-<div id="cell-32" class="cell">
+<div id="cell-32" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy[<span class="st">'close'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <pre><code>pandas.core.series.Series</code></pre>
 </div>
 </div>
@@ -1006,9 +1019,9 @@ Name: date, Length: 22, dtype: datetime64[ns]</code></pre>
 <li><p>The <code>.values</code> component of a <code>Series</code> is a <code>numpy.array</code>.</p></li>
 </ul>
 <p>Let’s look at the <code>.values</code> attribute of the <code>close</code> column of <code>df_spy</code>.</p>
-<div id="cell-36" class="cell">
+<div id="cell-36" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>].values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>array([296.26, 309.09, 300.24, 312.86, 302.46, 297.46, 274.23, 288.42,
        274.36, 248.11, 269.32, 239.85, 252.8 , 240.  , 240.51, 228.8 ,
        222.95, 243.15, 246.79, 261.2 , 253.42, 261.65])</code></pre>
@@ -1016,12 +1029,12 @@ Name: date, Length: 22, dtype: datetime64[ns]</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Verify that the <code>values</code> component of the <code>close</code> column of <code>df_spy</code> is in fact a a <code>numpy.array</code>.</p>
-<div id="cell-39" class="cell">
+<div id="cell-39" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy[<span class="st">'close'</span>].values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <pre><code>numpy.ndarray</code></pre>
 </div>
 </div>
@@ -1031,9 +1044,9 @@ Name: date, Length: 22, dtype: datetime64[ns]</code></pre>
 <h2 data-number="2.5" class="anchored" data-anchor-id="component-wise-column-operations"><span class="header-section-number">2.5</span> Component-wise Column Operations</h2>
 <p>We can perform component-wise (i.e.&nbsp;vector-like) calculations with <code>DataFrame</code> columns.</p>
 <p>The following code divides all the <code>close</code> prices by 100.</p>
-<div id="cell-44" class="cell">
+<div id="cell-44" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>] <span class="op">/</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>0     2.9626
 1     3.0909
 2     3.0024
@@ -1050,9 +1063,9 @@ Name: close, Length: 22, dtype: float64</code></pre>
 </div>
 <p>We can also perform component-wise calculations between two colums.</p>
 <p>Let’s say we want to calculate the <em>intraday range</em> of SPY for each of the trade-dates in <code>df_spy</code>; this is the difference between the <code>high</code> and the <code>low</code> of each day. We can do this easily from the columns of our <code>DataFrame</code>.</p>
-<div id="cell-46" class="cell">
+<div id="cell-46" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'high'</span>] <span class="op">-</span> df_spy[<span class="st">'low'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="15">
 <pre><code>0     12.35
 1     14.70
 2     16.27
@@ -1069,12 +1082,12 @@ Length: 22, dtype: float64</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Calculate the difference between the <code>close</code> and <code>open</code> columns of <code>df_spy</code>.</p>
-<div id="cell-49" class="cell">
+<div id="cell-49" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>] <span class="op">-</span> df_spy[<span class="st">'open'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <pre><code>0      7.56
 1     10.88
 2     -9.26
@@ -1094,10 +1107,10 @@ Length: 22, dtype: float64</code></pre>
 <section id="adding-columns-via-variable-assignment" class="level2" data-number="2.6">
 <h2 data-number="2.6" class="anchored" data-anchor-id="adding-columns-via-variable-assignment"><span class="header-section-number">2.6</span> Adding Columns via Variable Assignment</h2>
 <p>Let’s say we want to save our intraday ranges back into <code>df_spy</code> for further analysis later. The most straightforward way to do this is using variable assignment as follows.</p>
-<div id="cell-53" class="cell">
+<div id="cell-53" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'intraday_range'</span>] <span class="op">=</span> df_spy[<span class="st">'high'</span>] <span class="op">-</span> df_spy[<span class="st">'low'</span>]</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div>
 
 
@@ -1106,11 +1119,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 </tr>
@@ -1119,55 +1132,55 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 </tr>
@@ -1179,13 +1192,13 @@ Length: 22, dtype: float64</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Add a new column to <code>df_spy</code> called <code>open_to_close</code> that consists of the difference between the <code>close</code> and <code>open</code> of each day.</p>
-<div id="cell-56" class="cell">
+<div id="cell-56" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'open_to_close'</span>] <span class="op">=</span> df_spy[<span class="st">'close'</span>] <span class="op">-</span> df_spy[<span class="st">'open'</span>]</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -1194,11 +1207,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1208,11 +1221,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
@@ -1220,11 +1233,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
@@ -1232,11 +1245,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
@@ -1244,11 +1257,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
@@ -1256,11 +1269,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
@@ -1277,9 +1290,9 @@ Length: 22, dtype: float64</code></pre>
 <h2 data-number="2.7" class="anchored" data-anchor-id="adding-columns-via-.assign"><span class="header-section-number">2.7</span> Adding Columns via <code>.assign()</code></h2>
 <p>A powerful but less intuitive way of adding a column to a <code>DataFrame</code> uses the <code>.assign()</code> function, which makes use of <code>lambda</code> functions (i.e.&nbsp;anonymous functions).</p>
 <p>The following code adds another column called <code>intraday_range_assign</code>.</p>
-<div id="cell-60" class="cell">
+<div id="cell-60" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>df_spy.assign(intraday_range_assign <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'high'</span>] <span class="op">-</span> df[<span class="st">'low'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="19">
 <div>
 
 
@@ -1288,11 +1301,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1303,11 +1316,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
@@ -1316,11 +1329,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
@@ -1329,11 +1342,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
@@ -1342,11 +1355,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
@@ -1355,11 +1368,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
@@ -1381,11 +1394,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">17</td>
 <td>2020-03-24</td>
-<td>234.42</td>
+<td>225.41</td>
+<td>243.15</td>
 <td>244.10</td>
 <td>233.80</td>
-<td>243.15</td>
-<td>231.41</td>
+<td>234.42</td>
 <td>235494500</td>
 <td>10.30</td>
 <td>8.73</td>
@@ -1394,11 +1407,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">18</td>
 <td>2020-03-25</td>
-<td>244.87</td>
+<td>228.78</td>
+<td>246.79</td>
 <td>256.35</td>
 <td>239.75</td>
-<td>246.79</td>
-<td>234.87</td>
+<td>244.87</td>
 <td>299430300</td>
 <td>16.60</td>
 <td>1.92</td>
@@ -1407,11 +1420,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">19</td>
 <td>2020-03-26</td>
-<td>249.52</td>
+<td>242.14</td>
+<td>261.20</td>
 <td>262.80</td>
 <td>249.05</td>
-<td>261.20</td>
-<td>248.59</td>
+<td>249.52</td>
 <td>257632800</td>
 <td>13.75</td>
 <td>11.68</td>
@@ -1420,11 +1433,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">20</td>
 <td>2020-03-27</td>
-<td>253.27</td>
+<td>234.93</td>
+<td>253.42</td>
 <td>260.81</td>
 <td>251.05</td>
-<td>253.42</td>
-<td>241.18</td>
+<td>253.27</td>
 <td>224341200</td>
 <td>9.76</td>
 <td>0.15</td>
@@ -1433,11 +1446,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">21</td>
 <td>2020-03-30</td>
-<td>255.70</td>
+<td>242.56</td>
+<td>261.65</td>
 <td>262.43</td>
 <td>253.53</td>
-<td>261.65</td>
-<td>249.02</td>
+<td>255.70</td>
 <td>171369500</td>
 <td>8.90</td>
 <td>5.95</td>
@@ -1452,12 +1465,12 @@ Length: 22, dtype: float64</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Verify that the column <code>intraday_range_assign</code> was not actually added to the <code>df_spy</code>.</p>
-<div id="cell-63" class="cell">
+<div id="cell-63" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -1466,11 +1479,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1480,11 +1493,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
@@ -1492,11 +1505,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
@@ -1504,11 +1517,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
@@ -1516,11 +1529,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
@@ -1528,11 +1541,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
@@ -1545,10 +1558,10 @@ Length: 22, dtype: float64</code></pre>
 </div>
 <hr>
 <p>In order to add the <code>intraday_range_assign</code> column to <code>df_spy</code> we will need to reassign to it.</p>
-<div id="cell-66" class="cell">
+<div id="cell-66" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.assign(intraday_range_assign <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'high'</span>] <span class="op">-</span> df[<span class="st">'low'</span>])</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -1557,11 +1570,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1572,11 +1585,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
@@ -1585,11 +1598,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
@@ -1598,11 +1611,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
@@ -1611,11 +1624,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
@@ -1624,11 +1637,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
@@ -1642,13 +1655,13 @@ Length: 22, dtype: float64</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Use <code>.assign()</code> to create a new column in <code>df_spy</code>, call it <code>open_to_close_assign</code>, that contains the difference between the <code>close</code> and <code>open</code>.</p>
-<div id="cell-69" class="cell">
+<div id="cell-69" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.assign(open_to_close_assign <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'close'</span>] <span class="op">-</span> df[<span class="st">'open'</span>])</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="22">
 <div>
 
 
@@ -1657,11 +1670,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1673,11 +1686,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
@@ -1687,11 +1700,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
@@ -1701,11 +1714,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
@@ -1715,11 +1728,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
@@ -1729,11 +1742,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
@@ -1752,11 +1765,11 @@ Length: 22, dtype: float64</code></pre>
 <h2 data-number="2.8" class="anchored" data-anchor-id="method-chaining"><span class="header-section-number">2.8</span> Method Chaining</h2>
 <p>The value of <code>.assign()</code> becomes clear when we start <em>chaining</em> methods together.</p>
 <p>In order to see this let’s first <code>drop</code> the columns that we created.</p>
-<div id="cell-73" class="cell">
+<div id="cell-73" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>lst_cols <span class="op">=</span> [<span class="st">'intraday_range'</span>, <span class="st">'open_to_close'</span>, <span class="st">'intraday_range_assign'</span>, <span class="st">'open_to_close_assign'</span>]</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>df_spy.drop(columns<span class="op">=</span>lst_cols, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="23">
 <div>
 
 
@@ -1765,11 +1778,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
@@ -1777,51 +1790,51 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 </tr>
 </tbody>
@@ -1831,7 +1844,7 @@ Length: 22, dtype: float64</code></pre>
 </div>
 </div>
 <p>The following code adds the <code>intraday</code> and and <code>open_to_close</code> columns at the same time.</p>
-<div id="cell-75" class="cell">
+<div id="cell-75" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
@@ -1839,7 +1852,7 @@ Length: 22, dtype: float64</code></pre>
 <span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>        .assign(open_to_close <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'close'</span>] <span class="op">-</span> df[<span class="st">'open'</span>])</span>
 <span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
 
@@ -1848,11 +1861,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1862,11 +1875,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
@@ -1874,11 +1887,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
@@ -1886,11 +1899,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
@@ -1898,11 +1911,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
@@ -1910,11 +1923,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
@@ -1931,7 +1944,7 @@ Length: 22, dtype: float64</code></pre>
 <li>the difference between the <code>close</code> and <code>adj_close</code></li>
 <li>the average of the <code>low</code> and <code>open</code></li>
 </ol>
-<div id="cell-78" class="cell">
+<div id="cell-78" class="cell" data-execution_count="25">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> <span class="op">\</span></span>
@@ -1942,7 +1955,7 @@ Length: 22, dtype: float64</code></pre>
 <span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -1951,11 +1964,11 @@ Length: 22, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">intraday_range</th>
 <th data-quarto-table-cell-role="th">open_to_close</th>
@@ -1967,71 +1980,71 @@ Length: 22, dtype: float64</code></pre>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2020-02-28</td>
-<td>288.70</td>
+<td>273.04</td>
+<td>296.26</td>
 <td>297.89</td>
 <td>285.54</td>
-<td>296.26</td>
-<td>280.31</td>
+<td>288.70</td>
 <td>384975800</td>
 <td>12.35</td>
 <td>7.56</td>
-<td>15.95</td>
+<td>23.22</td>
 <td>287.120</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2020-03-02</td>
-<td>298.21</td>
+<td>284.86</td>
+<td>309.09</td>
 <td>309.16</td>
 <td>294.46</td>
-<td>309.09</td>
-<td>292.45</td>
+<td>298.21</td>
 <td>238703600</td>
 <td>14.70</td>
 <td>10.88</td>
-<td>16.64</td>
+<td>24.23</td>
 <td>296.335</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2020-03-03</td>
-<td>309.50</td>
+<td>276.71</td>
+<td>300.24</td>
 <td>313.84</td>
 <td>297.57</td>
-<td>300.24</td>
-<td>284.07</td>
+<td>309.50</td>
 <td>300139100</td>
 <td>16.27</td>
 <td>-9.26</td>
-<td>16.17</td>
+<td>23.53</td>
 <td>303.535</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2020-03-04</td>
-<td>306.12</td>
+<td>288.34</td>
+<td>312.86</td>
 <td>313.10</td>
 <td>303.33</td>
-<td>312.86</td>
-<td>296.01</td>
+<td>306.12</td>
 <td>176613400</td>
 <td>9.77</td>
 <td>6.74</td>
-<td>16.85</td>
+<td>24.52</td>
 <td>304.725</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2020-03-05</td>
-<td>304.98</td>
+<td>278.75</td>
+<td>302.46</td>
 <td>308.47</td>
 <td>300.01</td>
-<td>302.46</td>
-<td>286.17</td>
+<td>304.98</td>
 <td>186366800</td>
 <td>8.46</td>
 <td>-2.52</td>
-<td>16.29</td>
+<td>23.71</td>
 <td>302.495</td>
 </tr>
 </tbody>
@@ -2046,14 +2059,14 @@ Length: 22, dtype: float64</code></pre>
 <h2 data-number="2.9" class="anchored" data-anchor-id="aggregating-calulations-on-series"><span class="header-section-number">2.9</span> Aggregating Calulations on <code>Series</code></h2>
 <p><code>Series</code> have a variety of built-in aggregation functions.</p>
 <p>For example, we can use the following code to calculate the total SPY volume during March 2020.</p>
-<div id="cell-82" class="cell">
+<div id="cell-82" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'volume'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="26">
 <pre><code>6116112300</code></pre>
 </div>
 </div>
 <p>Here are some summary statistics on the <code>intraday_range</code> column that we added to our <code>DataFrame</code> earlier.</p>
-<div id="cell-84" class="cell">
+<div id="cell-84" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Mean:  "</span>, df_spy[<span class="st">'intraday_range'</span>].mean()) <span class="co"># average</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"St Dev: "</span>, df_spy[<span class="st">'intraday_range'</span>].std()) <span class="co"># standard deviation</span></span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Min:    "</span> , df_spy[<span class="st">'intraday_range'</span>].<span class="bu">min</span>()) <span class="co"># minimum</span></span>
@@ -2067,12 +2080,12 @@ Max:    22.960000000000008</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Calculate the average daily <code>volume</code> for the trade dates in <code>df_spy</code>.</p>
-<div id="cell-87" class="cell">
+<div id="cell-87" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'volume'</span>].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="28">
 <pre><code>278005104.54545456</code></pre>
 </div>
 </div>

@@ -665,13 +665,11 @@ window.Quarto = {
 <section id="importing-packages" class="level2" data-number="16.1">
 <h2 data-number="16.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">16.1</span> Importing Packages</h2>
 <p>Let’s begin by importing the packages that we will need. All of them are standard except for the <strong>riskparityportfolio</strong> package, which we will use to calculate the weights for the risk-parity portfolio.</p>
-<div id="ea3ae3cc-c20f-44e4-8eff-695bef0eca5e" class="cell">
+<div id="ea3ae3cc-c20f-44e4-8eff-695bef0eca5e" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> riskparityportfolio <span class="im">as</span> rp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> riskparityportfolio <span class="im">as</span> rp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="weights-portfolio-volatilities-risk-contributions-2019-data" class="level2" data-number="16.2">
@@ -680,22 +678,25 @@ window.Quarto = {
 <section id="reading-in-data" class="level3" data-number="16.2.1">
 <h3 data-number="16.2.1" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">16.2.1</span> Reading-In Data</h3>
 <p>Let’s begin by reading in the 2019 data.</p>
-<div id="46a221cc-b256-4bea-8b68-d6eeecd1c1a9" class="cell">
+<div id="46a221cc-b256-4bea-8b68-d6eeecd1c1a9" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>assets <span class="op">=</span> [<span class="st">'SPY'</span>, <span class="st">'TLT'</span>, <span class="st">'GLD'</span>, <span class="st">'UUP'</span>, <span class="st">'DBA'</span>, <span class="st">'LQD'</span>]</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_assets_weights <span class="op">=</span> pdr.get_data_yahoo(assets, start<span class="op">=</span><span class="st">'2018-12-31'</span>, end<span class="op">=</span><span class="st">'2020-01-01'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_assets_weights <span class="op">=</span> df_assets_weights[<span class="st">'Close'</span>]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_assets_weights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_assets_weights <span class="op">=</span> yf.download(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    assets, start<span class="op">=</span><span class="st">'2018-12-31'</span>, end<span class="op">=</span><span class="st">'2020-01-01'</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    auto_adjust <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_assets_weights <span class="op">=</span> df_assets_weights[<span class="st">'Close'</span>]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_assets_weights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  6 of 6 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">DBA</th>
 <th data-quarto-table-cell-role="th">GLD</th>
 <th data-quarto-table-cell-role="th">LQD</th>
@@ -824,17 +825,17 @@ window.Quarto = {
 <section id="returns-and-covariance-matrix" class="level3" data-number="16.2.2">
 <h3 data-number="16.2.2" class="anchored" data-anchor-id="returns-and-covariance-matrix"><span class="header-section-number">16.2.2</span> Returns and Covariance Matrix</h3>
 <p>Next, we use <strong>pandas</strong> <code>DataFrame</code> methods to calculated the daily returns and returns covariance matrix for 2019.</p>
-<div id="53cf6931-2a9a-4042-b808-d5425c349685" class="cell">
+<div id="53cf6931-2a9a-4042-b808-d5425c349685" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_returns_weights <span class="op">=</span> df_assets_weights.pct_change()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_returns_weights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">DBA</th>
 <th data-quarto-table-cell-role="th">GLD</th>
 <th data-quarto-table-cell-role="th">LQD</th>
@@ -959,23 +960,32 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="2c99cbff-4e03-403b-9b67-728dad417763" class="cell">
+<div id="2c99cbff-4e03-403b-9b67-728dad417763" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_covariance_returns <span class="op">=</span> df_returns_weights.cov()</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_covariance_returns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">DBA</th>
 <th data-quarto-table-cell-role="th">GLD</th>
 <th data-quarto-table-cell-role="th">LQD</th>
 <th data-quarto-table-cell-role="th">SPY</th>
 <th data-quarto-table-cell-role="th">TLT</th>
 <th data-quarto-table-cell-role="th">UUP</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Ticker</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 </tr>
 </thead>
 <tbody>
@@ -1045,7 +1055,7 @@ window.Quarto = {
 <p>Let’s now calculate the weights of each asset in our four portfolios. The weighting schemes from SPY-only and equal-weight are self explanatory. Inverse volatility and risk-parity both have the effect of underweighting high volatility assets while overweighting low volatility assets.</p>
 <p><strong>Inverse Volatility:</strong> the weight for the <span class="math inline">\(i\)</span>th asset is <span class="math inline">\(w_i = \frac{1/\sigma_i}{\sum_j 1/\sigma_j}\)</span>, where <span class="math inline">\(\sigma_i\)</span> is the volatility of the <span class="math inline">\(i\)</span>th asset.</p>
 <p><strong>Risk-Parity:</strong> intuitively, this methods chooses weight such that the risk that each asset contributes to the portfolio is equal. This idea can be translated in to an optimization problem involving the covariance matrix of the assets. We will use the <strong>riskparityportfolio</strong> package to do the optimization for us.</p>
-<div id="6611469f-7a1f-4754-9081-0362314c5a17" class="cell">
+<div id="6611469f-7a1f-4754-9081-0362314c5a17" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SPY only</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>spy <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1071,7 +1081,7 @@ window.Quarto = {
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: risk_parity,</span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>df_weights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -1142,7 +1152,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Let’s plot the weights to compare the equal-weight, inverse-volatility, and risk-parity portfolios.</p>
-<div id="5e9089ff-29b1-432e-9c9c-16d25a4d1b5a" class="cell">
+<div id="5e9089ff-29b1-432e-9c9c-16d25a4d1b5a" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_weights.plot(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">=</span><span class="st">'bar'</span>, </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'symbol'</span>, </span>
@@ -1162,11 +1172,11 @@ window.Quarto = {
 <section id="portfolio-volatilities" class="level3" data-number="16.2.4">
 <h3 data-number="16.2.4" class="anchored" data-anchor-id="portfolio-volatilities"><span class="header-section-number">16.2.4</span> Portfolio Volatilities</h3>
 <p>Next, we calculate the estimated portfolio volatilities at end-of-day 12/31/2019. Note that these are not the actual (2020) realized volatilites of the portfolios.</p>
-<div id="83137a96-5f25-4f1e-87d2-a860ea7c3929" class="cell">
+<div id="83137a96-5f25-4f1e-87d2-a860ea7c3929" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> portfolio_volatility(weights, cov):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.sqrt(np.dot(weights, np.dot(cov, weights.T))) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="605fba77-776a-4b00-9ddf-7ca9300aa2c4" class="cell">
+<div id="605fba77-776a-4b00-9ddf-7ca9300aa2c4" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># portfolio volatilities</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_portfolio_volatilities <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
@@ -1176,7 +1186,7 @@ window.Quarto = {
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: [portfolio_volatility(df_weights[<span class="st">'risk_parity'</span>], df_covariance_returns)],</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>df_portfolio_volatilities</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -1208,12 +1218,12 @@ window.Quarto = {
 <section id="risk-contributions" class="level3" data-number="16.2.5">
 <h3 data-number="16.2.5" class="anchored" data-anchor-id="risk-contributions"><span class="header-section-number">16.2.5</span> Risk Contributions</h3>
 <p>Finally, we calculate the risk-contributions of each asset in the various portfolios. Notice, that buy construction, in the risk-parity portfolio the risk contributions of each of the assets is equal.</p>
-<div id="c72caa28-c1e0-4369-afa9-149c0683f61d" class="cell">
+<div id="c72caa28-c1e0-4369-afa9-149c0683f61d" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> risk_contributions(weights, cov):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    mctar <span class="op">=</span> np.dot(weights, cov <span class="op">*</span> <span class="dv">252</span>) <span class="op">/</span> portfolio_volatility(weights, cov)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mctar <span class="op">*</span> weights <span class="op">/</span> portfolio_volatility(weights, cov)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="3bd2c1a7-9949-4806-bf0e-9187e8e81e07" class="cell">
+<div id="3bd2c1a7-9949-4806-bf0e-9187e8e81e07" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_risk_contributions <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'symbol'</span>:df_assets_weights.columns,</span>
@@ -1223,7 +1233,7 @@ window.Quarto = {
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: risk_contributions(df_weights[<span class="st">'risk_parity'</span>], df_covariance_returns),</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>df_risk_contributions</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1294,7 +1304,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Let’s plots the risk contributions to compare the equal-weight, inverse-volatility, and risk-parity portfolios.</p>
-<div id="cc520e21-4d41-497f-a6fc-1f7c7ba04944" class="cell">
+<div id="cc520e21-4d41-497f-a6fc-1f7c7ba04944" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_risk_contributions.plot(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    kind<span class="op">=</span><span class="st">'bar'</span>, </span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">'symbol'</span>,</span>
@@ -1317,22 +1327,24 @@ window.Quarto = {
 <section id="reading-in-data-1" class="level3" data-number="16.3.1">
 <h3 data-number="16.3.1" class="anchored" data-anchor-id="reading-in-data-1"><span class="header-section-number">16.3.1</span> Reading-In Data</h3>
 <p>We begin by reading in price data from 2020 and calculating daily returns for each of the assets.</p>
-<div id="3b6278d2-adbe-4b0e-a962-155202bebccc" class="cell">
+<div id="3b6278d2-adbe-4b0e-a962-155202bebccc" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>assets <span class="op">=</span> [<span class="st">'SPY'</span>, <span class="st">'TLT'</span>, <span class="st">'GLD'</span>, <span class="st">'UUP'</span>, <span class="st">'DBA'</span>, <span class="st">'LQD'</span>]</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_assets_performance <span class="op">=</span> pdr.get_data_yahoo(assets, start<span class="op">=</span><span class="st">'2019-12-31'</span>, end<span class="op">=</span><span class="st">'2021-01-01'</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>df_assets_performance <span class="op">=</span> df_assets_performance[<span class="st">'Close'</span>]</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>df_assets_performance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_assets_performance <span class="op">=</span> yf.download(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    assets, start<span class="op">=</span><span class="st">'2019-12-31'</span>, end<span class="op">=</span><span class="st">'2021-01-01'</span>, auto_adjust<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>df_assets_performance <span class="op">=</span> df_assets_performance[<span class="st">'Close'</span>]</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>df_assets_performance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  6 of 6 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">DBA</th>
 <th data-quarto-table-cell-role="th">GLD</th>
 <th data-quarto-table-cell-role="th">LQD</th>
@@ -1353,48 +1365,48 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2019-12-31</td>
-<td>16.559999</td>
+<td>15.140183</td>
 <td>142.899994</td>
-<td>127.959999</td>
-<td>321.859985</td>
-<td>135.479996</td>
-<td>25.969999</td>
+<td>105.076500</td>
+<td>296.632355</td>
+<td>115.825302</td>
+<td>23.153391</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-01-02</td>
-<td>16.500000</td>
+<td>15.085328</td>
 <td>143.949997</td>
-<td>128.229996</td>
-<td>324.869995</td>
-<td>137.009995</td>
-<td>26.059999</td>
+<td>105.298218</td>
+<td>299.406372</td>
+<td>117.133331</td>
+<td>23.233629</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-03</td>
-<td>16.309999</td>
+<td>14.911618</td>
 <td>145.860001</td>
-<td>128.669998</td>
-<td>322.410004</td>
-<td>139.119995</td>
-<td>26.090000</td>
+<td>105.659538</td>
+<td>297.139313</td>
+<td>118.937202</td>
+<td>23.260376</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-01-06</td>
-<td>16.350000</td>
+<td>14.948189</td>
 <td>147.389999</td>
-<td>128.240005</td>
-<td>323.640015</td>
-<td>138.330002</td>
-<td>26.030001</td>
+<td>105.306435</td>
+<td>298.272858</td>
+<td>118.261795</td>
+<td>23.206882</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-07</td>
-<td>16.389999</td>
+<td>14.984758</td>
 <td>147.970001</td>
-<td>127.910004</td>
-<td>322.730011</td>
-<td>137.649994</td>
-<td>26.120001</td>
+<td>105.035454</td>
+<td>297.434204</td>
+<td>117.680466</td>
+<td>23.287123</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -1407,48 +1419,48 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-12-24</td>
-<td>15.830000</td>
+<td>14.472772</td>
 <td>176.350006</td>
-<td>137.770004</td>
-<td>369.000000</td>
-<td>157.289993</td>
-<td>24.350000</td>
+<td>116.299553</td>
+<td>346.428406</td>
+<td>136.468445</td>
+<td>21.709091</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-12-28</td>
-<td>15.770000</td>
+<td>14.417917</td>
 <td>175.710007</td>
-<td>137.860001</td>
-<td>372.170013</td>
-<td>157.360001</td>
-<td>24.350000</td>
+<td>116.375504</td>
+<td>349.404449</td>
+<td>136.529221</td>
+<td>21.709091</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-12-29</td>
-<td>15.820000</td>
+<td>14.463630</td>
 <td>176.350006</td>
-<td>137.919998</td>
-<td>371.459991</td>
-<td>157.160004</td>
-<td>24.270000</td>
+<td>116.426208</td>
+<td>348.737946</td>
+<td>136.355698</td>
+<td>21.637768</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2020-12-30</td>
-<td>15.980000</td>
+<td>14.609912</td>
 <td>177.699997</td>
-<td>138.100006</td>
-<td>371.989990</td>
-<td>157.500000</td>
-<td>24.170000</td>
+<td>116.578140</td>
+<td>349.235474</td>
+<td>136.650635</td>
+<td>21.548611</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-12-31</td>
-<td>16.139999</td>
+<td>14.756194</td>
 <td>178.360001</td>
-<td>138.130005</td>
-<td>373.880005</td>
-<td>157.729996</td>
-<td>24.240000</td>
+<td>116.603455</td>
+<td>351.009857</td>
+<td>136.850174</td>
+<td>21.611019</td>
 </tr>
 </tbody>
 </table>
@@ -1457,17 +1469,17 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="5e47af7c-60f0-4305-924d-bf884089edaa" class="cell">
+<div id="5e47af7c-60f0-4305-924d-bf884089edaa" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_returns_performance <span class="op">=</span> df_assets_performance.pct_change().dropna()</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df_returns_performance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">DBA</th>
 <th data-quarto-table-cell-role="th">GLD</th>
 <th data-quarto-table-cell-role="th">LQD</th>
@@ -1506,7 +1518,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-06</td>
-<td>0.002453</td>
+<td>0.002452</td>
 <td>0.010490</td>
 <td>-0.003342</td>
 <td>0.003815</td>
@@ -1526,8 +1538,8 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2020-01-08</td>
 <td>-0.004881</td>
 <td>-0.007502</td>
-<td>-0.001407</td>
-<td>0.005330</td>
+<td>-0.001408</td>
+<td>0.005329</td>
 <td>-0.006611</td>
 <td>0.002680</td>
 </tr>
@@ -1542,7 +1554,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-12-24</td>
-<td>0.003169</td>
+<td>0.003168</td>
 <td>0.003985</td>
 <td>0.003423</td>
 <td>0.003890</td>
@@ -1562,7 +1574,7 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2020-12-29</td>
 <td>0.003171</td>
 <td>0.003642</td>
-<td>0.000435</td>
+<td>0.000436</td>
 <td>-0.001908</td>
 <td>-0.001271</td>
 <td>-0.003285</td>
@@ -1596,7 +1608,7 @@ window.Quarto = {
 <section id="portfolio-daily-returns" class="level3" data-number="16.3.2">
 <h3 data-number="16.3.2" class="anchored" data-anchor-id="portfolio-daily-returns"><span class="header-section-number">16.3.2</span> Portfolio Daily Returns</h3>
 <p>Now we can calculate the daily returns of each of the weighted portfolios.</p>
-<div id="d2453214-0bf7-46c5-95b2-8fb66a9821d1" class="cell">
+<div id="d2453214-0bf7-46c5-95b2-8fb66a9821d1" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_performance <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'spy_ret'</span>: (df_weights[<span class="st">'spy'</span>].values <span class="op">*</span> df_returns_performance[df_assets_performance.columns]).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>),</span>
@@ -1605,7 +1617,7 @@ window.Quarto = {
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity_ret'</span>: (df_weights[<span class="st">'risk_parity'</span>].values <span class="op">*</span> df_returns_performance[df_assets_performance.columns]).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>df_performance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -1657,7 +1669,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2020-01-08</td>
-<td>0.005330</td>
+<td>0.005329</td>
 <td>-0.002065</td>
 <td>-0.001319</td>
 <td>-0.000820</td>
@@ -1715,11 +1727,11 @@ window.Quarto = {
 <section id="annualized-returns" class="level3" data-number="16.3.3">
 <h3 data-number="16.3.3" class="anchored" data-anchor-id="annualized-returns"><span class="header-section-number">16.3.3</span> Annualized Returns</h3>
 <p>Now, let’s calculate the annualized return from the daily returns.</p>
-<div id="bc1afa19-e680-4aa5-b74b-3b4e0f3668fe" class="cell">
+<div id="bc1afa19-e680-4aa5-b74b-3b4e0f3668fe" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> annualized_return(ret):</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (((<span class="dv">1</span> <span class="op">+</span> ret).prod()) <span class="op">**</span> (<span class="dv">252</span> <span class="op">/</span> <span class="bu">len</span>(ret))) <span class="op">-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="debec055-f00d-48cc-b0e6-d83904c6f2bd" class="cell">
+<div id="debec055-f00d-48cc-b0e6-d83904c6f2bd" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_annualized_return <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'spy'</span>: [annualized_return(df_performance[<span class="st">'spy_ret'</span>])],</span>
@@ -1728,7 +1740,7 @@ window.Quarto = {
 <span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: [annualized_return(df_performance[<span class="st">'risk_parity_ret'</span>])],</span>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>df_annualized_return</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -1745,10 +1757,10 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>0.160935</td>
-<td>0.105849</td>
-<td>0.074651</td>
-<td>0.065901</td>
+<td>0.182529</td>
+<td>0.116983</td>
+<td>0.086656</td>
+<td>0.075005</td>
 </tr>
 </tbody>
 </table>
@@ -1760,11 +1772,11 @@ window.Quarto = {
 <section id="realized-volatility" class="level3" data-number="16.3.4">
 <h3 data-number="16.3.4" class="anchored" data-anchor-id="realized-volatility"><span class="header-section-number">16.3.4</span> Realized Volatility</h3>
 <p>The realized volatility of the portfolios is simply the annualized standard deviation of the daily returns. Notice that the ordering of the realized volatilities of the strategies matches the estimated/forecasted volatilities calculated with 2019 data.</p>
-<div id="538dd8d9-1315-4672-9e85-74a1e229d67b" class="cell">
+<div id="538dd8d9-1315-4672-9e85-74a1e229d67b" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> realized_vol(ret):</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ret.std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="ea900375-f2ea-4b38-af85-714101c25310" class="cell">
+<div id="ea900375-f2ea-4b38-af85-714101c25310" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># realized volatility</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>df_realized_vol <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
@@ -1774,7 +1786,7 @@ window.Quarto = {
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: [realized_vol(df_performance[<span class="st">'risk_parity_ret'</span>])],</span>
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>df_realized_vol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -1791,10 +1803,10 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>0.335132</td>
-<td>0.094387</td>
-<td>0.085532</td>
-<td>0.079909</td>
+<td>0.33398</td>
+<td>0.094486</td>
+<td>0.085564</td>
+<td>0.079952</td>
 </tr>
 </tbody>
 </table>
@@ -1806,11 +1818,11 @@ window.Quarto = {
 <section id="sharpe-ratio" class="level3" data-number="16.3.5">
 <h3 data-number="16.3.5" class="anchored" data-anchor-id="sharpe-ratio"><span class="header-section-number">16.3.5</span> Sharpe-Ratio</h3>
 <p>Next, we calculate the Sharpe-ratio of each of the portfolios.</p>
-<div id="5d18114b-fbb8-410f-80fe-5ac91c4cb30d" class="cell">
+<div id="5d18114b-fbb8-410f-80fe-5ac91c4cb30d" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sharpe_ratio(ret):</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (ret.mean() <span class="op">/</span> ret.std()) <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="2663befe-c116-4fa6-ab5e-5128cd9c602f" class="cell">
+<div id="2663befe-c116-4fa6-ab5e-5128cd9c602f" class="cell" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_sharpe <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'spy'</span>: [sharpe_ratio(df_performance[<span class="st">'spy_ret'</span>])],</span>
@@ -1819,7 +1831,7 @@ window.Quarto = {
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: [sharpe_ratio(df_performance[<span class="st">'risk_parity_ret'</span>])],</span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>df_sharpe</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="20">
 <div>
 
 
@@ -1836,10 +1848,10 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>0.613956</td>
-<td>1.113349</td>
-<td>0.884497</td>
-<td>0.83866</td>
+<td>0.670112</td>
+<td>1.218346</td>
+<td>1.014076</td>
+<td>0.944655</td>
 </tr>
 </tbody>
 </table>
@@ -1851,14 +1863,14 @@ window.Quarto = {
 <section id="equity-curve" class="level3" data-number="16.3.6">
 <h3 data-number="16.3.6" class="anchored" data-anchor-id="equity-curve"><span class="header-section-number">16.3.6</span> Equity Curve</h3>
 <p>We can also calculate and plot the equity curve of the three strategies.</p>
-<div id="befb204a-82c9-4ab2-8d4c-797f1970d8b6" class="cell">
+<div id="befb204a-82c9-4ab2-8d4c-797f1970d8b6" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># equity curve</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'spy_equity'</span>] <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> df_performance[<span class="st">'spy_ret'</span>]).cumprod()</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'equal_weight_equity'</span>] <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> df_performance[<span class="st">'equal_weight_ret'</span>]).cumprod()</span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'inverse_volatility_equity'</span>] <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> df_performance[<span class="st">'inverse_volatility_ret'</span>]).cumprod()</span>
 <span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'risk_parity_equity'</span>] <span class="op">=</span> (<span class="dv">1</span> <span class="op">+</span> df_performance[<span class="st">'risk_parity_ret'</span>]).cumprod()</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>df_performance.head().T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="21">
 <div>
 
 
@@ -1880,7 +1892,7 @@ window.Quarto = {
 <td>-0.007572</td>
 <td>0.003815</td>
 <td>-0.002812</td>
-<td>0.005330</td>
+<td>0.005329</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">equal_weight_ret</td>
@@ -1944,7 +1956,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="40fa31d4-996e-4327-88cd-7466a7a1ac81" class="cell">
+<div id="40fa31d4-996e-4327-88cd-7466a7a1ac81" class="cell" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_performance.plot(</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>[<span class="st">'spy_equity'</span>, <span class="st">'equal_weight_equity'</span>, <span class="st">'inverse_volatility_equity'</span>, <span class="st">'risk_parity_equity'</span>],</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    ylabel<span class="op">=</span><span class="st">'equity curve'</span>,</span>
@@ -1962,17 +1974,17 @@ window.Quarto = {
 <section id="maximum-draw-down" class="level3" data-number="16.3.7">
 <h3 data-number="16.3.7" class="anchored" data-anchor-id="maximum-draw-down"><span class="header-section-number">16.3.7</span> Maximum Draw Down</h3>
 <p>To calculate maximum draw down, let’s first calculate the draw downs through time for each of the portofolios.</p>
-<div id="68e3b060-11a7-48fa-a12d-558a270d25d4" class="cell">
+<div id="68e3b060-11a7-48fa-a12d-558a270d25d4" class="cell" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_down(equity_curve):</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (equity_curve <span class="op">-</span> equity_curve.cummax()) <span class="op">/</span> equity_curve.cummax()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="f91b0a88-be31-43da-8593-7136cd1b0222" class="cell">
+<div id="f91b0a88-be31-43da-8593-7136cd1b0222" class="cell" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'spy_draw_down'</span>] <span class="op">=</span> draw_down(df_performance[<span class="st">'spy_equity'</span>])</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'equal_weight_draw_down'</span>] <span class="op">=</span> draw_down(df_performance[<span class="st">'equal_weight_equity'</span>])</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'inverse_volatility_draw_down'</span>] <span class="op">=</span> draw_down(df_performance[<span class="st">'inverse_volatility_equity'</span>])</span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>df_performance[<span class="st">'risk_parity_draw_down'</span>] <span class="op">=</span> draw_down(df_performance[<span class="st">'risk_parity_equity'</span>])</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>df_performance.head().T</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>df_performance.head().T <span class="co"># transposed only because it's easier to look at the DataFrame</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
 
@@ -1994,7 +2006,7 @@ window.Quarto = {
 <td>-0.007572</td>
 <td>0.003815</td>
 <td>-0.002812</td>
-<td>0.005330</td>
+<td>0.005329</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">equal_weight_ret</td>
@@ -2091,7 +2103,7 @@ window.Quarto = {
 </div>
 </div>
 <p>Now, we can easily calculate the greatest draw downs.</p>
-<div id="a59e916b-d7f2-4089-8dad-54646cb1dea3" class="cell">
+<div id="a59e916b-d7f2-4089-8dad-54646cb1dea3" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># max draw down</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>df_max_draw_downs <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
@@ -2101,7 +2113,7 @@ window.Quarto = {
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: [df_performance[<span class="st">'risk_parity_draw_down'</span>].<span class="bu">min</span>()],</span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>df_max_draw_downs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="25">
 <div>
 
 
@@ -2118,10 +2130,10 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>-0.341047</td>
-<td>-0.112601</td>
-<td>-0.103766</td>
-<td>-0.090255</td>
+<td>-0.337172</td>
+<td>-0.111999</td>
+<td>-0.102974</td>
+<td>-0.089722</td>
 </tr>
 </tbody>
 </table>
@@ -2133,11 +2145,11 @@ window.Quarto = {
 <section id="dvar" class="level3" data-number="16.3.8">
 <h3 data-number="16.3.8" class="anchored" data-anchor-id="dvar"><span class="header-section-number">16.3.8</span> 99% DVaR</h3>
 <p>The 99% DVaR can easily be calculated from the daily returns.</p>
-<div id="2ef3f855-8b1c-4499-8916-da8e11739fa3" class="cell">
+<div id="2ef3f855-8b1c-4499-8916-da8e11739fa3" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dvar(ret):</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.percentile(ret, <span class="fl">0.01</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="46f16bfd-55ab-4f09-8957-92aaefc2afde" class="cell">
+<div id="46f16bfd-55ab-4f09-8957-92aaefc2afde" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 99% DVaR</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df_dvar<span class="op">=</span> <span class="op">\</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    pd.DataFrame({</span>
@@ -2147,7 +2159,7 @@ window.Quarto = {
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'risk_parity'</span>: [dvar(df_performance[<span class="st">'risk_parity_ret'</span>])],</span>
 <span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    })</span>
 <span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>df_dvar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="27">
 <div>
 
 

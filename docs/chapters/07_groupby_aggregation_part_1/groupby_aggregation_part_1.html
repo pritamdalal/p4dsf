@@ -634,34 +634,34 @@ window.Quarto = {
 <section id="loading-packages" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">7.1</span> Loading Packages</h2>
 <p>Let’s begin by loading the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-data" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">7.2</span> Reading-In Data</h2>
 <p>Our analysis will be on the set of of July 2021 prices for <code>SPY</code>, <code>IWM</code>, <code>QQQ</code>, <code>DIA</code>.</p>
 <p>Let’s read-in that data with <strong>pandas_datareader</strong>.</p>
-<div id="cell-7" class="cell">
+<div id="cell-7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">25</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> pdr.get_data_yahoo([<span class="st">'SPY'</span>, <span class="st">'QQQ'</span>, <span class="st">'IWM'</span>, <span class="st">'DIA'</span>], start<span class="op">=</span><span class="st">'2021-06-30'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> df_etf.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> yf.download(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'SPY'</span>, <span class="st">'QQQ'</span>, <span class="st">'IWM'</span>, <span class="st">'DIA'</span>], start<span class="op">=</span><span class="st">'2021-06-30'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  4 of 4 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th colspan="4" data-quarto-table-cell-role="th" data-halign="left">Adj Close</th>
 <th colspan="4" data-quarto-table-cell-role="th" data-halign="left">Close</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">High</th>
@@ -671,7 +671,7 @@ window.Quarto = {
 <th colspan="4" data-quarto-table-cell-role="th" data-halign="left">Volume</th>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">DIA</th>
 <th data-quarto-table-cell-role="th">IWM</th>
 <th data-quarto-table-cell-role="th">QQQ</th>
@@ -722,10 +722,10 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-06-30</td>
-<td>331.30</td>
-<td>223.29</td>
-<td>349.98</td>
-<td>415.28</td>
+<td>320.48</td>
+<td>217.77</td>
+<td>345.63</td>
+<td>404.51</td>
 <td>344.95</td>
 <td>229.37</td>
 <td>354.43</td>
@@ -746,10 +746,10 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-01</td>
-<td>332.66</td>
-<td>225.26</td>
-<td>350.11</td>
-<td>417.58</td>
+<td>321.79</td>
+<td>219.69</td>
+<td>345.76</td>
+<td>406.75</td>
 <td>346.36</td>
 <td>231.39</td>
 <td>354.57</td>
@@ -770,10 +770,10 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-02</td>
-<td>334.17</td>
-<td>223.11</td>
-<td>354.13</td>
-<td>420.77</td>
+<td>323.26</td>
+<td>217.60</td>
+<td>349.73</td>
+<td>409.86</td>
 <td>347.94</td>
 <td>229.19</td>
 <td>358.64</td>
@@ -794,10 +794,10 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-06</td>
-<td>332.14</td>
-<td>219.87</td>
-<td>355.66</td>
-<td>420.00</td>
+<td>321.29</td>
+<td>214.44</td>
+<td>351.24</td>
+<td>409.11</td>
 <td>345.82</td>
 <td>225.86</td>
 <td>360.19</td>
@@ -818,10 +818,10 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-07</td>
-<td>333.20</td>
-<td>217.83</td>
-<td>356.41</td>
-<td>421.49</td>
+<td>322.32</td>
+<td>212.44</td>
+<td>351.99</td>
+<td>410.56</td>
 <td>346.92</td>
 <td>223.76</td>
 <td>360.95</td>
@@ -848,21 +848,17 @@ window.Quarto = {
 </div>
 </div>
 <p>This data is not as tidy as we would like. Let’s use method chaining to perform a series of data munging operations.</p>
-<div id="cell-9" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    df_etf</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        .stack() <span class="co">#pivot the table</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        .reset_index() <span class="co">#turn date into a column</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'level_1'</span>:<span class="st">'Symbols'</span>}) <span class="co">#renaming a column</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .sort_values(by<span class="op">=</span>[<span class="st">'Symbols'</span>, <span class="st">'Date'</span>]) <span class="co">#sort</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>, <span class="st">'Symbols'</span>:<span class="st">'symbol'</span>, <span class="st">'Adj Close'</span>:<span class="st">'adj_close'</span>,<span class="st">'Close'</span>:<span class="st">'close'</span>, </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                         <span class="st">'High'</span>:<span class="st">'high'</span>, <span class="st">'Low'</span>:<span class="st">'low'</span>, <span class="st">'Open'</span>:<span class="st">'open'</span>, <span class="st">'Volume'</span>:<span class="st">'volume'</span>}) <span class="co">#renaming columns</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        [[<span class="st">'date'</span>, <span class="st">'symbol'</span>,<span class="st">'open'</span>, <span class="st">'high'</span>, <span class="st">'low'</span>, <span class="st">'close'</span>, <span class="st">'volume'</span>, <span class="st">'adj_close'</span>]] <span class="co">#reordering columns</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        .reset_index(drop<span class="op">=</span><span class="va">True</span>)    </span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>df_etf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-9" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_etf <span class="op">=</span> (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    df_etf[[(<span class="st">'Close'</span>,<span class="st">'DIA'</span>), (<span class="st">'Close'</span>, <span class="st">'IWM'</span>), (<span class="st">'Close'</span>, <span class="st">'QQQ'</span>), (<span class="st">'Close'</span>, <span class="st">'SPY'</span>)]] <span class="co"># grab close prices</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .stack() <span class="co"># pivot the table</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    .rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>) <span class="co"># remove the name from the row index</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>, <span class="st">'Ticker'</span>:<span class="st">'symbol'</span>, <span class="st">'Close'</span>:<span class="st">'close'</span>}) <span class="co"># columns in snake-case</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    .sort_values(by<span class="op">=</span>[<span class="st">'symbol'</span>, <span class="st">'date'</span>])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>df_etf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -872,12 +868,7 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
 </tr>
 </thead>
 <tbody>
@@ -885,127 +876,72 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
 <td>DIA</td>
-<td>342.38</td>
-<td>345.51</td>
-<td>342.35</td>
 <td>344.95</td>
-<td>3778900</td>
-<td>331.30</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-01</td>
 <td>DIA</td>
-<td>345.78</td>
-<td>346.40</td>
-<td>344.92</td>
 <td>346.36</td>
-<td>3606900</td>
-<td>332.66</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">8</td>
 <td>2021-07-02</td>
 <td>DIA</td>
-<td>347.04</td>
-<td>348.29</td>
-<td>346.18</td>
 <td>347.94</td>
-<td>3013500</td>
-<td>334.17</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">12</td>
 <td>2021-07-06</td>
 <td>DIA</td>
-<td>347.75</td>
-<td>348.11</td>
-<td>343.60</td>
 <td>345.82</td>
-<td>3910600</td>
-<td>332.14</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<td data-quarto-table-cell-role="th">16</td>
 <td>2021-07-07</td>
 <td>DIA</td>
-<td>345.65</td>
-<td>347.14</td>
-<td>344.43</td>
 <td>346.92</td>
-<td>3347000</td>
-<td>333.20</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">83</td>
+<td data-quarto-table-cell-role="th">71</td>
 <td>2021-07-26</td>
 <td>SPY</td>
-<td>439.31</td>
-<td>441.03</td>
-<td>439.26</td>
 <td>441.02</td>
-<td>43719200</td>
-<td>427.85</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">84</td>
+<td data-quarto-table-cell-role="th">75</td>
 <td>2021-07-27</td>
 <td>SPY</td>
-<td>439.91</td>
-<td>439.94</td>
-<td>435.99</td>
 <td>439.01</td>
-<td>67397100</td>
-<td>425.90</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">85</td>
+<td data-quarto-table-cell-role="th">79</td>
 <td>2021-07-28</td>
 <td>SPY</td>
-<td>439.68</td>
-<td>440.30</td>
-<td>437.31</td>
 <td>438.83</td>
-<td>52472400</td>
-<td>425.73</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">86</td>
+<td data-quarto-table-cell-role="th">83</td>
 <td>2021-07-29</td>
 <td>SPY</td>
-<td>439.82</td>
-<td>441.80</td>
-<td>439.81</td>
 <td>440.65</td>
-<td>47435300</td>
-<td>427.49</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">87</td>
 <td>2021-07-30</td>
 <td>SPY</td>
-<td>437.91</td>
-<td>440.06</td>
-<td>437.77</td>
 <td>438.51</td>
-<td>68951200</td>
-<td>425.42</td>
 </tr>
 </tbody>
 </table>
 
-<p>88 rows × 8 columns</p>
+<p>88 rows × 3 columns</p>
 </div>
 </div>
 </div>
@@ -1016,15 +952,15 @@ window.Quarto = {
 <p>In a previous tutorial we calculated daily returns in a simple vectorized fashion. Unfortunately, we can’t use the exact same approach here because there are multiple ETFs in the data set.</p>
 <p>To overcome this challenge we will use our first application of <code>.groupby()</code>.</p>
 <p>Here is the <code>.groupby()</code> code that calculates daily returns for each ETF.</p>
-<div id="cell-12" class="cell">
+<div id="cell-12" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sorting values to get everything in the right order</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_etf.sort_values([<span class="st">'symbol'</span>, <span class="st">'date'</span>], inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># vectorized return calculation</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'ret'</span>] <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    df_etf[<span class="st">'close'</span>].groupby(df_etf[<span class="st">'symbol'</span>]).pct_change()</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df_etf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -1034,12 +970,7 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
 <th data-quarto-table-cell-role="th">ret</th>
 </tr>
 </thead>
@@ -1048,76 +979,94 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
 <td>DIA</td>
-<td>342.38</td>
-<td>345.51</td>
-<td>342.35</td>
 <td>344.95</td>
-<td>3778900</td>
-<td>331.30</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-01</td>
 <td>DIA</td>
-<td>345.78</td>
-<td>346.40</td>
-<td>344.92</td>
 <td>346.36</td>
-<td>3606900</td>
-<td>332.66</td>
 <td>0.004088</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">8</td>
 <td>2021-07-02</td>
 <td>DIA</td>
-<td>347.04</td>
-<td>348.29</td>
-<td>346.18</td>
 <td>347.94</td>
-<td>3013500</td>
-<td>334.17</td>
 <td>0.004562</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">12</td>
 <td>2021-07-06</td>
 <td>DIA</td>
-<td>347.75</td>
-<td>348.11</td>
-<td>343.60</td>
 <td>345.82</td>
-<td>3910600</td>
-<td>332.14</td>
 <td>-0.006093</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<td data-quarto-table-cell-role="th">16</td>
 <td>2021-07-07</td>
 <td>DIA</td>
-<td>345.65</td>
-<td>347.14</td>
-<td>344.43</td>
 <td>346.92</td>
-<td>3347000</td>
-<td>333.20</td>
 <td>0.003181</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">71</td>
+<td>2021-07-26</td>
+<td>SPY</td>
+<td>441.02</td>
+<td>0.002455</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">75</td>
+<td>2021-07-27</td>
+<td>SPY</td>
+<td>439.01</td>
+<td>-0.004558</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">79</td>
+<td>2021-07-28</td>
+<td>SPY</td>
+<td>438.83</td>
+<td>-0.000410</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">83</td>
+<td>2021-07-29</td>
+<td>SPY</td>
+<td>440.65</td>
+<td>0.004147</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">87</td>
+<td>2021-07-30</td>
+<td>SPY</td>
+<td>438.51</td>
+<td>-0.004856</td>
 </tr>
 </tbody>
 </table>
 
+<p>88 rows × 4 columns</p>
 </div>
 </div>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> If the <code>.group_by()</code> worked correctly, we should see a <code>NaN</code> value in the <code>ret</code> column for the first trade-date of each ETF. Use <code>DataFrame.query()</code> to confirm this.</p>
-<div id="cell-15" class="cell">
+<div id="cell-15" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_etf.query(<span class="st">'ret.isnull()'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -1127,12 +1076,7 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
 <th data-quarto-table-cell-role="th">ret</th>
 </tr>
 </thead>
@@ -1141,48 +1085,28 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
 <td>DIA</td>
-<td>342.38</td>
-<td>345.51</td>
-<td>342.35</td>
 <td>344.95</td>
-<td>3778900</td>
-<td>331.30</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">22</td>
+<td data-quarto-table-cell-role="th">1</td>
 <td>2021-06-30</td>
 <td>IWM</td>
-<td>228.65</td>
-<td>230.32</td>
-<td>227.76</td>
 <td>229.37</td>
-<td>26039000</td>
-<td>223.29</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">44</td>
+<td data-quarto-table-cell-role="th">2</td>
 <td>2021-06-30</td>
 <td>QQQ</td>
-<td>354.83</td>
-<td>355.23</td>
-<td>353.83</td>
 <td>354.43</td>
-<td>32724000</td>
-<td>349.98</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">66</td>
+<td data-quarto-table-cell-role="th">3</td>
 <td>2021-06-30</td>
 <td>SPY</td>
-<td>427.21</td>
-<td>428.78</td>
-<td>427.18</td>
 <td>428.06</td>
-<td>64827900</td>
-<td>415.28</td>
 <td>NaN</td>
 </tr>
 </tbody>
@@ -1197,10 +1121,10 @@ window.Quarto = {
 <h2 data-number="7.4" class="anchored" data-anchor-id="monthly-return-for-each-symbol"><span class="header-section-number">7.4</span> Monthly Return for Each <code>symbol</code></h2>
 <p>We’ll now proceed to calculate monthly returns and monthly volatilities for each of the ETFs in our data set. This amounts to first grouping by <code>symbol</code>, and then performing an aggregation calculation on <code>ret</code> (daily returns).</p>
 <p>Let’s start with monthly returns. As a preliminary step we’ll calculate the daily growth factor in a separate column.</p>
-<div id="cell-19" class="cell">
+<div id="cell-19" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_etf[<span class="st">'daily_factor'</span>] <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> df_etf[<span class="st">'ret'</span>]</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_etf.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1210,12 +1134,7 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">symbol</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">volume</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
 <th data-quarto-table-cell-role="th">ret</th>
 <th data-quarto-table-cell-role="th">daily_factor</th>
 </tr>
@@ -1225,64 +1144,39 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>2021-06-30</td>
 <td>DIA</td>
-<td>342.38</td>
-<td>345.51</td>
-<td>342.35</td>
 <td>344.95</td>
-<td>3778900</td>
-<td>331.30</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
+<td data-quarto-table-cell-role="th">4</td>
 <td>2021-07-01</td>
 <td>DIA</td>
-<td>345.78</td>
-<td>346.40</td>
-<td>344.92</td>
 <td>346.36</td>
-<td>3606900</td>
-<td>332.66</td>
 <td>0.004088</td>
 <td>1.004088</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
+<td data-quarto-table-cell-role="th">8</td>
 <td>2021-07-02</td>
 <td>DIA</td>
-<td>347.04</td>
-<td>348.29</td>
-<td>346.18</td>
 <td>347.94</td>
-<td>3013500</td>
-<td>334.17</td>
 <td>0.004562</td>
 <td>1.004562</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
+<td data-quarto-table-cell-role="th">12</td>
 <td>2021-07-06</td>
 <td>DIA</td>
-<td>347.75</td>
-<td>348.11</td>
-<td>343.60</td>
 <td>345.82</td>
-<td>3910600</td>
-<td>332.14</td>
 <td>-0.006093</td>
 <td>0.993907</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
+<td data-quarto-table-cell-role="th">16</td>
 <td>2021-07-07</td>
 <td>DIA</td>
-<td>345.65</td>
-<td>347.14</td>
-<td>344.43</td>
 <td>346.92</td>
-<td>3347000</td>
-<td>333.20</td>
 <td>0.003181</td>
 <td>1.003181</td>
 </tr>
@@ -1293,11 +1187,11 @@ window.Quarto = {
 </div>
 </div>
 <p>Recall that the monthly growth factor is the product of the daily growth factors. Here is a way to write all that logic in a single line using <code>.groupby()</code> and <code>.agg()</code>:</p>
-<div id="cell-21" class="cell">
+<div id="cell-21" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_grouped_factor <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>])[<span class="st">'daily_factor'</span>].agg([np.prod]).reset_index()</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df_grouped_factor</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -1337,10 +1231,10 @@ window.Quarto = {
 </div>
 </div>
 <p>Notice that <strong>pandas</strong> isn’t very sophisticated about the name that it gives to the column that stores the aggregation calculation. It just gave it the name <code>prod</code>, which is the name of the function that was used in the aggregation calculation. Let’s make <code>df_grouped_factor</code> a bit more readable by renaming that column.</p>
-<div id="cell-23" class="cell">
+<div id="cell-23" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_grouped_factor.rename(columns<span class="op">=</span>{<span class="st">'prod'</span>: <span class="st">'monthly_factor'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_grouped_factor</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -1380,10 +1274,10 @@ window.Quarto = {
 </div>
 </div>
 <p>And finally, recall that the monthly return is calculated by subtracting one from the monthly growth factor.</p>
-<div id="cell-25" class="cell">
+<div id="cell-25" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_grouped_factor[<span class="st">'monthly_return'</span>] <span class="op">=</span> df_grouped_factor[<span class="st">'monthly_factor'</span>] <span class="op">-</span> <span class="dv">1</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df_grouped_factor[[<span class="st">'symbol'</span>, <span class="st">'monthly_return'</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -1427,12 +1321,12 @@ window.Quarto = {
 <h2 data-number="7.5" class="anchored" data-anchor-id="monthly-volatility-for-each-symbol"><span class="header-section-number">7.5</span> Monthly Volatility for Each <code>symbol</code></h2>
 <p>Now let’s calculate the (realized/historical) volatility for each of the ETFs.</p>
 <p>We once again use <code>.groupby()</code> and <code>.agg()</code> to do most of the work in a single line of code.</p>
-<div id="cell-28" class="cell">
+<div id="cell-28" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_grouped_vol <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    df_etf.groupby([<span class="st">'symbol'</span>])[<span class="st">'ret'</span>].agg([np.std]).reset_index()</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>df_grouped_vol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1472,10 +1366,10 @@ window.Quarto = {
 </div>
 </div>
 <p>Again, let’s rename our aggregation column to something more descriptive.</p>
-<div id="cell-30" class="cell">
+<div id="cell-30" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_grouped_vol.rename(columns<span class="op">=</span>{<span class="st">'std'</span>:<span class="st">'daily_vol'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_grouped_vol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 
 
@@ -1515,10 +1409,10 @@ window.Quarto = {
 </div>
 </div>
 <p>What we have calculated is a daily volatility, but when practitioners talk about volatility, they typically annualize it. A daily volatility is annualized by multiplying by <span class="math inline">\(\sqrt{252}\)</span>.</p>
-<div id="cell-32" class="cell">
+<div id="cell-32" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_grouped_vol[<span class="st">'ann_vol'</span>] <span class="op">=</span> df_grouped_vol[<span class="st">'daily_vol'</span>] <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_grouped_vol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
@@ -1564,14 +1458,14 @@ window.Quarto = {
 </div>
 <hr>
 <p><strong>Code Challenge</strong> Use <code>.groupby()</code> and <code>.agg()</code> to calculate the average daily return for each of the ETFs.</p>
-<div id="cell-35" class="cell">
+<div id="cell-35" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_etf</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">'symbol'</span>])[[<span class="st">'ret'</span>]].agg(np.mean)</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    .reset_index()</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">'ret'</span>:<span class="st">'daily_avg_ret'</span>})</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 

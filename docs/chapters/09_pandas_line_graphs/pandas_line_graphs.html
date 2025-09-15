@@ -607,27 +607,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="load-packages" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="load-packages"><span class="header-section-number">9.1</span> Load Packages</h2>
 <p>Let’s begin by loading the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="ipython-magic-commands" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="ipython-magic-commands"><span class="header-section-number">9.2</span> <code>IPython</code> Magic Commands</h2>
 <p>Now that we are (implictly) using <strong>matplotlib</strong>, we will have occasion to use our first <code>IPython</code> magic command. These magic commands are often referred to as simply <em>magics</em>.</p>
 <p>The following line of code tells Jupyter to print graphs as output just below the code cell - in the same way that other ouput is printed to the screen.</p>
-<div id="cell-7" class="cell">
+<div id="cell-7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Magics are convenience functions that <code>IPython</code> adds to base <code>Python</code> to make a variety of analysis tasks easier.</p>
 <p>Another example is <code>%timeit</code> that performs time tests on code.</p>
-<div id="cell-9" class="cell">
+<div id="cell-9" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>timeit L <span class="op">=</span> [n <span class="op">**</span> <span class="dv">2</span> <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>203 µs ± 8.65 µs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
+<pre><code>202 µs ± 351 ns per loop (mean ± std. dev. of 7 runs, 1,000 loops each)</code></pre>
 </div>
 </div>
 <p>You can read more about magics in Section 1.3 of <em>Python Data Science Handbook</em>. The primary magic command that we will utilize is <code>%matplotlib inline</code>.</p>
@@ -635,21 +633,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reading-in-data" class="level2" data-number="9.3">
 <h2 data-number="9.3" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">9.3</span> Reading In Data</h2>
 <p>Let’s now use <strong>pandas_datareader</strong> to read-in <code>SPY</code> and <code>VIX</code> data for 2016Q1 through 2021Q2.</p>
-<div id="cell-13" class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo([<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-13" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  2 of 2 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Adj Close</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Close</th>
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">High</th>
@@ -658,7 +658,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <th colspan="2" data-quarto-table-cell-role="th" data-halign="left">Volume</th>
 </tr>
 <tr class="even">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Ticker</th>
 <th data-quarto-table-cell-role="th">SPY</th>
 <th data-quarto-table-cell-role="th">^VIX</th>
 <th data-quarto-table-cell-role="th">SPY</th>
@@ -691,7 +691,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-04</td>
-<td>175.91</td>
+<td>171.35</td>
 <td>20.70</td>
 <td>201.02</td>
 <td>20.70</td>
@@ -706,7 +706,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2016-01-05</td>
-<td>176.21</td>
+<td>171.64</td>
 <td>19.34</td>
 <td>201.36</td>
 <td>19.34</td>
@@ -721,7 +721,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-06</td>
-<td>173.98</td>
+<td>169.47</td>
 <td>20.59</td>
 <td>198.82</td>
 <td>20.59</td>
@@ -736,7 +736,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2016-01-07</td>
-<td>169.81</td>
+<td>165.41</td>
 <td>24.99</td>
 <td>194.05</td>
 <td>24.99</td>
@@ -751,7 +751,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-08</td>
-<td>167.95</td>
+<td>163.59</td>
 <td>27.01</td>
 <td>191.92</td>
 <td>27.01</td>
@@ -770,12 +770,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>The following code cleans up the data by isolating the the <code>Close</code> prices, resetting the index, and then changing the column names</p>
-<div id="cell-15" class="cell">
+<p>The following code cleans up the data by isolating the the <code>Close</code> prices, resetting the index, and then changing the column names.</p>
+<div id="cell-15" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="st">'Close'</span>].reset_index()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy.rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -830,7 +831,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="9.4" class="anchored" data-anchor-id="creating-a-basic-price-plot"><span class="header-section-number">9.4</span> Creating a Basic Price Plot</h2>
 <p><strong>pandas</strong> was created by Wes McKinney when he was a quantitative analyst at the hedge fund called AQR. One of McKinney’s goals for <strong>pandas</strong> was to facilitate the analysis of financial time series. For example, plotting stock prices and returns over time can be done very easily.</p>
 <p>The following single line of code produces a line graph consisting of the close prices of SPY over time.</p>
-<div id="cell-18" class="cell">
+<div id="cell-18" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'spy'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -846,7 +847,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="improving-our-graph" class="level2" data-number="9.5">
 <h2 data-number="9.5" class="anchored" data-anchor-id="improving-our-graph"><span class="header-section-number">9.5</span> Improving Our Graph</h2>
 <p>As a first improvement, let’s add a title to our graph, and add some grid lines to make it a little easier to read.</p>
-<div id="cell-22" class="cell">
+<div id="cell-22" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.<span class="op">\</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    plot(</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="st">'date'</span>,</span>
@@ -863,7 +864,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>In order to add custom labels to the x-axis and y-axis we will have to work with the <strong>matplotlib</strong> API. Don’t worry about the details too much right now, just copy this code if you need to relabel your axes.</p>
-<div id="cell-24" class="cell">
+<div id="cell-24" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_spy.<span class="op">\</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'date'</span>,</span>
@@ -886,7 +887,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>1. figsize = (10, 5)
 2. style = 'k--'
 3. alpha = 0.5</code></pre>
-<div id="cell-28" class="cell">
+<div id="cell-28" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_spy.<span class="op">\</span></span>
@@ -918,10 +919,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="9.6" class="anchored" data-anchor-id="subplot-of-price-and-returns"><span class="header-section-number">9.6</span> Subplot of Price and Returns</h2>
 <p>In this section, we will plot prices and returns as subplots on the same x-axis. This dual plot will be our first observation of the <em>leverage effect</em>: when the stock market suffers losses there is greater volatility.</p>
 <p>Let’s begin by adding a <code>return</code> column to <code>df_spy</code>.</p>
-<div id="cell-34" class="cell">
+<div id="cell-34" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>] <span class="op">=</span> df_spy[<span class="st">'spy'</span>] <span class="op">/</span> df_spy[<span class="st">'spy'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -978,7 +979,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Now we can use the <code>subplots</code> argument of <code>.plot()</code> to plot both the prices and returns simulatneously.</p>
-<div id="cell-36" class="cell">
+<div id="cell-36" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'spy'</span>, <span class="st">'return'</span>], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, grid<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">8</span>),)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -994,10 +995,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="9.7" class="anchored" data-anchor-id="realized-volatility"><span class="header-section-number">9.7</span> Realized Volatility</h2>
 <p>Plotting the realized volatility - i.e.&nbsp;the rolling standard deviation - is another way to observe the leverage effect.</p>
 <p>In order to execute rolling calculations in <strong>pandas</strong> we will use the <code>DataFrame.rolling()</code> method.</p>
-<div id="cell-40" class="cell">
+<div id="cell-40" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">6</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>0            NaN
 1            NaN
 2            NaN
@@ -1010,10 +1011,10 @@ Name: return, Length: 1382, dtype: float64</code></pre>
 </div>
 <p>Note that the argument of <code>.rolling()</code> is the window size, which we have set to two months.</p>
 <p>Let’s add this rolling realized volatility calculation to <code>df_spy</code>.</p>
-<div id="cell-43" class="cell">
+<div id="cell-43" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'realized_vol'</span>] <span class="op">=</span> df_spy[<span class="st">'return'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1076,7 +1077,7 @@ Name: return, Length: 1382, dtype: float64</code></pre>
 </div>
 </div>
 <p>Again, we can use the <code>subplot</code> argument of <code>.plot()</code> to plot all three time series.</p>
-<div id="cell-45" class="cell">
+<div id="cell-45" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'spy'</span>, <span class="st">'return'</span>, <span class="st">'realized_vol'</span>,], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, grid<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">12</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1094,7 +1095,7 @@ Name: return, Length: 1382, dtype: float64</code></pre>
 <p>One of the complexities of implied volatility measurements is that even for a single underlying they differ depending on strike and expiration. However, all implied volatility measurements tend to rise and fall together.</p>
 <p>The VIX index is a single number that summarizes the general level of option implied volatility for options on the S&amp;P500. The S&amp;P500 represents a large number of the most important stocks in America. Moreover, S&amp;P500 options are the most actively traded options in the world. For these reasons, the VIX is a good barometer for overall implied volatility level in the stock market.</p>
 <p>Let’s plot <code>vix</code> along side the other volatility measures in the same graph.</p>
-<div id="cell-50" class="cell">
+<div id="cell-50" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'spy'</span>, <span class="st">'return'</span>, <span class="st">'realized_vol'</span>, <span class="st">'vix'</span>,], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, grid<span class="op">=</span><span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">16</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>

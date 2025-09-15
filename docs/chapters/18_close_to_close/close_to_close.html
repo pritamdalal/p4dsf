@@ -638,44 +638,41 @@ window.Quarto = {
 <section id="loading-packages" class="level2" data-number="19.1">
 <h2 data-number="19.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">19.1</span> Loading Packages</h2>
 <p>Let’s begin by loading the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-spy-data-from-yahoo-finance" class="level2" data-number="19.2">
 <h2 data-number="19.2" class="anchored" data-anchor-id="reading-in-spy-data-from-yahoo-finance"><span class="header-section-number">19.2</span> Reading-In SPY Data From Yahoo Finance</h2>
 <p>Sepp’s analysis covers data starting from 1/1/2005 and ending on 4/2/2016. Let’s grab these SPY prices from Yahoo Finance using <strong>pandas_datareader</strong>.</p>
-<div id="cell-7" class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-7" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>, auto_adjust<span class="op">=</span><span class="va">False</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[[<span class="st">'trade_date'</span>, <span class="st">'close'</span>]].copy()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
 <tbody>
@@ -683,64 +680,34 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>SPY</td>
 <td>2004-12-31</td>
-<td>121.300003</td>
-<td>121.660004</td>
-<td>120.800003</td>
 <td>120.870003</td>
-<td>84.657806</td>
-<td>28648800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>SPY</td>
 <td>2005-01-03</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
-<td>55748000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>2005-01-04</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
-<td>69167600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>SPY</td>
 <td>2005-01-05</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
-<td>65667300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>SPY</td>
 <td>2005-01-06</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
-<td>47814700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -749,61 +716,36 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2827</td>
 <td>SPY</td>
 <td>2016-03-28</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
-<td>62408200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2828</td>
 <td>SPY</td>
 <td>2016-03-29</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2829</td>
 <td>SPY</td>
 <td>2016-03-30</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
-<td>86365300</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2830</td>
 <td>SPY</td>
 <td>2016-03-31</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2831</td>
 <td>SPY</td>
 <td>2016-04-01</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
-<td>114423500</td>
 </tr>
 </tbody>
 </table>
 
-<p>2832 rows × 8 columns</p>
+<p>2832 rows × 3 columns</p>
 </div>
 </div>
 </div>
@@ -811,26 +753,21 @@ window.Quarto = {
 <section id="calculating-daily-returns-realized-volatility" class="level2" data-number="19.3">
 <h2 data-number="19.3" class="anchored" data-anchor-id="calculating-daily-returns-realized-volatility"><span class="header-section-number">19.3</span> Calculating Daily Returns &amp; Realized Volatility</h2>
 <p>The close-to-close estimator is a function of daily returns so let’s calculate those now. In particular, we will use log-returns.</p>
-<div id="cell-10" class="cell">
+<div id="cell-10" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'close'</span>]).diff()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="dv">1</span>:].reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 </tr>
 </thead>
@@ -839,69 +776,39 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>SPY</td>
 <td>2005-01-03</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
-<td>55748000</td>
 <td>-0.004727</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>SPY</td>
 <td>2005-01-04</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
-<td>69167600</td>
 <td>-0.012295</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>2005-01-05</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
-<td>65667300</td>
 <td>-0.006925</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>SPY</td>
 <td>2005-01-06</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
-<td>47814700</td>
 <td>0.005071</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>SPY</td>
 <td>2005-01-07</td>
-<td>118.970001</td>
-<td>119.230003</td>
-<td>118.129997</td>
 <td>118.440002</td>
-<td>82.955849</td>
-<td>55847700</td>
 <td>-0.001434</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -911,66 +818,41 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2826</td>
 <td>SPY</td>
 <td>2016-03-28</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
-<td>62408200</td>
 <td>0.000591</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2827</td>
 <td>SPY</td>
 <td>2016-03-29</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 <td>0.009208</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2828</td>
 <td>SPY</td>
 <td>2016-03-30</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
-<td>86365300</td>
 <td>0.004378</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2829</td>
 <td>SPY</td>
 <td>2016-03-31</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2830</td>
 <td>SPY</td>
 <td>2016-04-01</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
-<td>114423500</td>
 <td>0.006789</td>
 </tr>
 </tbody>
 </table>
 
-<p>2831 rows × 9 columns</p>
+<p>2831 rows × 4 columns</p>
 </div>
 </div>
 </div>
@@ -980,10 +862,10 @@ window.Quarto = {
 <p>Organizing dates is an important step in a historical analysis.</p>
 <p>We are performing a weekly analysis, which means that in later steps we will performing aggregation calculations of daily calculations grouped into weeks. Therefore, we will need to add a column to <code>df_spy</code> that will allow us to group by weeks.</p>
 <p>The key to our approach will be to use the <code>.dt.weekday</code> attribute of the <code>trade_date</code> columns. In the following code, the variable <code>weekday</code> is a <code>Series</code> that contains the weekday associated with each date. Notice that Monday is encoded by <code>0</code> and Friday is encoded by <code>4</code>.</p>
-<div id="cell-13" class="cell">
+<div id="cell-13" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>weekday <span class="op">=</span> df_spy[<span class="st">'trade_date'</span>].dt.weekday</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>weekday</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>0       0
 1       1
 2       2
@@ -999,7 +881,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 <p>The following code is a simple <code>for</code>-loop that has the effect of creating a week-number for each week.</p>
-<div id="cell-15" class="cell">
+<div id="cell-15" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>week_num <span class="op">=</span> []</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ix_week <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>week_num.append(ix_week)</span>
@@ -1010,31 +892,26 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        ix_week <span class="op">=</span> ix_week <span class="op">+</span> <span class="dv">1</span></span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    week_num.append(ix_week)</span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>np.array(week_num) <span class="co"># I use the array function simply because it looks better when it prints</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>array([  0,   0,   0, ..., 586, 586, 586])</code></pre>
 </div>
 </div>
 <p>Let’s now insert the week numbers into <code>df_spy</code>.</p>
-<div id="cell-17" class="cell">
+<div id="cell-17" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">2</span>, <span class="st">'week_num'</span>, week_num)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
 <th data-quarto-table-cell-role="th">week_num</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 </tr>
 </thead>
@@ -1044,12 +921,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-03</td>
 <td>0</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
-<td>55748000</td>
 <td>-0.004727</td>
 </tr>
 <tr class="even">
@@ -1057,12 +929,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-04</td>
 <td>0</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
-<td>69167600</td>
 <td>-0.012295</td>
 </tr>
 <tr class="odd">
@@ -1070,12 +937,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-05</td>
 <td>0</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
-<td>65667300</td>
 <td>-0.006925</td>
 </tr>
 <tr class="even">
@@ -1083,12 +945,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-06</td>
 <td>0</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
-<td>47814700</td>
 <td>0.005071</td>
 </tr>
 <tr class="odd">
@@ -1096,21 +953,11 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-07</td>
 <td>0</td>
-<td>118.970001</td>
-<td>119.230003</td>
-<td>118.129997</td>
 <td>118.440002</td>
-<td>82.955849</td>
-<td>55847700</td>
 <td>-0.001434</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1122,12 +969,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-28</td>
 <td>586</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
-<td>62408200</td>
 <td>0.000591</td>
 </tr>
 <tr class="even">
@@ -1135,12 +977,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-29</td>
 <td>586</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 <td>0.009208</td>
 </tr>
 <tr class="odd">
@@ -1148,12 +985,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-30</td>
 <td>586</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
-<td>86365300</td>
 <td>0.004378</td>
 </tr>
 <tr class="even">
@@ -1161,12 +993,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-31</td>
 <td>586</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 </tr>
 <tr class="odd">
@@ -1174,24 +1001,19 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-04-01</td>
 <td>586</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
-<td>114423500</td>
 <td>0.006789</td>
 </tr>
 </tbody>
 </table>
 
-<p>2831 rows × 10 columns</p>
+<p>2831 rows × 5 columns</p>
 </div>
 </div>
 </div>
 <hr>
 <p><strong>Discussion Question:</strong> The <code>pandas.Series.dt.week</code> attribute gives the <em>week-of-the-year</em> for a give trade-date. My initial idea was to use <code>.dt.week</code> and <code>dt.year</code> for my grouping, but I ran into an issue. Can you think what the issue was?</p>
-<div id="cell-20" class="cell">
+<div id="cell-20" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">##&gt; Weeks at the beginning and end of the year may be partial weeks.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1199,7 +1021,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 <hr>
 <p>We can now use <code>.groupby()</code> to calculate the starting and ending dates for each week.</p>
-<div id="cell-23" class="cell">
+<div id="cell-23" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_start_end <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    df_spy.groupby([<span class="st">'week_num'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'trade_date'</span>]].agg([<span class="bu">min</span>, <span class="bu">max</span>])[<span class="st">'trade_date'</span>]</span>
@@ -1208,7 +1030,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'index'</span>:<span class="st">'week_num'</span>})</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>df_start_end</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -1296,10 +1118,10 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 </div>
 <p>Let’s merge these columns into <code>df_spy</code>.</p>
-<div id="cell-25" class="cell">
+<div id="cell-25" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.merge(df_start_end)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -1310,12 +1132,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
 <th data-quarto-table-cell-role="th">week_num</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 <th data-quarto-table-cell-role="th">week_start</th>
 <th data-quarto-table-cell-role="th">week_end</th>
@@ -1327,12 +1144,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-03</td>
 <td>0</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258568</td>
-<td>55748000</td>
 <td>-0.004727</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1342,12 +1154,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-04</td>
 <td>0</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.228973</td>
-<td>69167600</td>
 <td>-0.012295</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1357,12 +1164,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-05</td>
 <td>0</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654648</td>
-<td>65667300</td>
 <td>-0.006925</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1372,12 +1174,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-06</td>
 <td>0</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074875</td>
-<td>47814700</td>
 <td>0.005071</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1387,12 +1184,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2005-01-07</td>
 <td>0</td>
-<td>118.970001</td>
-<td>119.230003</td>
-<td>118.129997</td>
 <td>118.440002</td>
-<td>82.955849</td>
-<td>55847700</td>
 <td>-0.001434</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1406,23 +1198,13 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>...</td>
 <td>...</td>
 <td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2826</td>
 <td>SPY</td>
 <td>2016-03-28</td>
 <td>586</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770126</td>
-<td>62408200</td>
 <td>0.000591</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1432,12 +1214,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-29</td>
 <td>586</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 <td>0.009208</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1447,12 +1224,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-30</td>
 <td>586</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215378</td>
-<td>86365300</td>
 <td>0.004378</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1462,12 +1234,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-03-31</td>
 <td>586</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1477,12 +1244,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <td>SPY</td>
 <td>2016-04-01</td>
 <td>586</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007065</td>
-<td>114423500</td>
 <td>0.006789</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1490,7 +1252,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </tbody>
 </table>
 
-<p>2831 rows × 12 columns</p>
+<p>2831 rows × 7 columns</p>
 </div>
 </div>
 </div>
@@ -1499,7 +1261,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <h2 data-number="19.5" class="anchored" data-anchor-id="calculating-weekly-realized-volatility"><span class="header-section-number">19.5</span> Calculating Weekly Realized Volatility</h2>
 <p>Now that we have a <code>week_num</code> associated with each <code>trade_date</code>, we can use <code>.groupby()</code> to calculate the realized volatility.</p>
 <p>These weekly realized volatilities are the labels that we will be predicting later in our analysis.</p>
-<div id="cell-28" class="cell">
+<div id="cell-28" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
@@ -1508,7 +1270,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> df_realized[<span class="dv">1</span>:]</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>df_realized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1611,7 +1373,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <section id="close-to-close-estimator" class="level2" data-number="19.6">
 <h2 data-number="19.6" class="anchored" data-anchor-id="close-to-close-estimator"><span class="header-section-number">19.6</span> Close-to-Close Estimator</h2>
 <p>Let’s now implement the close-to-close estimator.</p>
-<div id="cell-31" class="cell">
+<div id="cell-31" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close(r):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> r.shape[<span class="dv">0</span>]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    r_bar <span class="op">=</span> r.mean()</span>
@@ -1619,7 +1381,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>(vol)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Notice that <code>close_to_close()</code> is an aggregation function that takes in an array of daily returns and returns back a number. In order to calculate weekly estimates we use <code>close_to_close()</code> as the aggregation function applied to a <code>.groupby()</code>.</p>
-<div id="cell-33" class="cell">
+<div id="cell-33" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_close_to_close <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
@@ -1629,7 +1391,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>df_close_to_close <span class="op">=</span> df_close_to_close[<span class="dv">0</span>:<span class="op">-</span><span class="dv">1</span>]</span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>df_close_to_close</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 
 
@@ -1730,7 +1492,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 <hr>
 <p><strong>Discussion Question:</strong> Verify that the <code>.groupby()</code> above works just fine with out including <code>week_start</code> and <code>week_end</code>. If that is the case, then why did I include it?</p>
-<div id="cell-36" class="cell">
+<div id="cell-36" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(</span>
@@ -1742,7 +1504,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co"># It makes the code and the dataframe more readable.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1843,7 +1605,7 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Create an alternative version of our close-to-close function using <code>np.std()</code>. Call the new function <code>close_to_close_std()</code>. Verify that your values match.</p>
-<div id="cell-39" class="cell">
+<div id="cell-39" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> close_to_close_std(r):</span>
@@ -1869,31 +1631,435 @@ Name: trade_date, Length: 2831, dtype: int32</code></pre>
 </div>
 <p>In Sepp 2016, the author uses the <span class="math inline">\(R^2\)</span> between the forecasts and the realized labels as a means of assessing the quality of a particular estimator. Let’s utilize <strong>sklearn</strong> to do the same.</p>
 <p>We being by importing the <code>LinearRegression()</code> constructor and instantiating a model.</p>
-<div id="cell-42" class="cell">
+<div id="cell-42" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>mdl_reg <span class="op">=</span> LinearRegression(fit_intercept <span class="op">=</span> <span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, let’s organize our features and labels.</p>
-<div id="cell-44" class="cell">
+<div id="cell-44" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df_close_to_close[[<span class="st">'close_to_close'</span>]]</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df_realized[<span class="st">'realized_vol'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now fit the model.</p>
-<div id="cell-46" class="cell">
+<div id="cell-46" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mdl_reg.fit(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;&nbsp;LinearRegression<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html">?<span>Documentation for LinearRegression</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>LinearRegression()</pre></div> </div></div></div></div>
 </div>
 </div>
 <p>The <code>.score()</code> method of a <code>LinearRegression</code> model returns the <span class="math inline">\(R^2\)</span>.</p>
-<div id="cell-48" class="cell">
+<div id="cell-48" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mdl_reg.score(X, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>0.4093645253435927</code></pre>
 </div>
 </div>
 <p>And we can examine the slope and intercept of our model as follows:</p>
-<div id="cell-50" class="cell">
+<div id="cell-50" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Intercept:"</span>, mdl_reg.intercept_)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Slope:   "</span>, mdl_reg.coef_)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1903,7 +2069,7 @@ Slope:    [0.57068844]</code></pre>
 </div>
 <hr>
 <p><strong>Discussion Question:</strong> How do our results compare to Sepp’s?</p>
-<div id="cell-53" class="cell">
+<div id="cell-53" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># They seem close enough that there probably isn't some error in my calculations.</span></span>
@@ -1912,16 +2078,12 @@ Slope:    [0.57068844]</code></pre>
 </details>
 </div>
 <hr>
-<p>Let’s also measure the bias and efficiency of the the close-to-close estimator.</p>
-<div id="cell-56" class="cell">
+<p>Let’s also measure the bias of the close-to-close estimator.</p>
+<div id="cell-56" class="cell" data-execution_count="21">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Bias:      "</span>, np.mean(df_close_to_close[<span class="st">'close_to_close'</span>] <span class="op">-</span> df_realized[<span class="st">'realized_vol'</span>]))</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># efficiency</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Efficiency:"</span>, np.std(df_realized[<span class="st">'realized_vol'</span>]) <span class="op">/</span> np.std(df_close_to_close[<span class="st">'close_to_close'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Bias:"</span>, np.mean(df_close_to_close[<span class="st">'close_to_close'</span>] <span class="op">-</span> df_realized[<span class="st">'realized_vol'</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Bias:       0.01708041424884867
-Efficiency: 0.8919571135609281</code></pre>
+<pre><code>Bias: 0.01708041424884867</code></pre>
 </div>
 </div>
 

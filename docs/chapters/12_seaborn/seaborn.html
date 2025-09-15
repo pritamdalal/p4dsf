@@ -617,30 +617,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="loading-packages" class="level2" data-number="12.1">
 <h2 data-number="12.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">12.1</span> Loading Packages</h2>
 <p>Let’s load the packages that we will be using.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="line-graph---prices-returns-realized-vol-vix" class="level2" data-number="12.2">
 <h2 data-number="12.2" class="anchored" data-anchor-id="line-graph---prices-returns-realized-vol-vix"><span class="header-section-number">12.2</span> Line Graph - Prices, Returns, Realized Vol, VIX</h2>
 <p>Let’s read-in and wrangle some data for SPY and VIX during 2016Q1-2021Q2.</p>
-<div id="cell-7" class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo([<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="st">'Close'</span>].reset_index()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-7" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">'SPY'</span>, <span class="st">'^VIX'</span>], start<span class="op">=</span><span class="st">'2016-01-01'</span>, end<span class="op">=</span><span class="st">'2021-06-30'</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[<span class="st">'Close'</span>].reset_index()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_spy.rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns<span class="op">=</span>{<span class="st">'Date'</span>:<span class="st">'date'</span>,<span class="st">'SPY'</span>:<span class="st">'spy'</span>,<span class="st">'^VIX'</span>:<span class="st">'vix'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  2 of 2 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -691,11 +692,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Next, let’s add <code>returns</code> and <code>realized_vol</code> to the <code>df_spy</code>.</p>
-<div id="cell-9" class="cell">
+<div id="cell-9" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'return'</span>] <span class="op">=</span> df_spy[<span class="st">'spy'</span>] <span class="op">/</span> df_spy[<span class="st">'spy'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'realized_vol'</span>] <span class="op">=</span> df_spy[<span class="st">'return'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -760,7 +761,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="graphing-with-pandas" class="level3" data-number="12.2.1">
 <h3 data-number="12.2.1" class="anchored" data-anchor-id="graphing-with-pandas"><span class="header-section-number">12.2.1</span> Graphing with <code>pandas</code></h3>
 <p>Recall that <code>pandas</code> allows us to quickly graph these four time-series in a single figure.</p>
-<div id="cell-12" class="cell">
+<div id="cell-12" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_spy. <span class="op">\</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    plot(</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="st">'date'</span>, </span>
@@ -783,7 +784,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 data-number="12.2.2" class="anchored" data-anchor-id="graphing-with-seaborn"><span class="header-section-number">12.2.2</span> Graphing with <code>seaborn</code></h3>
 <p>Let’s create similar graphs with <strong>seaborn</strong>. Creating all four plots in a single graph is not as easy with <strong>seaborn</strong> and the code is a little confusing. To keep things simple we will recreate two of the plots separately.</p>
 <p>Here is the code that generates the graph of the daily prices.</p>
-<div id="cell-16" class="cell">
+<div id="cell-16" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">'darkgrid'</span>):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> sns.relplot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'spy'</span>, kind<span class="op">=</span><span class="st">'line'</span>, data<span class="op">=</span>df_spy, aspect<span class="op">=</span><span class="fl">1.5</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    g.fig.autofmt_xdate()</span>
@@ -799,7 +800,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>And here is the code produces the graph of the daily returns.</p>
-<div id="cell-18" class="cell">
+<div id="cell-18" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">'darkgrid'</span>):</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> sns.relplot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'return'</span>, kind<span class="op">=</span><span class="st">'line'</span>, data<span class="op">=</span>df_spy, aspect<span class="op">=</span><span class="fl">1.5</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    g.fig.autofmt_xdate()</span>
@@ -819,10 +820,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="bar-graph---monthly-spy-call-pnls" class="level2" data-number="12.3">
 <h2 data-number="12.3" class="anchored" data-anchor-id="bar-graph---monthly-spy-call-pnls"><span class="header-section-number">12.3</span> Bar Graph - Monthly SPY Call PNLs</h2>
 <p>Our next data set consists of monthly pnls from the call trades detailed in <code>seaborn_monthly_pnl_bar.csv</code>.</p>
-<div id="cell-21" class="cell">
+<div id="cell-21" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_monthly_bar <span class="op">=</span> pd.read_csv(<span class="st">'seaborn_monthly_pnl_bar.csv'</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df_monthly_bar.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -875,7 +876,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="graphing-with-pandas-1" class="level3" data-number="12.3.1">
 <h3 data-number="12.3.1" class="anchored" data-anchor-id="graphing-with-pandas-1"><span class="header-section-number">12.3.1</span> Graphing with <code>pandas</code></h3>
 <p>Recall that this code creates the barplot of the pnls by month using <strong>pandas</strong>.</p>
-<div id="cell-24" class="cell">
+<div id="cell-24" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    (df_monthly_bar</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        .plot(</span>
@@ -904,7 +905,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="graphing-with-seaborn-1" class="level3" data-number="12.3.2">
 <h3 data-number="12.3.2" class="anchored" data-anchor-id="graphing-with-seaborn-1"><span class="header-section-number">12.3.2</span> Graphing with <code>seaborn</code></h3>
 <p>Here is the code that produces a similar graph in using <strong>seaborn</strong>.</p>
-<div id="cell-27" class="cell">
+<div id="cell-27" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">'darkgrid'</span>):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> sns.catplot(</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span><span class="st">'month'</span></span>
@@ -931,12 +932,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="scatter-plot---spy-returns-vs-vix-change-implied-leverage" class="level2" data-number="12.4">
 <h2 data-number="12.4" class="anchored" data-anchor-id="scatter-plot---spy-returns-vs-vix-change-implied-leverage"><span class="header-section-number">12.4</span> Scatter Plot - SPY Returns vs VIX Change (<em>implied leverage</em>)</h2>
 <p>Let’s add <code>vix_chng</code> to <code>df_spy</code> and change the units to decimals.</p>
-<div id="cell-30" class="cell">
+<div id="cell-30" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix_chng'</span>] <span class="op">=</span> df_spy[<span class="st">'vix'</span>].diff()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix'</span>] <span class="op">=</span> df_spy[<span class="st">'vix'</span>] <span class="op">/</span> <span class="dv">100</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'vix_chng'</span>] <span class="op">=</span> df_spy[<span class="st">'vix_chng'</span>] <span class="op">/</span> <span class="dv">100</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1007,7 +1008,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="graphing-with-pandas-2" class="level3" data-number="12.4.1">
 <h3 data-number="12.4.1" class="anchored" data-anchor-id="graphing-with-pandas-2"><span class="header-section-number">12.4.1</span> Graphing with <code>pandas</code></h3>
 <p>Here is the <strong>pandas</strong> code that creates scatter plot of returns vs VIX changes.</p>
-<div id="cell-33" class="cell">
+<div id="cell-33" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot.scatter(</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="st">'return'</span>,</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="st">'vix_chng'</span>,</span>
@@ -1030,7 +1031,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="graphing-with-seaborn-2" class="level3" data-number="12.4.2">
 <h3 data-number="12.4.2" class="anchored" data-anchor-id="graphing-with-seaborn-2"><span class="header-section-number">12.4.2</span> Graphing with <code>seaborn</code></h3>
 <p>Here is the code for a similar graph using <strong>seaborn</strong>.</p>
-<div id="cell-36" class="cell">
+<div id="cell-36" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> sns.axes_style(<span class="st">'darkgrid'</span>):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> sns.relplot(</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'return'</span>,</span>

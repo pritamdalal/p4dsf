@@ -605,16 +605,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="load-packages" class="level2" data-number="10.1">
 <h2 data-number="10.1" class="anchored" data-anchor-id="load-packages"><span class="header-section-number">10.1</span> Load Packages</h2>
 <p>Let’s begin by loading the packages we need:</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Knowledge Challenge:</strong> What is the purpose of this line of code in the above cell: <code>%matplotlib inline</code>?</p>
-<div id="cell-7" class="cell">
+<div id="cell-7" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plotting graphs below code cells</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -624,10 +621,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reading-in-data" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">10.2</span> Reading-In Data</h2>
 <p>Next, let’s read in the data from the CSV file.</p>
-<div id="cell-10" class="cell">
+<div id="cell-10" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_pnl <span class="op">=</span> pd.read_csv(<span class="st">'spy_2018_call_pnl.csv'</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -736,11 +733,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="wrangling" class="level2" data-number="10.3">
 <h2 data-number="10.3" class="anchored" data-anchor-id="wrangling"><span class="header-section-number">10.3</span> Wrangling</h2>
 <p>First, we will refactor the <code>expiration</code> and <code>data_date</code> columns to <code>datetime</code> using the <code>pd.to_datetime()</code> method.</p>
-<div id="cell-14" class="cell">
+<div id="cell-14" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'expiration'</span>] <span class="op">=</span> pd.to_datetime(df_pnl[<span class="st">'expiration'</span>])</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'data_date'</span>] <span class="op">=</span> pd.to_datetime(df_pnl[<span class="st">'data_date'</span>])</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -845,10 +842,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>We are interested in total pnl, which is the sum of the option pnl and the delta-hedge PNL. Let’s add a column called <code>dly_tot_pnl</code> which captures this logic.</p>
-<div id="cell-16" class="cell">
+<div id="cell-16" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'dly_tot_pnl'</span>] <span class="op">=</span> df_pnl[<span class="st">'dly_opt_pnl'</span>] <span class="op">+</span> df_pnl[<span class="st">'dly_dh_pnl'</span>]</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -959,11 +956,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>As the final step of our wrangling, let’s extract the <code>year</code> and <code>month</code> of the <code>expiration</code>, as this is what we will use for grouping.</p>
-<div id="cell-18" class="cell">
+<div id="cell-18" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'year'</span>] <span class="op">=</span> df_pnl[<span class="st">'expiration'</span>].dt.year</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_pnl[<span class="st">'month'</span>] <span class="op">=</span> df_pnl[<span class="st">'expiration'</span>].dt.month</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df_pnl.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1089,11 +1086,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="groupby-and-agg" class="level2" data-number="10.4">
 <h2 data-number="10.4" class="anchored" data-anchor-id="groupby-and-agg"><span class="header-section-number">10.4</span> <code>groupby()</code> and <code>agg()</code></h2>
 <p>We are interested in graphing the PNLs by expiration, so let’s sum up the <code>dly_tot_pnl</code> by the year and month of the expiration.</p>
-<div id="cell-21" class="cell">
+<div id="cell-21" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_monthly <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    df_pnl.groupby([<span class="st">'year'</span>, <span class="st">'month'</span>])[<span class="st">'dly_tot_pnl'</span>].agg([np.<span class="bu">sum</span>]).reset_index()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_monthly.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -1144,14 +1141,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Before we proceed to graphing, let’s change the name of the aggregated pnl column to something more meaningful.</p>
-<div id="cell-23" class="cell">
+<div id="cell-23" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_monthly.rename(columns<span class="op">=</span>{<span class="st">'sum'</span>:<span class="st">'monthly_pnl'</span>}, inplace<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="visualizing-the-data" class="level2" data-number="10.5">
 <h2 data-number="10.5" class="anchored" data-anchor-id="visualizing-the-data"><span class="header-section-number">10.5</span> Visualizing the Data</h2>
 <p>Creating a simple bar graph of the <code>monthly_pnls</code> in <code>df_monthly</code> can be done easily with a single line of code.</p>
-<div id="cell-26" class="cell">
+<div id="cell-26" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_monthly.plot(x<span class="op">=</span><span class="st">'month'</span>, y<span class="op">=</span><span class="st">'monthly_pnl'</span>, kind<span class="op">=</span><span class="st">'bar'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -1163,7 +1160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>While the above graph may be fine for EDA purposes, it still leaves much to be desired, especially if our intention is to share it with a broader audience.</p>
 <p>The following code makes several of modifications to improve its appearance.</p>
-<div id="cell-28" class="cell">
+<div id="cell-28" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    df_monthly.<span class="op">\</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        plot(</span>
@@ -1190,7 +1187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <hr>
 <p><strong>Code Challenge:</strong> Google and try to find how you create a <em>horizontal</em> bar graph using <strong>pandas</strong>.</p>
-<div id="cell-31" class="cell">
+<div id="cell-31" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Solution</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
@@ -1226,7 +1223,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This is nicely illustrated by comparing our bar graph to the original <code>DataFrame</code> of data. Consider the following question:</p>
 <p><em>What were the two worst PNL months for these SPY calls?</em></p>
 <p>Do you find it easier to answer the question using the bar graph or the table? Explain why.</p>
-<div id="cell-35" class="cell">
+<div id="cell-35" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df_monthly.<span class="op">\</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        plot(</span>
@@ -1251,9 +1248,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="cell-36" class="cell">
+<div id="cell-36" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_monthly</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 

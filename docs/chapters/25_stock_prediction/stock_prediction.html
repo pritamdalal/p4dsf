@@ -638,30 +638,30 @@ window.Quarto = {
 <section id="import-packages" class="level2" data-number="26.1">
 <h2 data-number="26.1" class="anchored" data-anchor-id="import-packages"><span class="header-section-number">26.1</span> Import Packages</h2>
 <p>Let’s begin by loading the packages that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-data" class="level2" data-number="26.2">
 <h2 data-number="26.2" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">26.2</span> Reading-In Data</h2>
 <p>Next, let’s read-in our data. We will start the stocks, whose data we will get from Yahoo Finance.</p>
-<div id="cell-7" class="cell">
+<div id="cell-7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stock_tickers <span class="op">=</span> [<span class="st">'MSFT'</span>, <span class="st">'IBM'</span>, <span class="st">'GOOGL'</span>] <span class="co"># define tickers</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_stock <span class="op">=</span> pdr.get_data_yahoo(stock_tickers, start<span class="op">=</span><span class="st">'2005-01-01'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>) <span class="co"># grab the data</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_stock <span class="op">=</span> df_stock[<span class="st">'Adj Close'</span>] <span class="co"># select only the adjusted close price</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_stock.columns <span class="op">=</span> df_stock.columns.<span class="bu">str</span>.lower() <span class="co"># clean-up column names</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_stock.rename_axis(<span class="st">'trade_date'</span>, inplace<span class="op">=</span><span class="va">True</span>) <span class="co"># clean-up index name</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_stock.rename_axis(<span class="st">''</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>) <span class="co"># clean-up index name</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_stock</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_stock <span class="op">=</span> yf.download(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    stock_tickers, start<span class="op">=</span><span class="st">'2005-01-01'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>, auto_adjust<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_stock <span class="op">=</span> df_stock[<span class="st">'Adj Close'</span>] <span class="co"># select only the adjusted close price</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_stock.columns <span class="op">=</span> df_stock.columns.<span class="bu">str</span>.lower() <span class="co"># clean-up column names</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_stock.rename_axis(<span class="st">'trade_date'</span>, inplace<span class="op">=</span><span class="va">True</span>) <span class="co"># clean-up index name</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df_stock.rename_axis(<span class="st">''</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>) <span class="co"># clean-up index name</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df_stock</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  3 of 3 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -683,33 +683,33 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-03</td>
-<td>5.072823</td>
-<td>53.707920</td>
-<td>18.732994</td>
+<td>5.038075</td>
+<td>50.237457</td>
+<td>18.454882</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-04</td>
-<td>4.867367</td>
-<td>53.131016</td>
-<td>18.803059</td>
+<td>4.834026</td>
+<td>49.697807</td>
+<td>18.523899</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-05</td>
-<td>4.842593</td>
-<td>53.021130</td>
-<td>18.761021</td>
+<td>4.809422</td>
+<td>49.595036</td>
+<td>18.482494</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-06</td>
-<td>4.718468</td>
-<td>52.856297</td>
-<td>18.740002</td>
+<td>4.686148</td>
+<td>49.440838</td>
+<td>18.461788</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-07</td>
-<td>4.851101</td>
-<td>52.625530</td>
-<td>18.683958</td>
+<td>4.817871</td>
+<td>49.224983</td>
+<td>18.406574</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -719,33 +719,33 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
-<td>134.035004</td>
-<td>122.236877</td>
-<td>283.364075</td>
+<td>133.116898</td>
+<td>114.338173</td>
+<td>279.157135</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
-<td>131.899994</td>
-<td>122.219757</td>
-<td>280.903412</td>
+<td>130.996506</td>
+<td>114.322159</td>
+<td>276.733093</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
-<td>136.093994</td>
-<td>121.380692</td>
-<td>280.589722</td>
+<td>135.161789</td>
+<td>113.537315</td>
+<td>276.424042</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
-<td>135.777496</td>
-<td>121.517693</td>
-<td>280.864197</td>
+<td>134.847443</td>
+<td>113.665489</td>
+<td>276.694427</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
-<td>134.726501</td>
-<td>120.687180</td>
-<td>279.305511</td>
+<td>133.803650</td>
+<td>112.888634</td>
+<td>275.158813</td>
 </tr>
 </tbody>
 </table>
@@ -755,15 +755,21 @@ window.Quarto = {
 </div>
 </div>
 <p>Next we’ll grab currency data from FRED.</p>
-<div id="cell-9" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>currency_tickers <span class="op">=</span> [<span class="st">'DEXJPUS'</span>, <span class="st">'DEXUSUK'</span>]</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_currency <span class="op">=</span> pdr.get_data_fred(currency_tickers, start<span class="op">=</span><span class="st">'2005-01-01'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_currency <span class="op">=</span> df_currency</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>df_currency.columns <span class="op">=</span> df_currency.columns.<span class="bu">str</span>.lower()</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>df_currency.rename_axis(<span class="st">'trade_date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>df_currency.rename_axis(<span class="st">''</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>df_currency</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-9" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>currency_tickers <span class="op">=</span> [<span class="st">'JPY=X'</span>, <span class="st">'GBPUSD=X'</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_currency <span class="op">=</span> yf.download(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    currency_tickers, start<span class="op">=</span><span class="st">'2005-01-01'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    auto_adjust<span class="op">=</span><span class="va">False</span>, ignore_tz<span class="op">=</span><span class="va">True</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>df_currency <span class="op">=</span> df_currency[<span class="st">'Adj Close'</span>]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>df_currency.columns <span class="op">=</span> df_currency.columns.<span class="bu">str</span>.lower()</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>df_currency.rename_axis(<span class="st">'trade_date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>df_currency.rename_axis(<span class="st">''</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df_currency</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>[*********************100%***********************]  2 of 2 completed</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
@@ -771,8 +777,8 @@ window.Quarto = {
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">dexjpus</th>
-<th data-quarto-table-cell-role="th">dexusuk</th>
+<th data-quarto-table-cell-role="th">gbpusd=x</th>
+<th data-quarto-table-cell-role="th">jpy=x</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">trade_date</th>
@@ -783,28 +789,28 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-03</td>
-<td>102.83</td>
-<td>1.9058</td>
+<td>1.904617</td>
+<td>102.739998</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-04</td>
-<td>104.27</td>
-<td>1.8834</td>
+<td>1.883594</td>
+<td>104.339996</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-05</td>
-<td>103.95</td>
-<td>1.8875</td>
+<td>1.885512</td>
+<td>103.930000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-06</td>
-<td>104.87</td>
-<td>1.8751</td>
+<td>1.876490</td>
+<td>104.889999</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-07</td>
-<td>104.93</td>
-<td>1.8702</td>
+<td>1.871293</td>
+<td>104.889999</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -813,49 +819,51 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
-<td>110.31</td>
-<td>1.3829</td>
+<td>1.375781</td>
+<td>110.543999</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
-<td>109.64</td>
-<td>1.3884</td>
+<td>1.382915</td>
+<td>110.302002</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
-<td>110.06</td>
-<td>1.3884</td>
+<td>1.388272</td>
+<td>109.806000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
-<td>109.53</td>
-<td>1.3966</td>
+<td>1.390685</td>
+<td>109.890999</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
-<td>109.70</td>
-<td>1.3913</td>
+<td>1.396433</td>
+<td>109.408997</td>
 </tr>
 </tbody>
 </table>
 
-<p>4325 rows × 2 columns</p>
+<p>4313 rows × 2 columns</p>
 </div>
 </div>
 </div>
 <p>Finally, we’ll grab index data from Yahoo Finance.</p>
-<div id="cell-11" class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>index_tickers <span class="op">=</span> [<span class="st">'SPY'</span>, <span class="st">'DIA'</span>, <span class="st">'^VIX'</span>] </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df_index <span class="op">=</span> pdr.get_data_yahoo(index_tickers, start<span class="op">=</span><span class="st">'2005-01-01'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_index <span class="op">=</span> df_index[<span class="st">'Adj Close'</span>]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>df_index.columns <span class="op">=</span> df_index.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">'^'</span>, <span class="st">''</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>df_index.rename_axis(<span class="st">'trade_date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df_index.rename_axis(<span class="st">''</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df_index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-11" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>index_tickers <span class="op">=</span> [<span class="st">'SPY'</span>, <span class="st">'DIA'</span>, <span class="st">'^VIX'</span>] </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_index <span class="op">=</span> yf.download(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    index_tickers, start<span class="op">=</span><span class="st">'2005-01-01'</span>, end<span class="op">=</span><span class="st">'2021-07-31'</span>, auto_adjust<span class="op">=</span><span class="va">False</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df_index <span class="op">=</span> df_index[<span class="st">'Adj Close'</span>]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>df_index.columns <span class="op">=</span> df_index.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">'^'</span>, <span class="st">''</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df_index.rename_axis(<span class="st">'trade_date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df_index.rename_axis(<span class="st">''</span>, axis<span class="op">=</span><span class="dv">1</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>df_index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  3 of 3 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
@@ -877,32 +885,32 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-03</td>
-<td>70.050133</td>
-<td>84.258598</td>
+<td>67.762741</td>
+<td>82.074028</td>
 <td>14.080000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-04</td>
-<td>69.384399</td>
-<td>83.228989</td>
+<td>67.118698</td>
+<td>81.071129</td>
 <td>13.980000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-05</td>
-<td>68.999268</td>
-<td>82.654648</td>
+<td>66.746147</td>
+<td>80.511711</td>
 <td>14.090000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-06</td>
-<td>69.214714</td>
-<td>83.074913</td>
+<td>66.954521</td>
+<td>80.921043</td>
 <td>13.580000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-07</td>
-<td>69.084152</td>
-<td>82.955833</td>
+<td>66.828232</td>
+<td>80.805061</td>
 <td>13.490000</td>
 </tr>
 <tr class="even">
@@ -913,32 +921,32 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
-<td>337.707458</td>
-<td>427.850800</td>
+<td>326.679840</td>
+<td>416.758026</td>
 <td>17.580000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
-<td>336.948181</td>
-<td>425.900879</td>
+<td>325.945343</td>
+<td>414.858612</td>
 <td>19.360001</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
-<td>335.737305</td>
-<td>425.726227</td>
+<td>324.773987</td>
+<td>414.688538</td>
 <td>18.309999</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
-<td>337.140411</td>
-<td>427.491821</td>
+<td>326.131287</td>
+<td>416.408417</td>
 <td>17.700001</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
-<td>335.852661</td>
-<td>425.415710</td>
+<td>324.885620</td>
+<td>414.386200</td>
 <td>18.240000</td>
 </tr>
 </tbody>
@@ -952,27 +960,27 @@ window.Quarto = {
 <section id="join-and-clean-data" class="level2" data-number="26.3">
 <h2 data-number="26.3" class="anchored" data-anchor-id="join-and-clean-data"><span class="header-section-number">26.3</span> Join and Clean Data</h2>
 <p>Now we can join together our price data and convert it into returns (we actually use differences for VIX as these are more stationary). Notice that we are implicitly adding a time series component to our regression by adding lagged <code>msft</code> returns as a feature.</p>
-<div id="cell-14" class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_data <span class="op">=</span> <span class="op">\</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    (</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    df_stock</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        .merge(df_index, how<span class="op">=</span><span class="st">'left'</span>, left_index<span class="op">=</span><span class="va">True</span>, right_index<span class="op">=</span><span class="va">True</span>) <span class="co"># join currency data</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        .merge(df_currency, how<span class="op">=</span><span class="st">'left'</span>, left_index<span class="op">=</span><span class="va">True</span>, right_index<span class="op">=</span><span class="va">True</span>) <span class="co"># join index data</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        .dropna()</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        .assign(msft <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'msft'</span>].pct_change())   <span class="co"># percent change</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        .assign(msft_lag_0 <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'msft'</span>].shift(<span class="dv">0</span>)) <span class="co">#</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        .assign(msft_lag_1 <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'msft'</span>].shift(<span class="dv">1</span>)) <span class="co">#</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        .assign(ibm <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'ibm'</span>].pct_change())     <span class="co">#</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        .assign(googl <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'googl'</span>].pct_change()) <span class="co">#</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        .assign(spy <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'spy'</span>].pct_change())     <span class="co">#</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        .assign(dia <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'dia'</span>].pct_change())     <span class="co">#</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        .assign(vix <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'vix'</span>].diff())           <span class="co"># absolute change</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        .assign(dexjpus <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'dexjpus'</span>].pct_change()) <span class="co"># percent change</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        .assign(dexusuk <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'dexusuk'</span>].pct_change()) <span class="co">#</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        .dropna()</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>df_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-14" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_data <span class="op">=</span> <span class="op">\</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    (</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    df_stock</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        .merge(df_index, how<span class="op">=</span><span class="st">'left'</span>, left_index<span class="op">=</span><span class="va">True</span>, right_index<span class="op">=</span><span class="va">True</span>) <span class="co"># join currency data</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        .merge(df_currency, how<span class="op">=</span><span class="st">'left'</span>, left_index<span class="op">=</span><span class="va">True</span>, right_index<span class="op">=</span><span class="va">True</span>) <span class="co"># join index data</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        .dropna()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        .assign(msft <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'msft'</span>].pct_change())   <span class="co"># percent change</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        .assign(msft_lag_0 <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'msft'</span>].shift(<span class="dv">0</span>)) <span class="co">#</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        .assign(msft_lag_1 <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'msft'</span>].shift(<span class="dv">1</span>)) <span class="co">#</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        .assign(ibm <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'ibm'</span>].pct_change())     <span class="co">#</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        .assign(googl <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'googl'</span>].pct_change()) <span class="co">#</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        .assign(spy <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'spy'</span>].pct_change())     <span class="co">#</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        .assign(dia <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'dia'</span>].pct_change())     <span class="co">#</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        .assign(vix <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'vix'</span>].diff())           <span class="co"># absolute change</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        .assign(dexjpus <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'jpy=x'</span>].pct_change()) <span class="co"># percent change</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        .assign(dexusuk <span class="op">=</span> <span class="kw">lambda</span> df: df[<span class="st">'gbpusd=x'</span>].pct_change()) <span class="co">#</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        .dropna()</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>df_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -986,13 +994,17 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th">dia</th>
 <th data-quarto-table-cell-role="th">spy</th>
 <th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">dexjpus</th>
-<th data-quarto-table-cell-role="th">dexusuk</th>
+<th data-quarto-table-cell-role="th">gbpusd=x</th>
+<th data-quarto-table-cell-role="th">jpy=x</th>
 <th data-quarto-table-cell-role="th">msft_lag_0</th>
 <th data-quarto-table-cell-role="th">msft_lag_1</th>
+<th data-quarto-table-cell-role="th">dexjpus</th>
+<th data-quarto-table-cell-role="th">dexusuk</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1010,14 +1022,16 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2005-01-05</td>
 <td>-0.005090</td>
 <td>-0.002068</td>
-<td>-0.002236</td>
+<td>-0.002235</td>
 <td>-0.005551</td>
-<td>-0.006901</td>
+<td>-0.006900</td>
 <td>0.110001</td>
-<td>-0.003069</td>
-<td>0.002177</td>
-<td>-0.002236</td>
+<td>1.885512</td>
+<td>103.930000</td>
+<td>-0.002235</td>
 <td>0.003740</td>
+<td>-0.003929</td>
+<td>0.001018</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-06</td>
@@ -1025,12 +1039,14 @@ window.Quarto = {
 <td>-0.003109</td>
 <td>-0.001120</td>
 <td>0.003122</td>
-<td>0.005085</td>
+<td>0.005084</td>
 <td>-0.510000</td>
-<td>0.008850</td>
-<td>-0.006570</td>
+<td>1.876490</td>
+<td>104.889999</td>
 <td>-0.001120</td>
-<td>-0.002236</td>
+<td>-0.002235</td>
+<td>0.009237</td>
+<td>-0.004785</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-07</td>
@@ -1040,39 +1056,47 @@ window.Quarto = {
 <td>-0.001886</td>
 <td>-0.001433</td>
 <td>-0.090000</td>
-<td>0.000572</td>
-<td>-0.002613</td>
+<td>1.871293</td>
+<td>104.889999</td>
 <td>-0.002991</td>
 <td>-0.001120</td>
+<td>0.000000</td>
+<td>-0.002769</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-10</td>
 <td>0.006242</td>
 <td>-0.001044</td>
-<td>0.004875</td>
+<td>0.004874</td>
 <td>0.003401</td>
-<td>0.004729</td>
+<td>0.004728</td>
 <td>-0.260000</td>
-<td>-0.005813</td>
-<td>0.002620</td>
-<td>0.004875</td>
+<td>1.876912</td>
+<td>104.169998</td>
+<td>0.004874</td>
 <td>-0.002991</td>
+<td>-0.006864</td>
+<td>0.003003</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-11</td>
-<td>-0.007793</td>
+<td>-0.007792</td>
 <td>-0.007107</td>
 <td>-0.002612</td>
-<td>-0.006404</td>
-<td>-0.006891</td>
+<td>-0.006403</td>
+<td>-0.006890</td>
 <td>-0.040000</td>
-<td>-0.008627</td>
-<td>0.002400</td>
+<td>1.878605</td>
+<td>103.419998</td>
 <td>-0.002612</td>
-<td>0.004875</td>
+<td>0.004874</td>
+<td>-0.007200</td>
+<td>0.000902</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1087,28 +1111,32 @@ window.Quarto = {
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
 <td>0.007668</td>
-<td>0.010118</td>
+<td>0.010117</td>
 <td>-0.002140</td>
 <td>0.002396</td>
 <td>0.002455</td>
 <td>0.379999</td>
-<td>-0.001900</td>
-<td>0.005819</td>
+<td>1.375781</td>
+<td>110.543999</td>
 <td>-0.002140</td>
-<td>0.012337</td>
+<td>0.012336</td>
+<td>0.003668</td>
+<td>-0.001168</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
 <td>-0.015929</td>
 <td>-0.000140</td>
-<td>-0.008684</td>
+<td>-0.008683</td>
 <td>-0.002248</td>
-<td>-0.004557</td>
+<td>-0.004558</td>
 <td>1.780001</td>
-<td>-0.006074</td>
-<td>0.003977</td>
-<td>-0.008684</td>
+<td>1.382915</td>
+<td>110.302002</td>
+<td>-0.008683</td>
 <td>-0.002140</td>
+<td>-0.002189</td>
+<td>0.005186</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
@@ -1118,10 +1146,12 @@ window.Quarto = {
 <td>-0.003594</td>
 <td>-0.000410</td>
 <td>-1.050001</td>
-<td>0.003831</td>
-<td>0.000000</td>
+<td>1.388272</td>
+<td>109.806000</td>
 <td>-0.001117</td>
-<td>-0.008684</td>
+<td>-0.008683</td>
+<td>-0.004497</td>
+<td>0.003873</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
@@ -1131,10 +1161,12 @@ window.Quarto = {
 <td>0.004179</td>
 <td>0.004147</td>
 <td>-0.609999</td>
-<td>-0.004816</td>
-<td>0.005906</td>
+<td>1.390685</td>
+<td>109.890999</td>
 <td>0.000978</td>
 <td>-0.001117</td>
+<td>0.000774</td>
+<td>0.001738</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
@@ -1144,15 +1176,17 @@ window.Quarto = {
 <td>-0.003820</td>
 <td>-0.004856</td>
 <td>0.539999</td>
-<td>0.001552</td>
-<td>-0.003795</td>
+<td>1.396433</td>
+<td>109.408997</td>
 <td>-0.005550</td>
 <td>0.000978</td>
+<td>-0.004386</td>
+<td>0.004133</td>
 </tr>
 </tbody>
 </table>
 
-<p>4132 rows × 10 columns</p>
+<p>4140 rows × 12 columns</p>
 </div>
 </div>
 </div>
@@ -1160,10 +1194,10 @@ window.Quarto = {
 <section id="training-set-and-testing-set" class="level2" data-number="26.4">
 <h2 data-number="26.4" class="anchored" data-anchor-id="training-set-and-testing-set"><span class="header-section-number">26.4</span> Training Set and Testing Set</h2>
 <p>We’ll train our models on data prior to 2016, and then we’ll use data from 2016 onward for testing. So let’s separate out these two subsets of data.</p>
-<div id="cell-17" class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> df_data.query(<span class="st">'trade_date &lt; "2016-01-01"'</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-17" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> df_data.query(<span class="st">'trade_date &lt; "2016-01-01"'</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1177,13 +1211,17 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th">dia</th>
 <th data-quarto-table-cell-role="th">spy</th>
 <th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">dexjpus</th>
-<th data-quarto-table-cell-role="th">dexusuk</th>
+<th data-quarto-table-cell-role="th">gbpusd=x</th>
+<th data-quarto-table-cell-role="th">jpy=x</th>
 <th data-quarto-table-cell-role="th">msft_lag_0</th>
 <th data-quarto-table-cell-role="th">msft_lag_1</th>
+<th data-quarto-table-cell-role="th">dexjpus</th>
+<th data-quarto-table-cell-role="th">dexusuk</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1201,14 +1239,16 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2005-01-05</td>
 <td>-0.005090</td>
 <td>-0.002068</td>
-<td>-0.002236</td>
+<td>-0.002235</td>
 <td>-0.005551</td>
-<td>-0.006901</td>
+<td>-0.006900</td>
 <td>0.110001</td>
-<td>-0.003069</td>
-<td>0.002177</td>
-<td>-0.002236</td>
+<td>1.885512</td>
+<td>103.930000</td>
+<td>-0.002235</td>
 <td>0.003740</td>
+<td>-0.003929</td>
+<td>0.001018</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-06</td>
@@ -1216,12 +1256,14 @@ window.Quarto = {
 <td>-0.003109</td>
 <td>-0.001120</td>
 <td>0.003122</td>
-<td>0.005085</td>
+<td>0.005084</td>
 <td>-0.510000</td>
-<td>0.008850</td>
-<td>-0.006570</td>
+<td>1.876490</td>
+<td>104.889999</td>
 <td>-0.001120</td>
-<td>-0.002236</td>
+<td>-0.002235</td>
+<td>0.009237</td>
+<td>-0.004785</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-07</td>
@@ -1231,39 +1273,47 @@ window.Quarto = {
 <td>-0.001886</td>
 <td>-0.001433</td>
 <td>-0.090000</td>
-<td>0.000572</td>
-<td>-0.002613</td>
+<td>1.871293</td>
+<td>104.889999</td>
 <td>-0.002991</td>
 <td>-0.001120</td>
+<td>0.000000</td>
+<td>-0.002769</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-10</td>
 <td>0.006242</td>
 <td>-0.001044</td>
-<td>0.004875</td>
+<td>0.004874</td>
 <td>0.003401</td>
-<td>0.004729</td>
+<td>0.004728</td>
 <td>-0.260000</td>
-<td>-0.005813</td>
-<td>0.002620</td>
-<td>0.004875</td>
+<td>1.876912</td>
+<td>104.169998</td>
+<td>0.004874</td>
 <td>-0.002991</td>
+<td>-0.006864</td>
+<td>0.003003</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-11</td>
-<td>-0.007793</td>
+<td>-0.007792</td>
 <td>-0.007107</td>
 <td>-0.002612</td>
-<td>-0.006404</td>
-<td>-0.006891</td>
+<td>-0.006403</td>
+<td>-0.006890</td>
 <td>-0.040000</td>
-<td>-0.008627</td>
-<td>0.002400</td>
+<td>1.878605</td>
+<td>103.419998</td>
 <td>-0.002612</td>
-<td>0.004875</td>
+<td>0.004874</td>
+<td>-0.007200</td>
+<td>0.000902</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1280,26 +1330,30 @@ window.Quarto = {
 <td>-0.003474</td>
 <td>-0.002093</td>
 <td>-0.002687</td>
-<td>-0.003357</td>
+<td>-0.003356</td>
 <td>-0.001650</td>
 <td>0.170000</td>
-<td>-0.005127</td>
-<td>0.005382</td>
+<td>1.487697</td>
+<td>120.934998</td>
 <td>-0.002687</td>
 <td>0.008491</td>
+<td>-0.000785</td>
+<td>0.003615</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2015-12-28</td>
 <td>0.021414</td>
 <td>-0.004629</td>
 <td>0.005030</td>
-<td>-0.001369</td>
+<td>-0.001370</td>
 <td>-0.002285</td>
 <td>1.170000</td>
-<td>-0.000166</td>
-<td>-0.004015</td>
+<td>1.493206</td>
+<td>120.231003</td>
 <td>0.005030</td>
 <td>-0.002687</td>
+<td>-0.005821</td>
+<td>0.003703</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2015-12-29</td>
@@ -1309,48 +1363,54 @@ window.Quarto = {
 <td>0.011430</td>
 <td>0.010672</td>
 <td>-0.830000</td>
-<td>0.001164</td>
-<td>-0.005980</td>
+<td>1.489403</td>
+<td>120.349998</td>
 <td>0.010724</td>
 <td>0.005030</td>
+<td>0.000990</td>
+<td>-0.002547</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2015-12-30</td>
 <td>-0.004610</td>
 <td>-0.003148</td>
 <td>-0.004244</td>
-<td>-0.006667</td>
+<td>-0.006668</td>
 <td>-0.007088</td>
 <td>1.210001</td>
-<td>0.001328</td>
-<td>0.002569</td>
+<td>1.482228</td>
+<td>120.528999</td>
 <td>-0.004244</td>
 <td>0.010724</td>
+<td>0.001487</td>
+<td>-0.004817</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2015-12-31</td>
 <td>-0.015551</td>
 <td>-0.012344</td>
 <td>-0.014740</td>
-<td>-0.010296</td>
-<td>-0.010003</td>
+<td>-0.010295</td>
+<td>-0.010004</td>
 <td>0.919998</td>
-<td>-0.002736</td>
-<td>-0.005798</td>
+<td>1.481921</td>
+<td>120.449997</td>
 <td>-0.014740</td>
 <td>-0.004244</td>
+<td>-0.000655</td>
+<td>-0.000207</td>
 </tr>
 </tbody>
 </table>
 
-<p>2745 rows × 10 columns</p>
+<p>2739 rows × 12 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-18" class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_test <span class="op">=</span> df_data.query(<span class="st">'trade_date &gt;= "2016-01-01"'</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-18" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_test <span class="op">=</span> df_data.query(<span class="st">'trade_date &gt;= "2016-01-01"'</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>df_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -1364,13 +1424,17 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th">dia</th>
 <th data-quarto-table-cell-role="th">spy</th>
 <th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">dexjpus</th>
-<th data-quarto-table-cell-role="th">dexusuk</th>
+<th data-quarto-table-cell-role="th">gbpusd=x</th>
+<th data-quarto-table-cell-role="th">jpy=x</th>
 <th data-quarto-table-cell-role="th">msft_lag_0</th>
 <th data-quarto-table-cell-role="th">msft_lag_1</th>
+<th data-quarto-table-cell-role="th">dexjpus</th>
+<th data-quarto-table-cell-role="th">dexusuk</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1389,68 +1453,80 @@ window.Quarto = {
 <td>-0.023869</td>
 <td>-0.012135</td>
 <td>-0.012257</td>
-<td>-0.015517</td>
-<td>-0.013980</td>
+<td>-0.015519</td>
+<td>-0.013979</td>
 <td>2.490002</td>
-<td>-0.008065</td>
-<td>-0.004069</td>
+<td>1.473709</td>
+<td>120.310997</td>
 <td>-0.012257</td>
 <td>-0.014740</td>
+<td>-0.001154</td>
+<td>-0.005541</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2016-01-05</td>
 <td>0.002752</td>
 <td>-0.000736</td>
 <td>0.004562</td>
-<td>0.000583</td>
-<td>0.001691</td>
+<td>0.000584</td>
+<td>0.001692</td>
 <td>-1.360001</td>
-<td>-0.002934</td>
-<td>-0.001498</td>
+<td>1.471410</td>
+<td>119.467003</td>
 <td>0.004562</td>
 <td>-0.012257</td>
+<td>-0.007015</td>
+<td>-0.001560</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-06</td>
 <td>-0.002889</td>
-<td>-0.005006</td>
+<td>-0.005005</td>
 <td>-0.018165</td>
-<td>-0.014295</td>
-<td>-0.012614</td>
+<td>-0.014294</td>
+<td>-0.012615</td>
 <td>1.250000</td>
-<td>-0.003447</td>
-<td>-0.002591</td>
+<td>1.467394</td>
+<td>119.101997</td>
 <td>-0.018165</td>
 <td>0.004562</td>
+<td>-0.003055</td>
+<td>-0.002729</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2016-01-07</td>
 <td>-0.024140</td>
 <td>-0.017089</td>
 <td>-0.034783</td>
-<td>-0.023558</td>
+<td>-0.023559</td>
 <td>-0.023991</td>
 <td>4.400000</td>
-<td>-0.004555</td>
-<td>-0.003213</td>
+<td>1.462994</td>
+<td>118.610001</td>
 <td>-0.034783</td>
 <td>-0.018165</td>
+<td>-0.004131</td>
+<td>-0.002999</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-08</td>
 <td>-0.013617</td>
 <td>-0.009258</td>
 <td>0.003067</td>
-<td>-0.010427</td>
+<td>-0.010426</td>
 <td>-0.010977</td>
 <td>2.020000</td>
-<td>-0.002203</td>
-<td>-0.003841</td>
+<td>1.462694</td>
+<td>117.540001</td>
 <td>0.003067</td>
 <td>-0.034783</td>
+<td>-0.009021</td>
+<td>-0.000205</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1465,28 +1541,32 @@ window.Quarto = {
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
 <td>0.007668</td>
-<td>0.010118</td>
+<td>0.010117</td>
 <td>-0.002140</td>
 <td>0.002396</td>
 <td>0.002455</td>
 <td>0.379999</td>
-<td>-0.001900</td>
-<td>0.005819</td>
+<td>1.375781</td>
+<td>110.543999</td>
 <td>-0.002140</td>
-<td>0.012337</td>
+<td>0.012336</td>
+<td>0.003668</td>
+<td>-0.001168</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
 <td>-0.015929</td>
 <td>-0.000140</td>
-<td>-0.008684</td>
+<td>-0.008683</td>
 <td>-0.002248</td>
-<td>-0.004557</td>
+<td>-0.004558</td>
 <td>1.780001</td>
-<td>-0.006074</td>
-<td>0.003977</td>
-<td>-0.008684</td>
+<td>1.382915</td>
+<td>110.302002</td>
+<td>-0.008683</td>
 <td>-0.002140</td>
+<td>-0.002189</td>
+<td>0.005186</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
@@ -1496,10 +1576,12 @@ window.Quarto = {
 <td>-0.003594</td>
 <td>-0.000410</td>
 <td>-1.050001</td>
-<td>0.003831</td>
-<td>0.000000</td>
+<td>1.388272</td>
+<td>109.806000</td>
 <td>-0.001117</td>
-<td>-0.008684</td>
+<td>-0.008683</td>
+<td>-0.004497</td>
+<td>0.003873</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
@@ -1509,10 +1591,12 @@ window.Quarto = {
 <td>0.004179</td>
 <td>0.004147</td>
 <td>-0.609999</td>
-<td>-0.004816</td>
-<td>0.005906</td>
+<td>1.390685</td>
+<td>109.890999</td>
 <td>0.000978</td>
 <td>-0.001117</td>
+<td>0.000774</td>
+<td>0.001738</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-30</td>
@@ -1522,15 +1606,17 @@ window.Quarto = {
 <td>-0.003820</td>
 <td>-0.004856</td>
 <td>0.539999</td>
-<td>0.001552</td>
-<td>-0.003795</td>
+<td>1.396433</td>
+<td>109.408997</td>
 <td>-0.005550</td>
 <td>0.000978</td>
+<td>-0.004386</td>
+<td>0.004133</td>
 </tr>
 </tbody>
 </table>
 
-<p>1387 rows × 10 columns</p>
+<p>1401 rows × 12 columns</p>
 </div>
 </div>
 </div>
@@ -1538,10 +1624,10 @@ window.Quarto = {
 <section id="training" class="level2" data-number="26.5">
 <h2 data-number="26.5" class="anchored" data-anchor-id="training"><span class="header-section-number">26.5</span> Training</h2>
 <p>In order to train our model, we first put our training features into <code>X_train</code> and our training labels into <code>y_train</code></p>
-<div id="cell-21" class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> df_train.drop(columns<span class="op">=</span>[<span class="st">'msft'</span>])[<span class="dv">0</span>:<span class="bu">len</span>(df_train)<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>X_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-21" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> df_train.drop(columns<span class="op">=</span>[<span class="st">'msft'</span>])[<span class="dv">0</span>:<span class="bu">len</span>(df_train)<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>X_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
@@ -1554,13 +1640,17 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th">dia</th>
 <th data-quarto-table-cell-role="th">spy</th>
 <th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">dexjpus</th>
-<th data-quarto-table-cell-role="th">dexusuk</th>
+<th data-quarto-table-cell-role="th">gbpusd=x</th>
+<th data-quarto-table-cell-role="th">jpy=x</th>
 <th data-quarto-table-cell-role="th">msft_lag_0</th>
 <th data-quarto-table-cell-role="th">msft_lag_1</th>
+<th data-quarto-table-cell-role="th">dexjpus</th>
+<th data-quarto-table-cell-role="th">dexusuk</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1578,24 +1668,28 @@ window.Quarto = {
 <td>-0.005090</td>
 <td>-0.002068</td>
 <td>-0.005551</td>
-<td>-0.006901</td>
+<td>-0.006900</td>
 <td>0.110001</td>
-<td>-0.003069</td>
-<td>0.002177</td>
-<td>-0.002236</td>
+<td>1.885512</td>
+<td>103.930000</td>
+<td>-0.002235</td>
 <td>0.003740</td>
+<td>-0.003929</td>
+<td>0.001018</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-06</td>
 <td>-0.025632</td>
 <td>-0.003109</td>
 <td>0.003122</td>
-<td>0.005085</td>
+<td>0.005084</td>
 <td>-0.510000</td>
-<td>0.008850</td>
-<td>-0.006570</td>
+<td>1.876490</td>
+<td>104.889999</td>
 <td>-0.001120</td>
-<td>-0.002236</td>
+<td>-0.002235</td>
+<td>0.009237</td>
+<td>-0.004785</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-07</td>
@@ -1604,37 +1698,45 @@ window.Quarto = {
 <td>-0.001886</td>
 <td>-0.001433</td>
 <td>-0.090000</td>
-<td>0.000572</td>
-<td>-0.002613</td>
+<td>1.871293</td>
+<td>104.889999</td>
 <td>-0.002991</td>
 <td>-0.001120</td>
+<td>0.000000</td>
+<td>-0.002769</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-10</td>
 <td>0.006242</td>
 <td>-0.001044</td>
 <td>0.003401</td>
-<td>0.004729</td>
+<td>0.004728</td>
 <td>-0.260000</td>
-<td>-0.005813</td>
-<td>0.002620</td>
-<td>0.004875</td>
+<td>1.876912</td>
+<td>104.169998</td>
+<td>0.004874</td>
 <td>-0.002991</td>
+<td>-0.006864</td>
+<td>0.003003</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-11</td>
-<td>-0.007793</td>
+<td>-0.007792</td>
 <td>-0.007107</td>
-<td>-0.006404</td>
-<td>-0.006891</td>
+<td>-0.006403</td>
+<td>-0.006890</td>
 <td>-0.040000</td>
-<td>-0.008627</td>
-<td>0.002400</td>
+<td>1.878605</td>
+<td>103.419998</td>
 <td>-0.002612</td>
-<td>0.004875</td>
+<td>0.004874</td>
+<td>-0.007200</td>
+<td>0.000902</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1652,34 +1754,40 @@ window.Quarto = {
 <td>0.010344</td>
 <td>0.012383</td>
 <td>-1.030001</td>
-<td>0.000000</td>
-<td>0.003511</td>
+<td>1.482338</td>
+<td>121.029999</td>
 <td>0.008491</td>
 <td>0.009484</td>
+<td>-0.001452</td>
+<td>-0.004936</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2015-12-24</td>
 <td>-0.003474</td>
 <td>-0.002093</td>
-<td>-0.003357</td>
+<td>-0.003356</td>
 <td>-0.001650</td>
 <td>0.170000</td>
-<td>-0.005127</td>
-<td>0.005382</td>
+<td>1.487697</td>
+<td>120.934998</td>
 <td>-0.002687</td>
 <td>0.008491</td>
+<td>-0.000785</td>
+<td>0.003615</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2015-12-28</td>
 <td>0.021414</td>
 <td>-0.004629</td>
-<td>-0.001369</td>
+<td>-0.001370</td>
 <td>-0.002285</td>
 <td>1.170000</td>
-<td>-0.000166</td>
-<td>-0.004015</td>
+<td>1.493206</td>
+<td>120.231003</td>
 <td>0.005030</td>
 <td>-0.002687</td>
+<td>-0.005821</td>
+<td>0.003703</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2015-12-29</td>
@@ -1688,35 +1796,39 @@ window.Quarto = {
 <td>0.011430</td>
 <td>0.010672</td>
 <td>-0.830000</td>
-<td>0.001164</td>
-<td>-0.005980</td>
+<td>1.489403</td>
+<td>120.349998</td>
 <td>0.010724</td>
 <td>0.005030</td>
+<td>0.000990</td>
+<td>-0.002547</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2015-12-30</td>
 <td>-0.004610</td>
 <td>-0.003148</td>
-<td>-0.006667</td>
+<td>-0.006668</td>
 <td>-0.007088</td>
 <td>1.210001</td>
-<td>0.001328</td>
-<td>0.002569</td>
+<td>1.482228</td>
+<td>120.528999</td>
 <td>-0.004244</td>
 <td>0.010724</td>
+<td>0.001487</td>
+<td>-0.004817</td>
 </tr>
 </tbody>
 </table>
 
-<p>2744 rows × 9 columns</p>
+<p>2738 rows × 11 columns</p>
 </div>
 </div>
 </div>
 <p>Notice that the label we are predicting is the <em>next</em> day <code>msft</code> return; the features we are using to predict are the <em>current</em> day returns of the various correlated assets.</p>
-<div id="cell-23" class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> df_train[[<span class="st">'msft'</span>]][<span class="dv">1</span>:<span class="bu">len</span>(df_train)]</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>y_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-23" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> df_train[[<span class="st">'msft'</span>]][<span class="dv">1</span>:<span class="bu">len</span>(df_train)]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>y_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -1742,7 +1854,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-10</td>
-<td>0.004875</td>
+<td>0.004874</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2005-01-11</td>
@@ -1750,7 +1862,7 @@ window.Quarto = {
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2005-01-12</td>
-<td>0.001870</td>
+<td>0.001871</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -1779,34 +1891,438 @@ window.Quarto = {
 </tbody>
 </table>
 
-<p>2744 rows × 1 columns</p>
+<p>2738 rows × 1 columns</p>
 </div>
 </div>
 </div>
 <section id="linear-regression" class="level3" data-number="26.5.1">
 <h3 data-number="26.5.1" class="anchored" data-anchor-id="linear-regression"><span class="header-section-number">26.5.1</span> Linear Regression</h3>
 <p>Let’s first fit a simple linear regression to our training data.</p>
-<div id="cell-26" class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>linear_regression <span class="op">=</span> LinearRegression()</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>linear_regression.fit(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">LinearRegression</label><div class="sk-toggleable__content"><pre>LinearRegression()</pre></div></div></div></div></div>
+<div id="cell-26" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>linear_regression <span class="op">=</span> LinearRegression()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>linear_regression.fit(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LinearRegression()</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked=""><label for="sk-estimator-id-1" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;&nbsp;LinearRegression<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html">?<span>Documentation for LinearRegression</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>LinearRegression()</pre></div> </div></div></div></div>
 </div>
 </div>
 <p>Recall that the <code>.score()</code> of a Linear Regression gives the <span class="math inline">\(R^2\)</span>.</p>
-<div id="cell-28" class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR R^2:"</span>, linear_regression.score(X_train, y_train))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-28" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR R^2:"</span>, linear_regression.score(X_train, y_train))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>LR R^2: 0.017818077856861736</code></pre>
+<pre><code>LR R^2: 0.017959337955331</code></pre>
 </div>
 </div>
 <p>We can also examine the coefficients of our model.</p>
-<div id="cell-30" class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">round</span>(linear_regression.coef_, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>array([[ 0.004, -0.027,  0.288, -0.432,  0.   ,  0.105, -0.006,  0.031,
-        -0.027]])</code></pre>
+<div id="cell-30" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>np.<span class="bu">round</span>(linear_regression.coef_, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>array([[ 0.002, -0.016,  0.214, -0.328,  0.   , -0.003,  0.   ,  0.012,
+        -0.048, -0.002, -0.002]])</code></pre>
 </div>
 </div>
 <hr>
@@ -1817,23 +2333,23 @@ window.Quarto = {
 <li>Examine the coefficients (<code>.coef_</code> attribute) of the model</li>
 </ol>
 <p>Does using a Lasso over a Linear Regression seem like a good idea?</p>
-<div id="cell-33" class="cell">
+<div id="cell-33" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Solution</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Lasso</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>lasso <span class="op">=</span> Lasso(alpha<span class="op">=</span><span class="fl">0.1</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>lasso.fit(X_train, y_train)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(lasso.score(X_train, y_train))</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(lasso.coef_)</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># The model seems very sensitive to `alpha`; anything but </span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># tiny values makes all the coefficients zero.  Moreover, the $R^2$ </span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># doesn't seem to improve so Lasso isn't an improvement over </span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># linear regression.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Lasso</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>lasso <span class="op">=</span> Lasso(alpha<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>lasso.fit(X_train, y_train)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(lasso.score(X_train, y_train))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(lasso.coef_)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># The model seems very sensitive to `alpha`; anything but </span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># tiny values makes all the coefficients zero.  Moreover, the $R^2$ </span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># doesn't seem to improve so Lasso isn't an improvement over </span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"># linear regression.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>0.0
-[-0. -0. -0. -0.  0.  0. -0. -0. -0.]</code></pre>
+[-0. -0. -0. -0.  0. -0. -0. -0. -0. -0. -0.]</code></pre>
 </div>
 </div>
 <hr>
@@ -1841,33 +2357,437 @@ window.Quarto = {
 <section id="knn" class="level3" data-number="26.5.2">
 <h3 data-number="26.5.2" class="anchored" data-anchor-id="knn"><span class="header-section-number">26.5.2</span> KNN</h3>
 <p>Next, let’s fit a KNN model to our data.</p>
-<div id="cell-37" class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsRegressor</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsRegressor(n_neighbors<span class="op">=</span><span class="dv">10</span>)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>knn.fit(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>KNeighborsRegressor(n_neighbors=10)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">KNeighborsRegressor</label><div class="sk-toggleable__content"><pre>KNeighborsRegressor(n_neighbors=10)</pre></div></div></div></div></div>
+<div id="cell-37" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KNeighborsRegressor</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>knn <span class="op">=</span> KNeighborsRegressor(n_neighbors<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>knn.fit(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<style>#sk-container-id-2 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-2 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-2 pre {
+  padding: 0;
+}
+
+#sk-container-id-2 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-2 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-2 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-2 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-2 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-2 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-2 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-2 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-2 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-2 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-2 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-2 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-2 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-2 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-2 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-2 div.sk-label label.sk-toggleable__label,
+#sk-container-id-2 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-2 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-2 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-2 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-2 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-2 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-2 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-2 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-2 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-2 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-2 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>KNeighborsRegressor(n_neighbors=10)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked=""><label for="sk-estimator-id-2" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;&nbsp;KNeighborsRegressor<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.neighbors.KNeighborsRegressor.html">?<span>Documentation for KNeighborsRegressor</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>KNeighborsRegressor(n_neighbors=10)</pre></div> </div></div></div></div>
 </div>
 </div>
 <p>As you can see, the in-sample <span class="math inline">\(R^2\)</span> is higher for KNN over Linear Regression.</p>
-<div id="cell-39" class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN R^2:"</span>, knn.score(X_train, y_train))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-39" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN R^2:"</span>, knn.score(X_train, y_train))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>KNN R^2: 0.10833738212937916</code></pre>
+<pre><code>KNN R^2: 0.12124018362747302</code></pre>
 </div>
 </div>
 </section>
 <section id="mean-squared-error" class="level3" data-number="26.5.3">
 <h3 data-number="26.5.3" class="anchored" data-anchor-id="mean-squared-error"><span class="header-section-number">26.5.3</span> Mean-Squared Error</h3>
 <p>Another goodness of fit metric is the mean squared error. As you can see the models are close on this metric.</p>
-<div id="cell-42" class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR MSE: "</span>, <span class="op">\</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_train, linear_regression.predict(X_train)))</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN MSE:"</span>, <span class="op">\</span></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_train, knn.predict(X_train)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-42" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR MSE: "</span>, <span class="op">\</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_train, linear_regression.predict(X_train)))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN MSE:"</span>, <span class="op">\</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_train, knn.predict(X_train)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>LR MSE:  0.0002835383523398787
-KNN MSE: 0.000257407048342368</code></pre>
+<pre><code>LR MSE:  0.0002940295825237298
+KNN MSE: 0.0002631066023362797</code></pre>
 </div>
 </div>
 </section>
@@ -1875,10 +2795,10 @@ KNN MSE: 0.000257407048342368</code></pre>
 <section id="testing" class="level2" data-number="26.6">
 <h2 data-number="26.6" class="anchored" data-anchor-id="testing"><span class="header-section-number">26.6</span> Testing</h2>
 <p>Let’s now test the model with the data after 2016.</p>
-<div id="cell-45" class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> df_test.drop(columns<span class="op">=</span>[<span class="st">'msft'</span>])[<span class="dv">0</span>:<span class="bu">len</span>(df_test)<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>X_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-45" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> df_test.drop(columns<span class="op">=</span>[<span class="st">'msft'</span>])[<span class="dv">0</span>:<span class="bu">len</span>(df_test)<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>X_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div>
 
 
@@ -1891,13 +2811,17 @@ KNN MSE: 0.000257407048342368</code></pre>
 <th data-quarto-table-cell-role="th">dia</th>
 <th data-quarto-table-cell-role="th">spy</th>
 <th data-quarto-table-cell-role="th">vix</th>
-<th data-quarto-table-cell-role="th">dexjpus</th>
-<th data-quarto-table-cell-role="th">dexusuk</th>
+<th data-quarto-table-cell-role="th">gbpusd=x</th>
+<th data-quarto-table-cell-role="th">jpy=x</th>
 <th data-quarto-table-cell-role="th">msft_lag_0</th>
 <th data-quarto-table-cell-role="th">msft_lag_1</th>
+<th data-quarto-table-cell-role="th">dexjpus</th>
+<th data-quarto-table-cell-role="th">dexusuk</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">trade_date</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -1914,64 +2838,76 @@ KNN MSE: 0.000257407048342368</code></pre>
 <td data-quarto-table-cell-role="th">2016-01-04</td>
 <td>-0.023869</td>
 <td>-0.012135</td>
-<td>-0.015517</td>
-<td>-0.013980</td>
+<td>-0.015519</td>
+<td>-0.013979</td>
 <td>2.490002</td>
-<td>-0.008065</td>
-<td>-0.004069</td>
+<td>1.473709</td>
+<td>120.310997</td>
 <td>-0.012257</td>
 <td>-0.014740</td>
+<td>-0.001154</td>
+<td>-0.005541</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2016-01-05</td>
 <td>0.002752</td>
 <td>-0.000736</td>
-<td>0.000583</td>
-<td>0.001691</td>
+<td>0.000584</td>
+<td>0.001692</td>
 <td>-1.360001</td>
-<td>-0.002934</td>
-<td>-0.001498</td>
+<td>1.471410</td>
+<td>119.467003</td>
 <td>0.004562</td>
 <td>-0.012257</td>
+<td>-0.007015</td>
+<td>-0.001560</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-06</td>
 <td>-0.002889</td>
-<td>-0.005006</td>
-<td>-0.014295</td>
-<td>-0.012614</td>
+<td>-0.005005</td>
+<td>-0.014294</td>
+<td>-0.012615</td>
 <td>1.250000</td>
-<td>-0.003447</td>
-<td>-0.002591</td>
+<td>1.467394</td>
+<td>119.101997</td>
 <td>-0.018165</td>
 <td>0.004562</td>
+<td>-0.003055</td>
+<td>-0.002729</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2016-01-07</td>
 <td>-0.024140</td>
 <td>-0.017089</td>
-<td>-0.023558</td>
+<td>-0.023559</td>
 <td>-0.023991</td>
 <td>4.400000</td>
-<td>-0.004555</td>
-<td>-0.003213</td>
+<td>1.462994</td>
+<td>118.610001</td>
 <td>-0.034783</td>
 <td>-0.018165</td>
+<td>-0.004131</td>
+<td>-0.002999</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2016-01-08</td>
 <td>-0.013617</td>
 <td>-0.009258</td>
-<td>-0.010427</td>
+<td>-0.010426</td>
 <td>-0.010977</td>
 <td>2.020000</td>
-<td>-0.002203</td>
-<td>-0.003841</td>
+<td>1.462694</td>
+<td>117.540001</td>
 <td>0.003067</td>
 <td>-0.034783</td>
+<td>-0.009021</td>
+<td>-0.000205</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1989,34 +2925,40 @@ KNN MSE: 0.000257407048342368</code></pre>
 <td>0.006633</td>
 <td>0.010288</td>
 <td>-0.490000</td>
-<td>0.003815</td>
-<td>-0.000073</td>
-<td>0.012337</td>
-<td>0.016844</td>
+<td>1.377390</td>
+<td>110.139999</td>
+<td>0.012336</td>
+<td>0.016845</td>
+<td>-0.001043</td>
+<td>0.004365</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-26</td>
 <td>0.007668</td>
-<td>0.010118</td>
+<td>0.010117</td>
 <td>0.002396</td>
 <td>0.002455</td>
 <td>0.379999</td>
-<td>-0.001900</td>
-<td>0.005819</td>
+<td>1.375781</td>
+<td>110.543999</td>
 <td>-0.002140</td>
-<td>0.012337</td>
+<td>0.012336</td>
+<td>0.003668</td>
+<td>-0.001168</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
 <td>-0.015929</td>
 <td>-0.000140</td>
 <td>-0.002248</td>
-<td>-0.004557</td>
+<td>-0.004558</td>
 <td>1.780001</td>
-<td>-0.006074</td>
-<td>0.003977</td>
-<td>-0.008684</td>
+<td>1.382915</td>
+<td>110.302002</td>
+<td>-0.008683</td>
 <td>-0.002140</td>
+<td>-0.002189</td>
+<td>0.005186</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
@@ -2025,10 +2967,12 @@ KNN MSE: 0.000257407048342368</code></pre>
 <td>-0.003594</td>
 <td>-0.000410</td>
 <td>-1.050001</td>
-<td>0.003831</td>
-<td>0.000000</td>
+<td>1.388272</td>
+<td>109.806000</td>
 <td>-0.001117</td>
-<td>-0.008684</td>
+<td>-0.008683</td>
+<td>-0.004497</td>
+<td>0.003873</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-29</td>
@@ -2037,22 +2981,24 @@ KNN MSE: 0.000257407048342368</code></pre>
 <td>0.004179</td>
 <td>0.004147</td>
 <td>-0.609999</td>
-<td>-0.004816</td>
-<td>0.005906</td>
+<td>1.390685</td>
+<td>109.890999</td>
 <td>0.000978</td>
 <td>-0.001117</td>
+<td>0.000774</td>
+<td>0.001738</td>
 </tr>
 </tbody>
 </table>
 
-<p>1386 rows × 9 columns</p>
+<p>1400 rows × 11 columns</p>
 </div>
 </div>
 </div>
-<div id="cell-46" class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> df_test[[<span class="st">'msft'</span>]][<span class="dv">1</span>:<span class="bu">len</span>(df_test)]</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>y_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-46" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>y_test <span class="op">=</span> df_test[[<span class="st">'msft'</span>]][<span class="dv">1</span>:<span class="bu">len</span>(df_test)]</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>y_test</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -2098,7 +3044,7 @@ KNN MSE: 0.000257407048342368</code></pre>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2021-07-27</td>
-<td>-0.008684</td>
+<td>-0.008683</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2021-07-28</td>
@@ -2115,28 +3061,28 @@ KNN MSE: 0.000257407048342368</code></pre>
 </tbody>
 </table>
 
-<p>1386 rows × 1 columns</p>
+<p>1400 rows × 1 columns</p>
 </div>
 </div>
 </div>
 <p>In terms of <span class="math inline">\(R^2\)</span>, the Linear Regression performs better than KNN on the testing data.</p>
-<div id="cell-48" class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR R^2: "</span>, linear_regression.score(X_test, y_test))</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN R^2:"</span>, knn.score(X_test, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-48" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR R^2: "</span>, linear_regression.score(X_test, y_test))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN R^2:"</span>, knn.score(X_test, y_test))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>LR R^2:  0.02720569878120005
-KNN R^2: 0.008540558936330656</code></pre>
+<pre><code>LR R^2:  0.037103603308828226
+KNN R^2: -0.02269524597068351</code></pre>
 </div>
 </div>
 <p>On the testing data, the models are again quite similar from an mean square error perspective.</p>
-<div id="cell-50" class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR MSE: "</span>, <span class="op">\</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_test, linear_regression.predict(X_test)))</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN MSE:"</span>, <span class="op">\</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_test, knn.predict(X_test)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-50" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LR MSE: "</span>, <span class="op">\</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_test, linear_regression.predict(X_test)))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"KNN MSE:"</span>, <span class="op">\</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>      sklearn.metrics.mean_squared_error(y_test, knn.predict(X_test)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>LR MSE:  0.0002831135176255083
-KNN MSE: 0.00028854565614835155</code></pre>
+<pre><code>LR MSE:  0.0002819198180799986
+KNN MSE: 0.0002994279121680069</code></pre>
 </div>
 </div>
 

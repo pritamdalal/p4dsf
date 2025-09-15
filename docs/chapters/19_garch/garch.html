@@ -634,45 +634,42 @@ window.Quarto = {
 <section id="loading-packages" class="level2" data-number="20.1">
 <h2 data-number="20.1" class="anchored" data-anchor-id="loading-packages"><span class="header-section-number">20.1</span> Loading Packages</h2>
 <p>We begin by loading the packages and functions that we will need.</p>
-<div id="cell-4" class="cell">
+<div id="cell-4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> arch <span class="im">import</span> arch_model</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pd.options.display.max_rows <span class="op">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="spy-data-for-backtest-period" class="level2" data-number="20.2">
 <h2 data-number="20.2" class="anchored" data-anchor-id="spy-data-for-backtest-period"><span class="header-section-number">20.2</span> SPY Data for Backtest Period</h2>
 <p>Next, let’s read-in the data for the backtest period.</p>
-<div id="cell-7" class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-7" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'2004-12-31'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>, auto_adjust<span class="op">=</span><span class="va">False</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_spy.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy[[<span class="st">'trade_date'</span>, <span class="st">'close'</span>]].copy()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
 <tbody>
@@ -680,64 +677,34 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>SPY</td>
 <td>2004-12-31</td>
-<td>121.300003</td>
-<td>121.660004</td>
-<td>120.800003</td>
 <td>120.870003</td>
-<td>84.657822</td>
-<td>28648800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>SPY</td>
 <td>2005-01-03</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258591</td>
-<td>55748000</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>2005-01-04</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.229019</td>
-<td>69167600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>SPY</td>
 <td>2005-01-05</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654678</td>
-<td>65667300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>SPY</td>
 <td>2005-01-06</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074913</td>
-<td>47814700</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -746,85 +713,55 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2827</td>
 <td>SPY</td>
 <td>2016-03-28</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770111</td>
-<td>62408200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2828</td>
 <td>SPY</td>
 <td>2016-03-29</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2829</td>
 <td>SPY</td>
 <td>2016-03-30</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215408</td>
-<td>86365300</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2830</td>
 <td>SPY</td>
 <td>2016-03-31</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2831</td>
 <td>SPY</td>
 <td>2016-04-01</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007034</td>
-<td>114423500</td>
 </tr>
 </tbody>
 </table>
 
-<p>2832 rows × 8 columns</p>
+<p>2832 rows × 3 columns</p>
 </div>
 </div>
 </div>
 <p>We will need the daily log returns, so let’s calculate those now.</p>
-<div id="cell-9" class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'adj_close'</span>]).diff()</span>
+<div id="cell-9" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_spy[<span class="st">'close'</span>]).diff()</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.dropna().reset_index(drop <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 </tr>
 </thead>
@@ -833,69 +770,39 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>SPY</td>
 <td>2005-01-03</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258591</td>
-<td>55748000</td>
 <td>-0.004727</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>SPY</td>
 <td>2005-01-04</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.229019</td>
-<td>69167600</td>
-<td>-0.012294</td>
+<td>-0.012295</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>2005-01-05</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654678</td>
-<td>65667300</td>
 <td>-0.006925</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>SPY</td>
 <td>2005-01-06</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074913</td>
-<td>47814700</td>
 <td>0.005071</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>SPY</td>
 <td>2005-01-07</td>
-<td>118.970001</td>
-<td>119.230003</td>
-<td>118.129997</td>
 <td>118.440002</td>
-<td>82.955826</td>
-<td>55847700</td>
-<td>-0.001435</td>
+<td>-0.001434</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -905,66 +812,41 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">2826</td>
 <td>SPY</td>
 <td>2016-03-28</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770111</td>
-<td>62408200</td>
 <td>0.000591</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2827</td>
 <td>SPY</td>
 <td>2016-03-29</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 <td>0.009208</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2828</td>
 <td>SPY</td>
 <td>2016-03-30</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215408</td>
-<td>86365300</td>
 <td>0.004378</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2829</td>
 <td>SPY</td>
 <td>2016-03-31</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2830</td>
 <td>SPY</td>
 <td>2016-04-01</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007034</td>
-<td>114423500</td>
 <td>0.006789</td>
 </tr>
 </tbody>
 </table>
 
-<p>2831 rows × 9 columns</p>
+<p>2831 rows × 4 columns</p>
 </div>
 </div>
 </div>
@@ -972,7 +854,7 @@ window.Quarto = {
 <section id="organizing-dates" class="level2" data-number="20.3">
 <h2 data-number="20.3" class="anchored" data-anchor-id="organizing-dates"><span class="header-section-number">20.3</span> Organizing Dates</h2>
 <p>Let’s organize our backtest period into weeks (Monday - Friday), since our analysis is of weekly volatility predictions.</p>
-<div id="cell-12" class="cell">
+<div id="cell-12" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># adding a new columns consisting of the weekday number for each trade_date </span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>weekday <span class="op">=</span> df_spy[<span class="st">'trade_date'</span>].dt.weekday</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -990,23 +872,18 @@ window.Quarto = {
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co"># inserting the week-number column into df_spy</span></span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>df_spy.insert(<span class="dv">2</span>, <span class="st">'week_num'</span>, week_num)</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
 <th data-quarto-table-cell-role="th">week_num</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 </tr>
 </thead>
@@ -1016,12 +893,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-03</td>
 <td>0</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258591</td>
-<td>55748000</td>
 <td>-0.004727</td>
 </tr>
 <tr class="even">
@@ -1029,25 +901,15 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-04</td>
 <td>0</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.229019</td>
-<td>69167600</td>
-<td>-0.012294</td>
+<td>-0.012295</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>2005-01-05</td>
 <td>0</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654678</td>
-<td>65667300</td>
 <td>-0.006925</td>
 </tr>
 <tr class="even">
@@ -1055,12 +917,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-06</td>
 <td>0</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074913</td>
-<td>47814700</td>
 <td>0.005071</td>
 </tr>
 <tr class="odd">
@@ -1068,21 +925,11 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-07</td>
 <td>0</td>
-<td>118.970001</td>
-<td>119.230003</td>
-<td>118.129997</td>
 <td>118.440002</td>
-<td>82.955826</td>
-<td>55847700</td>
-<td>-0.001435</td>
+<td>-0.001434</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1094,12 +941,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-28</td>
 <td>586</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770111</td>
-<td>62408200</td>
 <td>0.000591</td>
 </tr>
 <tr class="even">
@@ -1107,12 +949,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-29</td>
 <td>586</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 <td>0.009208</td>
 </tr>
 <tr class="odd">
@@ -1120,12 +957,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-30</td>
 <td>586</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215408</td>
-<td>86365300</td>
 <td>0.004378</td>
 </tr>
 <tr class="even">
@@ -1133,12 +965,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-31</td>
 <td>586</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 </tr>
 <tr class="odd">
@@ -1146,23 +973,18 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-04-01</td>
 <td>586</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007034</td>
-<td>114423500</td>
 <td>0.006789</td>
 </tr>
 </tbody>
 </table>
 
-<p>2831 rows × 10 columns</p>
+<p>2831 rows × 5 columns</p>
 </div>
 </div>
 </div>
 <p>The following code generates a <code>DataFrame</code> that contains the start-date and end-date for each week.</p>
-<div id="cell-14" class="cell">
+<div id="cell-14" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_start_end <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    df_spy.groupby([<span class="st">'week_num'</span>], as_index <span class="op">=</span> <span class="va">False</span>)[[<span class="st">'trade_date'</span>]].agg([<span class="bu">min</span>, <span class="bu">max</span>])[<span class="st">'trade_date'</span>]</span>
@@ -1171,7 +993,7 @@ window.Quarto = {
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    .rename(columns <span class="op">=</span> {<span class="st">'index'</span>:<span class="st">'week_num'</span>})</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df_start_end</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
@@ -1259,10 +1081,10 @@ window.Quarto = {
 </div>
 </div>
 <p>And finally let’s join the weekly start/end dates into <code>df_spy</code>.</p>
-<div id="cell-16" class="cell">
+<div id="cell-16" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.merge(df_start_end)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
@@ -1273,12 +1095,7 @@ window.Quarto = {
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
 <th data-quarto-table-cell-role="th">week_num</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 <th data-quarto-table-cell-role="th">week_start</th>
 <th data-quarto-table-cell-role="th">week_end</th>
@@ -1290,12 +1107,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-03</td>
 <td>0</td>
-<td>121.559998</td>
-<td>121.760002</td>
-<td>119.900002</td>
 <td>120.300003</td>
-<td>84.258591</td>
-<td>55748000</td>
 <td>-0.004727</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1305,13 +1117,8 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-04</td>
 <td>0</td>
-<td>120.459999</td>
-<td>120.540001</td>
-<td>118.440002</td>
 <td>118.830002</td>
-<td>83.229019</td>
-<td>69167600</td>
-<td>-0.012294</td>
+<td>-0.012295</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
 </tr>
@@ -1320,12 +1127,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-05</td>
 <td>0</td>
-<td>118.739998</td>
-<td>119.250000</td>
-<td>118.000000</td>
 <td>118.010002</td>
-<td>82.654678</td>
-<td>65667300</td>
 <td>-0.006925</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1335,12 +1137,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-06</td>
 <td>0</td>
-<td>118.440002</td>
-<td>119.150002</td>
-<td>118.260002</td>
 <td>118.610001</td>
-<td>83.074913</td>
-<td>47814700</td>
 <td>0.005071</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
@@ -1350,23 +1147,13 @@ window.Quarto = {
 <td>SPY</td>
 <td>2005-01-07</td>
 <td>0</td>
-<td>118.970001</td>
-<td>119.230003</td>
-<td>118.129997</td>
 <td>118.440002</td>
-<td>82.955826</td>
-<td>55847700</td>
-<td>-0.001435</td>
+<td>-0.001434</td>
 <td>2005-01-03</td>
 <td>2005-01-07</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1380,12 +1167,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-28</td>
 <td>586</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770111</td>
-<td>62408200</td>
 <td>0.000591</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1395,12 +1177,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-29</td>
 <td>586</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423782</td>
-<td>92922900</td>
 <td>0.009208</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1410,12 +1187,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-30</td>
 <td>586</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215408</td>
-<td>86365300</td>
 <td>0.004378</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1425,12 +1197,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-03-31</td>
 <td>586</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1440,12 +1207,7 @@ window.Quarto = {
 <td>SPY</td>
 <td>2016-04-01</td>
 <td>586</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007034</td>
-<td>114423500</td>
 <td>0.006789</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
@@ -1453,7 +1215,7 @@ window.Quarto = {
 </tbody>
 </table>
 
-<p>2831 rows × 12 columns</p>
+<p>2831 rows × 7 columns</p>
 </div>
 </div>
 </div>
@@ -1461,7 +1223,7 @@ window.Quarto = {
 <section id="calculating-realized-volatility" class="level2" data-number="20.4">
 <h2 data-number="20.4" class="anchored" data-anchor-id="calculating-realized-volatility"><span class="header-section-number">20.4</span> Calculating Realized Volatility</h2>
 <p>This code cell calculates the realized volatility for each week. In machine learning parlance, these are the labels that we are trying to predict.</p>
-<div id="cell-19" class="cell">
+<div id="cell-19" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    (</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    df_spy</span>
@@ -1470,7 +1232,7 @@ window.Quarto = {
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>df_realized <span class="op">=</span> df_realized[<span class="dv">1</span>:]</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>df_realized</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="7">
 <div>
 
 
@@ -1490,35 +1252,35 @@ window.Quarto = {
 <td>1</td>
 <td>2005-01-10</td>
 <td>2005-01-14</td>
-<td>0.093297</td>
+<td>0.093295</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2</td>
 <td>2005-01-18</td>
 <td>2005-01-21</td>
-<td>0.126558</td>
+<td>0.126557</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">3</td>
 <td>3</td>
 <td>2005-01-24</td>
 <td>2005-01-28</td>
-<td>0.029752</td>
+<td>0.029753</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">4</td>
 <td>4</td>
 <td>2005-01-31</td>
 <td>2005-02-04</td>
-<td>0.069585</td>
+<td>0.069583</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5</td>
 <td>5</td>
 <td>2005-02-07</td>
 <td>2005-02-11</td>
-<td>0.084566</td>
+<td>0.084567</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -1532,21 +1294,21 @@ window.Quarto = {
 <td>582</td>
 <td>2016-02-29</td>
 <td>2016-03-04</td>
-<td>0.159052</td>
+<td>0.159055</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">583</td>
 <td>583</td>
 <td>2016-03-07</td>
 <td>2016-03-11</td>
-<td>0.137589</td>
+<td>0.137591</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">584</td>
 <td>584</td>
 <td>2016-03-14</td>
 <td>2016-03-18</td>
-<td>0.054367</td>
+<td>0.057861</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">585</td>
@@ -1560,7 +1322,7 @@ window.Quarto = {
 <td>586</td>
 <td>2016-03-28</td>
 <td>2016-04-01</td>
-<td>0.066439</td>
+<td>0.066437</td>
 </tr>
 </tbody>
 </table>
@@ -1574,31 +1336,31 @@ window.Quarto = {
 <h2 data-number="20.5" class="anchored" data-anchor-id="garch-training-data"><span class="header-section-number">20.5</span> GARCH Training Data</h2>
 <p>A practical rule of thumb for fitting garch models to equity index returns is that you should use 5-10 years worth of data. In this tutorial we will use 10-years worth.</p>
 <p>Let’s begin by grabbing all the data that we will need for fitting.</p>
-<div id="cell-22" class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'1994-12-30'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>).reset_index()</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_train.columns <span class="op">=</span> df_train.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df_train.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>df_train.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-22" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#df_train = pdr.get_data_yahoo('SPY', start = '1994-12-30', end = '2016-04-02').reset_index()</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> yf.download(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'SPY'</span>, start <span class="op">=</span> <span class="st">'1994-12-30'</span>, end <span class="op">=</span> <span class="st">'2016-04-02'</span>, auto_adjust<span class="op">=</span><span class="va">False</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>).reset_index()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> df_train.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>df_train.columns <span class="op">=</span> df_train.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>, <span class="st">'_'</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>df_train.rename(columns <span class="op">=</span> {<span class="st">'date'</span>:<span class="st">'trade_date'</span>}, inplace <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>df_train <span class="op">=</span> df_train[[<span class="st">'trade_date'</span>, <span class="st">'close'</span>]].copy()</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>df_train.insert(<span class="dv">0</span>, <span class="st">'ticker'</span>, <span class="st">'SPY'</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
 <tbody>
@@ -1606,64 +1368,34 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>SPY</td>
 <td>1994-12-30</td>
-<td>46.203125</td>
-<td>46.250000</td>
 <td>45.562500</td>
-<td>45.562500</td>
-<td>27.317329</td>
-<td>2209500</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>SPY</td>
 <td>1995-01-03</td>
-<td>45.703125</td>
-<td>45.843750</td>
-<td>45.687500</td>
 <td>45.781250</td>
-<td>27.448469</td>
-<td>324300</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>1995-01-04</td>
-<td>45.984375</td>
 <td>46.000000</td>
-<td>45.750000</td>
-<td>46.000000</td>
-<td>27.579622</td>
-<td>351800</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>SPY</td>
 <td>1995-01-05</td>
-<td>46.031250</td>
-<td>46.109375</td>
-<td>45.953125</td>
 <td>46.000000</td>
-<td>27.579622</td>
-<td>89800</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>SPY</td>
 <td>1995-01-06</td>
-<td>46.093750</td>
-<td>46.250000</td>
-<td>45.906250</td>
 <td>46.046875</td>
-<td>27.607731</td>
-<td>448400</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1672,86 +1404,56 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">5346</td>
 <td>SPY</td>
 <td>2016-03-28</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770142</td>
-<td>62408200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5347</td>
 <td>SPY</td>
 <td>2016-03-29</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423767</td>
-<td>92922900</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5348</td>
 <td>SPY</td>
 <td>2016-03-30</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215424</td>
-<td>86365300</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5349</td>
 <td>SPY</td>
 <td>2016-03-31</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5350</td>
 <td>SPY</td>
 <td>2016-04-01</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007050</td>
-<td>114423500</td>
 </tr>
 </tbody>
 </table>
 
-<p>5351 rows × 8 columns</p>
+<p>5351 rows × 3 columns</p>
 </div>
 </div>
 </div>
 <p>Next we calculate the daily returns.</p>
-<div id="cell-24" class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_train[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_train[<span class="st">'adj_close'</span>]).diff()</span>
+<div id="cell-24" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_train[<span class="st">'dly_ret'</span>] <span class="op">=</span> np.log(df_train[<span class="st">'close'</span>]).diff()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df_train.dropna(inplace <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_train.reset_index(drop <span class="op">=</span> <span class="va">True</span>, inplace <span class="op">=</span> <span class="va">True</span>)</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>df_train</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">ticker</th>
 <th data-quarto-table-cell-role="th">trade_date</th>
-<th data-quarto-table-cell-role="th">open</th>
-<th data-quarto-table-cell-role="th">high</th>
-<th data-quarto-table-cell-role="th">low</th>
 <th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
-<th data-quarto-table-cell-role="th">volume</th>
 <th data-quarto-table-cell-role="th">dly_ret</th>
 </tr>
 </thead>
@@ -1760,69 +1462,39 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">0</td>
 <td>SPY</td>
 <td>1995-01-03</td>
-<td>45.703125</td>
-<td>45.843750</td>
-<td>45.687500</td>
 <td>45.781250</td>
-<td>27.448469</td>
-<td>324300</td>
-<td>0.004789</td>
+<td>0.004790</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>SPY</td>
 <td>1995-01-04</td>
-<td>45.984375</td>
 <td>46.000000</td>
-<td>45.750000</td>
-<td>46.000000</td>
-<td>27.579622</td>
-<td>351800</td>
 <td>0.004767</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>SPY</td>
 <td>1995-01-05</td>
-<td>46.031250</td>
-<td>46.109375</td>
-<td>45.953125</td>
 <td>46.000000</td>
-<td>27.579622</td>
-<td>89800</td>
 <td>0.000000</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>SPY</td>
 <td>1995-01-06</td>
-<td>46.093750</td>
-<td>46.250000</td>
-<td>45.906250</td>
 <td>46.046875</td>
-<td>27.607731</td>
-<td>448400</td>
 <td>0.001019</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>SPY</td>
 <td>1995-01-09</td>
-<td>46.031250</td>
 <td>46.093750</td>
-<td>46.000000</td>
-<td>46.093750</td>
-<td>27.635849</td>
-<td>36800</td>
-<td>0.001018</td>
+<td>0.001017</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -1832,90 +1504,65 @@ window.Quarto = {
 <td data-quarto-table-cell-role="th">5345</td>
 <td>SPY</td>
 <td>2016-03-28</td>
-<td>203.610001</td>
-<td>203.860001</td>
-<td>202.710007</td>
 <td>203.240005</td>
-<td>178.770142</td>
-<td>62408200</td>
 <td>0.000591</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5346</td>
 <td>SPY</td>
 <td>2016-03-29</td>
-<td>202.759995</td>
-<td>205.250000</td>
-<td>202.399994</td>
 <td>205.119995</td>
-<td>180.423767</td>
-<td>92922900</td>
-<td>0.009207</td>
+<td>0.009208</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5347</td>
 <td>SPY</td>
 <td>2016-03-30</td>
-<td>206.300003</td>
-<td>206.869995</td>
-<td>205.589996</td>
 <td>206.020004</td>
-<td>181.215424</td>
-<td>86365300</td>
 <td>0.004378</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">5348</td>
 <td>SPY</td>
 <td>2016-03-31</td>
-<td>205.910004</td>
-<td>206.410004</td>
-<td>205.330002</td>
 <td>205.520004</td>
-<td>180.775589</td>
-<td>94584100</td>
 <td>-0.002430</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">5349</td>
 <td>SPY</td>
 <td>2016-04-01</td>
-<td>204.350006</td>
-<td>207.139999</td>
-<td>203.979996</td>
 <td>206.919998</td>
-<td>182.007050</td>
-<td>114423500</td>
 <td>0.006789</td>
 </tr>
 </tbody>
 </table>
 
-<p>5350 rows × 9 columns</p>
+<p>5350 rows × 4 columns</p>
 </div>
 </div>
 </div>
 <p>The GARCH fitting process has better convergence if we express the returns as percents rather than decimals.</p>
-<div id="cell-26" class="cell">
+<div id="cell-26" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ser_returns <span class="op">=</span> df_train[<span class="st">'dly_ret'</span>] <span class="op">*</span> <span class="dv">100</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ser_returns.index <span class="op">=</span> df_train[<span class="st">'trade_date'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we instantiate the model.</p>
-<div id="cell-28" class="cell">
+<div id="cell-28" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> arch_model(ser_returns, vol <span class="op">=</span> <span class="st">'Garch'</span>, p <span class="op">=</span> <span class="dv">1</span>, o <span class="op">=</span> <span class="dv">0</span>, q <span class="op">=</span> <span class="dv">1</span>, dist <span class="op">=</span> <span class="st">'Normal'</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> model.fit(update_freq <span class="op">=</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Iteration:      5,   Func. Count:     37,   Neg. LLF: 7624.3614767949375
-Iteration:     10,   Func. Count:     65,   Neg. LLF: 7598.333575044246
+<pre><code>Iteration:      5,   Func. Count:     37,   Neg. LLF: 7638.164309626905
+Iteration:     10,   Func. Count:     65,   Neg. LLF: 7614.014588774797
 Optimization terminated successfully    (Exit mode 0)
-            Current function value: 7598.333533861198
+            Current function value: 7614.0145792503545
             Iterations: 12
-            Function evaluations: 75
+            Function evaluations: 74
             Gradient evaluations: 12</code></pre>
 </div>
 </div>
 <p>The following code loops through and performs the fitting for each day. It takes a while to run, so I’ll leave it to you to run it and examine on your own time. See the package documentation linked below for details - you will probably need to read those in order to complete the associated project.</p>
-<div id="cell-31" class="cell">
+<div id="cell-31" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ix_start = df_train.query('trade_date == trade_date.min()').index[0]</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ix_end = df_train.query('trade_date == "2004-12-31"').index[0]</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># forecasts = {}</span></span>
@@ -1935,11 +1582,11 @@ Optimization terminated successfully    (Exit mode 0)
 <span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># df_forecast.to_csv('variance_forecast.csv', index = False)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The above code saves the variance estimates to a CSV file, and we will read those in now.</p>
-<div id="cell-33" class="cell">
+<div id="cell-33" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df_forecast <span class="op">=</span> pd.read_csv(<span class="st">'variance_forecast.csv'</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>df_forecast[<span class="st">'trade_date'</span>] <span class="op">=</span> pd.to_datetime(df_forecast[<span class="st">'trade_date'</span>])</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df_forecast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 
 
@@ -1959,47 +1606,47 @@ Optimization terminated successfully    (Exit mode 0)
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2004-12-30</td>
-<td>0.312152</td>
-<td>0.320800</td>
-<td>0.329415</td>
-<td>0.337999</td>
-<td>0.346551</td>
+<td>0.353439</td>
+<td>0.362420</td>
+<td>0.371362</td>
+<td>0.380267</td>
+<td>0.389134</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2004-12-31</td>
-<td>0.303715</td>
-<td>0.312426</td>
-<td>0.321104</td>
-<td>0.329750</td>
-<td>0.338364</td>
+<td>0.341843</td>
+<td>0.350909</td>
+<td>0.359935</td>
+<td>0.368924</td>
+<td>0.377874</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2005-01-03</td>
-<td>0.313479</td>
-<td>0.322231</td>
-<td>0.330949</td>
-<td>0.339635</td>
-<td>0.348287</td>
+<td>0.348320</td>
+<td>0.357434</td>
+<td>0.366509</td>
+<td>0.375543</td>
+<td>0.384539</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2005-01-04</td>
-<td>0.433124</td>
-<td>0.441654</td>
-<td>0.450148</td>
-<td>0.458607</td>
-<td>0.467031</td>
+<td>0.464023</td>
+<td>0.472827</td>
+<td>0.481590</td>
+<td>0.490313</td>
+<td>0.498996</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2005-01-05</td>
-<td>0.453912</td>
-<td>0.462365</td>
-<td>0.470782</td>
-<td>0.479165</td>
-<td>0.487513</td>
+<td>0.481935</td>
+<td>0.490661</td>
+<td>0.499346</td>
+<td>0.507992</td>
+<td>0.516598</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -2013,47 +1660,47 @@ Optimization terminated successfully    (Exit mode 0)
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2826</td>
 <td>2016-03-23</td>
-<td>0.578104</td>
-<td>0.593060</td>
-<td>0.607729</td>
-<td>0.622115</td>
-<td>0.636224</td>
+<td>0.578490</td>
+<td>0.593375</td>
+<td>0.607975</td>
+<td>0.622293</td>
+<td>0.636337</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2827</td>
 <td>2016-03-24</td>
-<td>0.527753</td>
-<td>0.543716</td>
-<td>0.559369</td>
-<td>0.574720</td>
-<td>0.589773</td>
+<td>0.528614</td>
+<td>0.544496</td>
+<td>0.560071</td>
+<td>0.575345</td>
+<td>0.590325</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2828</td>
 <td>2016-03-28</td>
-<td>0.482408</td>
-<td>0.499278</td>
-<td>0.515820</td>
-<td>0.532041</td>
-<td>0.547947</td>
+<td>0.483814</td>
+<td>0.500593</td>
+<td>0.517046</td>
+<td>0.533181</td>
+<td>0.549003</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2829</td>
 <td>2016-03-29</td>
-<td>0.526633</td>
-<td>0.542651</td>
-<td>0.558358</td>
-<td>0.573760</td>
-<td>0.588863</td>
+<td>0.529147</td>
+<td>0.545053</td>
+<td>0.560652</td>
+<td>0.575948</td>
+<td>0.590947</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2830</td>
 <td>2016-03-30</td>
-<td>0.496876</td>
-<td>0.513525</td>
-<td>0.529849</td>
-<td>0.545856</td>
-<td>0.561551</td>
+<td>0.500307</td>
+<td>0.516825</td>
+<td>0.533021</td>
+<td>0.548903</td>
+<td>0.564477</td>
 </tr>
 </tbody>
 </table>
@@ -2063,11 +1710,11 @@ Optimization terminated successfully    (Exit mode 0)
 </div>
 </div>
 <p>The columns of the <code>df_forecast</code> are the one day variance estimates for the next five days. In order to calculate a 5-day volatility forecasts we will add up these columns, divide by 100 (the variances are stated as percentages), and then take a square-root.</p>
-<div id="cell-35" class="cell">
+<div id="cell-35" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_forecast[<span class="st">'volatility_forecast'</span>] <span class="op">=</span> <span class="op">\</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    np.sqrt((df_forecast[<span class="st">'h.1'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.2'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.3'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.4'</span>] <span class="op">+</span> df_forecast[<span class="st">'h.5'</span>]) <span class="op">/</span> <span class="dv">100</span>)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>df_forecast</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div>
 
 
@@ -2088,52 +1735,52 @@ Optimization terminated successfully    (Exit mode 0)
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
 <td>2004-12-30</td>
-<td>0.312152</td>
-<td>0.320800</td>
-<td>0.329415</td>
-<td>0.337999</td>
-<td>0.346551</td>
-<td>0.128332</td>
+<td>0.353439</td>
+<td>0.362420</td>
+<td>0.371362</td>
+<td>0.380267</td>
+<td>0.389134</td>
+<td>0.136258</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
 <td>2004-12-31</td>
-<td>0.303715</td>
-<td>0.312426</td>
-<td>0.321104</td>
-<td>0.329750</td>
-<td>0.338364</td>
-<td>0.126703</td>
+<td>0.341843</td>
+<td>0.350909</td>
+<td>0.359935</td>
+<td>0.368924</td>
+<td>0.377874</td>
+<td>0.134145</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
 <td>2005-01-03</td>
-<td>0.313479</td>
-<td>0.322231</td>
-<td>0.330949</td>
-<td>0.339635</td>
-<td>0.348287</td>
-<td>0.128630</td>
+<td>0.348320</td>
+<td>0.357434</td>
+<td>0.366509</td>
+<td>0.375543</td>
+<td>0.384539</td>
+<td>0.135364</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
 <td>2005-01-04</td>
-<td>0.433124</td>
-<td>0.441654</td>
-<td>0.450148</td>
-<td>0.458607</td>
-<td>0.467031</td>
-<td>0.150019</td>
+<td>0.464023</td>
+<td>0.472827</td>
+<td>0.481590</td>
+<td>0.490313</td>
+<td>0.498996</td>
+<td>0.155169</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
 <td>2005-01-05</td>
-<td>0.453912</td>
-<td>0.462365</td>
-<td>0.470782</td>
-<td>0.479165</td>
-<td>0.487513</td>
-<td>0.153419</td>
+<td>0.481935</td>
+<td>0.490661</td>
+<td>0.499346</td>
+<td>0.507992</td>
+<td>0.516598</td>
+<td>0.158004</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -2148,52 +1795,52 @@ Optimization terminated successfully    (Exit mode 0)
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2826</td>
 <td>2016-03-23</td>
-<td>0.578104</td>
-<td>0.593060</td>
-<td>0.607729</td>
-<td>0.622115</td>
-<td>0.636224</td>
-<td>0.174277</td>
+<td>0.578490</td>
+<td>0.593375</td>
+<td>0.607975</td>
+<td>0.622293</td>
+<td>0.636337</td>
+<td>0.174312</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2827</td>
 <td>2016-03-24</td>
-<td>0.527753</td>
-<td>0.543716</td>
-<td>0.559369</td>
-<td>0.574720</td>
-<td>0.589773</td>
-<td>0.167192</td>
+<td>0.528614</td>
+<td>0.544496</td>
+<td>0.560071</td>
+<td>0.575345</td>
+<td>0.590325</td>
+<td>0.167298</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2828</td>
 <td>2016-03-28</td>
-<td>0.482408</td>
-<td>0.499278</td>
-<td>0.515820</td>
-<td>0.532041</td>
-<td>0.547947</td>
-<td>0.160546</td>
+<td>0.483814</td>
+<td>0.500593</td>
+<td>0.517046</td>
+<td>0.533181</td>
+<td>0.549003</td>
+<td>0.160737</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">2829</td>
 <td>2016-03-29</td>
-<td>0.526633</td>
-<td>0.542651</td>
-<td>0.558358</td>
-<td>0.573760</td>
-<td>0.588863</td>
-<td>0.167041</td>
+<td>0.529147</td>
+<td>0.545053</td>
+<td>0.560652</td>
+<td>0.575948</td>
+<td>0.590947</td>
+<td>0.167384</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2830</td>
 <td>2016-03-30</td>
-<td>0.496876</td>
-<td>0.513525</td>
-<td>0.529849</td>
-<td>0.545856</td>
-<td>0.561551</td>
-<td>0.162716</td>
+<td>0.500307</td>
+<td>0.516825</td>
+<td>0.533021</td>
+<td>0.548903</td>
+<td>0.564477</td>
+<td>0.163203</td>
 </tr>
 </tbody>
 </table>
@@ -2203,7 +1850,7 @@ Optimization terminated successfully    (Exit mode 0)
 </div>
 </div>
 <p>Let’s plot these forecasts to make sure that they look reasonable.</p>
-<div id="cell-37" class="cell">
+<div id="cell-37" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_forecast.plot(x <span class="op">=</span> <span class="st">'trade_date'</span>, y <span class="op">=</span> <span class="st">'volatility_forecast'</span>, figsize <span class="op">=</span> (<span class="dv">12</span>, <span class="dv">6</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -2214,9 +1861,9 @@ Optimization terminated successfully    (Exit mode 0)
 </div>
 </div>
 <p>We actually have far more forecasts than we need, because we calculated forecasts for each day. We can isolate the ones in question by using a join.</p>
-<div id="cell-39" class="cell">
+<div id="cell-39" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_start_end.merge(df_forecast[[<span class="st">'trade_date'</span>, <span class="st">'volatility_forecast'</span>]], left_on <span class="op">=</span> <span class="st">'week_end'</span>, right_on <span class="op">=</span> <span class="st">'trade_date'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 
 
@@ -2238,7 +1885,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2005-01-03</td>
 <td>2005-01-07</td>
 <td>2005-01-07</td>
-<td>0.147481</td>
+<td>0.151672</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
@@ -2246,7 +1893,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2005-01-10</td>
 <td>2005-01-14</td>
 <td>2005-01-14</td>
-<td>0.150795</td>
+<td>0.153685</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
@@ -2254,7 +1901,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2005-01-18</td>
 <td>2005-01-21</td>
 <td>2005-01-21</td>
-<td>0.170141</td>
+<td>0.171956</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
@@ -2262,7 +1909,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2005-01-24</td>
 <td>2005-01-28</td>
 <td>2005-01-28</td>
-<td>0.147867</td>
+<td>0.149470</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
@@ -2270,7 +1917,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2005-01-31</td>
 <td>2005-02-04</td>
 <td>2005-02-04</td>
-<td>0.151963</td>
+<td>0.153561</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -2286,7 +1933,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2016-02-22</td>
 <td>2016-02-26</td>
 <td>2016-02-26</td>
-<td>0.250594</td>
+<td>0.251327</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">582</td>
@@ -2294,7 +1941,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2016-02-29</td>
 <td>2016-03-04</td>
 <td>2016-03-04</td>
-<td>0.242543</td>
+<td>0.243445</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">583</td>
@@ -2302,7 +1949,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2016-03-07</td>
 <td>2016-03-11</td>
 <td>2016-03-11</td>
-<td>0.230967</td>
+<td>0.231719</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">584</td>
@@ -2310,7 +1957,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2016-03-14</td>
 <td>2016-03-18</td>
 <td>2016-03-18</td>
-<td>0.188825</td>
+<td>0.188915</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">585</td>
@@ -2318,7 +1965,7 @@ Optimization terminated successfully    (Exit mode 0)
 <td>2016-03-21</td>
 <td>2016-03-24</td>
 <td>2016-03-24</td>
-<td>0.167192</td>
+<td>0.167298</td>
 </tr>
 </tbody>
 </table>
@@ -2328,41 +1975,41 @@ Optimization terminated successfully    (Exit mode 0)
 </div>
 </div>
 <p>Let’s grab the forecasts and put them into their own variable.</p>
-<div id="cell-41" class="cell">
+<div id="cell-41" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>volatility_forecasts <span class="op">=</span> df_start_end.merge(df_forecast, left_on <span class="op">=</span> <span class="st">'week_end'</span>, right_on <span class="op">=</span> <span class="st">'trade_date'</span>)[<span class="st">'volatility_forecast'</span>]</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>volatility_forecasts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>0      0.147481
-1      0.150795
-2      0.170141
-3      0.147867
-4      0.151963
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>0      0.151672
+1      0.153685
+2      0.171956
+3      0.149470
+4      0.153561
          ...   
-581    0.250594
-582    0.242543
-583    0.230967
-584    0.188825
-585    0.167192
+581    0.251327
+582    0.243445
+583    0.231719
+584    0.188915
+585    0.167298
 Name: volatility_forecast, Length: 586, dtype: float64</code></pre>
 </div>
 </div>
 <p>Next, let’s use the <span class="math inline">\(R^2\)</span> metric that Sepp uses in his studies.</p>
-<div id="cell-44" class="cell">
+<div id="cell-44" class="cell" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>np.corrcoef(volatility_forecasts, df_realized[<span class="st">'realized_vol'</span>])[<span class="dv">0</span>,<span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>0.5612564282964889</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>0.5610123510046198</code></pre>
 </div>
 </div>
-<p>And finally, let’s calculate the bias and efficiency.</p>
-<div id="cell-46" class="cell">
+<p>And finally, let’s calculate the bias and efficiency. <strong>Errata (9/14/2025):</strong> Efficiency should have close-to-close estimator in the numerator, not realized vol.&nbsp;Come back and fix this.</p>
+<div id="cell-46" class="cell" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bias</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.mean(volatility_forecasts <span class="op">-</span> df_realized[<span class="st">'realized_vol'</span>]))</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># efficiency</span></span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.std(df_realized[<span class="st">'realized_vol'</span>]) <span class="op">/</span> np.std(volatility_forecasts))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>0.1028763057503257
-0.8233056504414178</code></pre>
+<pre><code>0.10300437701453104
+0.8245692042744442</code></pre>
 </div>
 </div>
 </section>

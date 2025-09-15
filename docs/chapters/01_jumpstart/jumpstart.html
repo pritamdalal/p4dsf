@@ -662,10 +662,10 @@ window.Quarto = {
 <h2 data-number="1.3" class="anchored" data-anchor-id="code-cells"><span class="header-section-number">1.3</span> Code Cells</h2>
 <p>A notebook is structured as a sequence of <em>cells</em>. There are three kinds of cells: 1) <em>code</em> cells that contain code; 2) <em>markdown</em> cells that contain markdown or latex; and 3) <em>raw</em> cells that contain raw text. We will work mainly with code cells and markdown cells.</p>
 <p>The cell below is a code cell - try typing the code and then press <strong>shift + enter</strong>.</p>
-<div id="cell-9" class="cell">
+<div id="cell-9" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Image</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Image(<span class="st">"not_ethical.png"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="1">
 <div>
 <figure class="figure">
 <p><img src="jumpstart_files/figure-html/cell-2-output-1.png" class="img-fluid figure-img"></p>
@@ -711,41 +711,48 @@ window.Quarto = {
 <p><strong>yfinance</strong> - reading in data from Yahoo finance</p>
 <p><strong>pandas_datareader</strong> - also for reading data from Yahoo Finance</p>
 <p>The following code imports these packages and assigns them each an alias.</p>
-<div id="cell-20" class="cell">
+<div id="cell-20" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-in-stock-data-into-a-dataframe" class="level2" data-number="1.8">
 <h2 data-number="1.8" class="anchored" data-anchor-id="reading-in-stock-data-into-a-dataframe"><span class="header-section-number">1.8</span> Reading-In Stock Data into a <code>DataFrame</code></h2>
 <p>Let’s begin by reading in 5 years of SPY price data from Yahoo Finance.</p>
 <p>SPY is an ETF that tracks the performace of the SP500 stock index.</p>
-<div id="cell-24" class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> pdr.get_data_yahoo(<span class="st">'SPY'</span>, start<span class="op">=</span><span class="st">'2014-01-01'</span>, end<span class="op">=</span><span class="st">'2019-01-01'</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.<span class="bu">round</span>(<span class="dv">2</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cell-24" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> yf.download(<span class="st">'SPY'</span>, start<span class="op">=</span><span class="st">'2013-12-31'</span>, end<span class="op">=</span><span class="st">'2019-01-01'</span>, auto_adjust<span class="op">=</span><span class="va">False</span>, rounding<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">Price</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Close</th>
 <th data-quarto-table-cell-role="th">High</th>
 <th data-quarto-table-cell-role="th">Low</th>
-<th data-quarto-table-cell-role="th">Close</th>
-<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Open</th>
 <th data-quarto-table-cell-role="th">Volume</th>
 </tr>
 <tr class="even">
+<th data-quarto-table-cell-role="th">Ticker</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+</tr>
+<tr class="header">
 <th data-quarto-table-cell-role="th">Date</th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -757,49 +764,49 @@ window.Quarto = {
 </thead>
 <tbody>
 <tr class="odd">
+<td data-quarto-table-cell-role="th">2013-12-31</td>
+<td>151.29</td>
+<td>184.69</td>
+<td>184.69</td>
+<td>183.93</td>
+<td>184.07</td>
+<td>86119900</td>
+</tr>
+<tr class="even">
 <td data-quarto-table-cell-role="th">2014-01-02</td>
-<td>183.98</td>
+<td>149.84</td>
+<td>182.92</td>
 <td>184.07</td>
 <td>182.48</td>
-<td>182.92</td>
-<td>153.83</td>
+<td>183.98</td>
 <td>119636900</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td data-quarto-table-cell-role="th">2014-01-03</td>
-<td>183.23</td>
+<td>149.82</td>
+<td>182.89</td>
 <td>183.60</td>
 <td>182.63</td>
-<td>182.89</td>
-<td>153.80</td>
+<td>183.23</td>
 <td>81390600</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td data-quarto-table-cell-role="th">2014-01-06</td>
-<td>183.49</td>
+<td>149.38</td>
+<td>182.36</td>
 <td>183.56</td>
 <td>182.08</td>
-<td>182.36</td>
-<td>153.36</td>
+<td>183.49</td>
 <td>108028200</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td data-quarto-table-cell-role="th">2014-01-07</td>
-<td>183.09</td>
+<td>150.30</td>
+<td>183.48</td>
 <td>183.79</td>
 <td>182.95</td>
-<td>183.48</td>
-<td>154.30</td>
+<td>183.09</td>
 <td>86144200</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2014-01-08</td>
-<td>183.45</td>
-<td>183.83</td>
-<td>182.89</td>
-<td>183.52</td>
-<td>154.33</td>
-<td>96582300</td>
 </tr>
 </tbody>
 </table>
@@ -808,9 +815,9 @@ window.Quarto = {
 </div>
 </div>
 <p>Our stock data now lives in the variable called <code>df_spy</code>, which is a <strong>pandas</strong> data structure known as a <code>DataFrame</code>. We can see this by using the following code:</p>
-<div id="cell-26" class="cell">
+<div id="cell-26" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>pandas.core.frame.DataFrame</code></pre>
 </div>
 </div>
@@ -818,90 +825,100 @@ window.Quarto = {
 <section id="dataframe-index" class="level2" data-number="1.9">
 <h2 data-number="1.9" class="anchored" data-anchor-id="dataframe-index"><span class="header-section-number">1.9</span> <code>DataFrame</code> Index</h2>
 <p>In <strong>pandas</strong>, a <code>DataFrame</code> always has an index. For <code>df_spy</code> the <code>Dates</code> form the index.</p>
-<div id="cell-30" class="cell">
+<div id="cell-30" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df_spy.index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>DatetimeIndex(['2014-01-02', '2014-01-03', '2014-01-06', '2014-01-07',
-               '2014-01-08', '2014-01-09', '2014-01-10', '2014-01-13',
-               '2014-01-14', '2014-01-15',
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>DatetimeIndex(['2013-12-31', '2014-01-02', '2014-01-03', '2014-01-06',
+               '2014-01-07', '2014-01-08', '2014-01-09', '2014-01-10',
+               '2014-01-13', '2014-01-14',
                ...
                '2018-12-17', '2018-12-18', '2018-12-19', '2018-12-20',
                '2018-12-21', '2018-12-24', '2018-12-26', '2018-12-27',
                '2018-12-28', '2018-12-31'],
-              dtype='datetime64[ns]', name='Date', length=1258, freq=None)</code></pre>
+              dtype='datetime64[ns]', name='Date', length=1259, freq=None)</code></pre>
 </div>
 </div>
 <p>I don’t use indices very much, so let’s make the <code>Date</code> index just a regular column. Notice that we can modify <code>DataFrames</code> inplace.</p>
-<div id="cell-32" class="cell">
+<div id="cell-32" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_spy.reset_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">Date</th>
-<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Close</th>
 <th data-quarto-table-cell-role="th">High</th>
 <th data-quarto-table-cell-role="th">Low</th>
-<th data-quarto-table-cell-role="th">Close</th>
-<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Open</th>
 <th data-quarto-table-cell-role="th">Volume</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Ticker</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
+<th data-quarto-table-cell-role="th">SPY</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>2014-01-02</td>
-<td>183.98</td>
+<td>2013-12-31</td>
+<td>151.29</td>
+<td>184.69</td>
+<td>184.69</td>
+<td>183.93</td>
 <td>184.07</td>
-<td>182.48</td>
-<td>182.92</td>
-<td>153.83</td>
-<td>119636900</td>
+<td>86119900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>2014-01-03</td>
-<td>183.23</td>
-<td>183.60</td>
-<td>182.63</td>
-<td>182.89</td>
-<td>153.80</td>
-<td>81390600</td>
+<td>2014-01-02</td>
+<td>149.84</td>
+<td>182.92</td>
+<td>184.07</td>
+<td>182.48</td>
+<td>183.98</td>
+<td>119636900</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>2014-01-06</td>
-<td>183.49</td>
-<td>183.56</td>
-<td>182.08</td>
-<td>182.36</td>
-<td>153.36</td>
-<td>108028200</td>
+<td>2014-01-03</td>
+<td>149.82</td>
+<td>182.89</td>
+<td>183.60</td>
+<td>182.63</td>
+<td>183.23</td>
+<td>81390600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>2014-01-07</td>
-<td>183.09</td>
-<td>183.79</td>
-<td>182.95</td>
-<td>183.48</td>
-<td>154.30</td>
-<td>86144200</td>
+<td>2014-01-06</td>
+<td>149.38</td>
+<td>182.36</td>
+<td>183.56</td>
+<td>182.08</td>
+<td>183.49</td>
+<td>108028200</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>2014-01-08</td>
-<td>183.45</td>
-<td>183.83</td>
-<td>182.89</td>
-<td>183.52</td>
-<td>154.33</td>
-<td>96582300</td>
+<td>2014-01-07</td>
+<td>150.30</td>
+<td>183.48</td>
+<td>183.79</td>
+<td>182.95</td>
+<td>183.09</td>
+<td>86144200</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">...</td>
@@ -914,77 +931,217 @@ window.Quarto = {
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1253</td>
+<td data-quarto-table-cell-role="th">1254</td>
 <td>2018-12-24</td>
-<td>239.04</td>
+<td>211.96</td>
+<td>234.34</td>
 <td>240.84</td>
 <td>234.27</td>
-<td>234.34</td>
-<td>217.60</td>
+<td>239.04</td>
 <td>147311600</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1254</td>
+<td data-quarto-table-cell-role="th">1255</td>
 <td>2018-12-26</td>
-<td>235.97</td>
+<td>222.67</td>
+<td>246.18</td>
 <td>246.18</td>
 <td>233.76</td>
-<td>246.18</td>
-<td>228.59</td>
+<td>235.97</td>
 <td>218485400</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1255</td>
+<td data-quarto-table-cell-role="th">1256</td>
 <td>2018-12-27</td>
-<td>242.57</td>
+<td>224.38</td>
+<td>248.07</td>
 <td>248.29</td>
 <td>238.96</td>
-<td>248.07</td>
-<td>230.35</td>
+<td>242.57</td>
 <td>186267300</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1256</td>
+<td data-quarto-table-cell-role="th">1257</td>
 <td>2018-12-28</td>
-<td>249.58</td>
+<td>224.09</td>
+<td>247.75</td>
 <td>251.40</td>
 <td>246.45</td>
-<td>247.75</td>
-<td>230.05</td>
+<td>249.58</td>
 <td>153100200</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1257</td>
+<td data-quarto-table-cell-role="th">1258</td>
 <td>2018-12-31</td>
-<td>249.56</td>
+<td>226.05</td>
+<td>249.92</td>
 <td>250.19</td>
 <td>247.47</td>
-<td>249.92</td>
-<td>232.07</td>
+<td>249.56</td>
 <td>144299400</td>
 </tr>
 </tbody>
 </table>
 
-<p>1258 rows × 7 columns</p>
+<p>1259 rows × 7 columns</p>
 </div>
 </div>
 </div>
 <p>Notice that even though we ran the <code>.reset_index()</code> method of <code>df_spy</code> it still has an index; now its index is just a sequence of integers.</p>
-<div id="cell-34" class="cell">
+<div id="cell-34" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df_spy.index</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>RangeIndex(start=0, stop=1258, step=1)</code></pre>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>RangeIndex(start=0, stop=1259, step=1)</code></pre>
 </div>
 </div>
 </section>
 <section id="a-bit-of-cleaning" class="level2" data-number="1.10">
 <h2 data-number="1.10" class="anchored" data-anchor-id="a-bit-of-cleaning"><span class="header-section-number">1.10</span> A Bit of Cleaning</h2>
+<p>For an additional bit of clean-up, let’s drop the second level of the column index from <code>df_spy</code>, and also remove the <code>Price</code> label from the row index.</p>
+<div id="cell-38" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_spy <span class="op">=</span> df_spy.rename_axis(<span class="va">None</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Date</th>
+<th data-quarto-table-cell-role="th">Adj Close</th>
+<th data-quarto-table-cell-role="th">Close</th>
+<th data-quarto-table-cell-role="th">High</th>
+<th data-quarto-table-cell-role="th">Low</th>
+<th data-quarto-table-cell-role="th">Open</th>
+<th data-quarto-table-cell-role="th">Volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2013-12-31</td>
+<td>151.29</td>
+<td>184.69</td>
+<td>184.69</td>
+<td>183.93</td>
+<td>184.07</td>
+<td>86119900</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2014-01-02</td>
+<td>149.84</td>
+<td>182.92</td>
+<td>184.07</td>
+<td>182.48</td>
+<td>183.98</td>
+<td>119636900</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2014-01-03</td>
+<td>149.82</td>
+<td>182.89</td>
+<td>183.60</td>
+<td>182.63</td>
+<td>183.23</td>
+<td>81390600</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2014-01-06</td>
+<td>149.38</td>
+<td>182.36</td>
+<td>183.56</td>
+<td>182.08</td>
+<td>183.49</td>
+<td>108028200</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2014-01-07</td>
+<td>150.30</td>
+<td>183.48</td>
+<td>183.79</td>
+<td>182.95</td>
+<td>183.09</td>
+<td>86144200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1254</td>
+<td>2018-12-24</td>
+<td>211.96</td>
+<td>234.34</td>
+<td>240.84</td>
+<td>234.27</td>
+<td>239.04</td>
+<td>147311600</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1255</td>
+<td>2018-12-26</td>
+<td>222.67</td>
+<td>246.18</td>
+<td>246.18</td>
+<td>233.76</td>
+<td>235.97</td>
+<td>218485400</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1256</td>
+<td>2018-12-27</td>
+<td>224.38</td>
+<td>248.07</td>
+<td>248.29</td>
+<td>238.96</td>
+<td>242.57</td>
+<td>186267300</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1257</td>
+<td>2018-12-28</td>
+<td>224.09</td>
+<td>247.75</td>
+<td>251.40</td>
+<td>246.45</td>
+<td>249.58</td>
+<td>153100200</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1258</td>
+<td>2018-12-31</td>
+<td>226.05</td>
+<td>249.92</td>
+<td>250.19</td>
+<td>247.47</td>
+<td>249.56</td>
+<td>144299400</td>
+</tr>
+</tbody>
+</table>
+
+<p>1259 rows × 7 columns</p>
+</div>
+</div>
+</div>
 <p>As a matter of preference, I like my column names to be in snake case.</p>
-<div id="cell-38" class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>,<span class="st">'_'</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-40" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_spy.columns <span class="op">=</span> df_spy.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>,<span class="st">'_'</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -993,64 +1150,64 @@ window.Quarto = {
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">open</th>
+<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">high</th>
 <th data-quarto-table-cell-role="th">low</th>
-<th data-quarto-table-cell-role="th">close</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">open</th>
 <th data-quarto-table-cell-role="th">volume</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>2014-01-02</td>
-<td>183.98</td>
+<td>2013-12-31</td>
+<td>151.29</td>
+<td>184.69</td>
+<td>184.69</td>
+<td>183.93</td>
 <td>184.07</td>
-<td>182.48</td>
-<td>182.92</td>
-<td>153.83</td>
-<td>119636900</td>
+<td>86119900</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>2014-01-03</td>
-<td>183.23</td>
-<td>183.60</td>
-<td>182.63</td>
-<td>182.89</td>
-<td>153.80</td>
-<td>81390600</td>
+<td>2014-01-02</td>
+<td>149.84</td>
+<td>182.92</td>
+<td>184.07</td>
+<td>182.48</td>
+<td>183.98</td>
+<td>119636900</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>2014-01-06</td>
-<td>183.49</td>
-<td>183.56</td>
-<td>182.08</td>
-<td>182.36</td>
-<td>153.36</td>
-<td>108028200</td>
+<td>2014-01-03</td>
+<td>149.82</td>
+<td>182.89</td>
+<td>183.60</td>
+<td>182.63</td>
+<td>183.23</td>
+<td>81390600</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>2014-01-07</td>
-<td>183.09</td>
-<td>183.79</td>
-<td>182.95</td>
-<td>183.48</td>
-<td>154.30</td>
-<td>86144200</td>
+<td>2014-01-06</td>
+<td>149.38</td>
+<td>182.36</td>
+<td>183.56</td>
+<td>182.08</td>
+<td>183.49</td>
+<td>108028200</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>2014-01-08</td>
-<td>183.45</td>
-<td>183.83</td>
-<td>182.89</td>
-<td>183.52</td>
-<td>154.33</td>
-<td>96582300</td>
+<td>2014-01-07</td>
+<td>150.30</td>
+<td>183.48</td>
+<td>183.79</td>
+<td>182.95</td>
+<td>183.09</td>
+<td>86144200</td>
 </tr>
 </tbody>
 </table>
@@ -1059,11 +1216,11 @@ window.Quarto = {
 </div>
 </div>
 <p>Let’s also remove the columns that we won’t need. We first create a <code>list</code> of the column names that we want to get rid of and then we use the <code>DataFrame.drop()</code> method.</p>
-<div id="cell-40" class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lst_cols <span class="op">=</span> [<span class="st">'high'</span>, <span class="st">'low'</span>, <span class="st">'open'</span>, <span class="st">'close'</span>, <span class="st">'volume'</span>,]</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df_spy.drop(columns<span class="op">=</span>lst_cols, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-42" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lst_cols <span class="op">=</span> [<span class="st">'high'</span>, <span class="st">'low'</span>, <span class="st">'open'</span>, <span class="st">'adj_close'</span>, <span class="st">'volume'</span>,]</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df_spy.drop(columns<span class="op">=</span>lst_cols, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
 <div>
 
 
@@ -1072,34 +1229,34 @@ window.Quarto = {
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>2014-01-02</td>
-<td>153.83</td>
+<td>2013-12-31</td>
+<td>184.69</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>2014-01-03</td>
-<td>153.80</td>
+<td>2014-01-02</td>
+<td>182.92</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>2014-01-06</td>
-<td>153.36</td>
+<td>2014-01-03</td>
+<td>182.89</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>2014-01-07</td>
-<td>154.30</td>
+<td>2014-01-06</td>
+<td>182.36</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>2014-01-08</td>
-<td>154.33</td>
+<td>2014-01-07</td>
+<td>183.48</td>
 </tr>
 </tbody>
 </table>
@@ -1112,27 +1269,27 @@ window.Quarto = {
 <section id="series" class="level2" data-number="1.11">
 <h2 data-number="1.11" class="anchored" data-anchor-id="series"><span class="header-section-number">1.11</span> <code>Series</code></h2>
 <p>You can isolate the columns of a <code>DataFrame</code> with square brackets as follows:</p>
-<div id="cell-44" class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'adj_close'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>0       153.83
-1       153.80
-2       153.36
-3       154.30
-4       154.33
+<div id="cell-46" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>0       184.69
+1       182.92
+2       182.89
+3       182.36
+4       183.48
          ...  
-1253    217.60
-1254    228.59
-1255    230.35
-1256    230.05
-1257    232.07
-Name: adj_close, Length: 1258, dtype: float64</code></pre>
+1254    234.34
+1255    246.18
+1256    248.07
+1257    247.75
+1258    249.92
+Name: close, Length: 1259, dtype: float64</code></pre>
 </div>
 </div>
 <p>The columns of a <code>DataFrame</code> are a <strong>pandas</strong> data structure called a <code>Series</code>.</p>
-<div id="cell-47" class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy[<span class="st">'adj_close'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-49" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy[<span class="st">'close'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
 <pre><code>pandas.core.series.Series</code></pre>
 </div>
 </div>
@@ -1141,15 +1298,15 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <h2 data-number="1.12" class="anchored" data-anchor-id="numpy-and-ndarrays"><span class="header-section-number">1.12</span> <strong>numpy</strong> and <code>ndarrays</code></h2>
 <p>Python is a general purpose programming language and was not created for scientific computing in particular. One of the foundational packages that makes Python well suited to scientific computing is <strong>numpy</strong>, which has a variety of features including a data type called <code>ndarrays</code>. One of the benefits of <code>ndarrays</code> is that they allow for efficient vector and matrix computation.</p>
 <p>The <code>values</code> of a <code>Series</code> object is a <code>numpy.ndarray</code>. This is one sense in which <strong>pandas</strong> is <em>built on top of</em> <code>numpy</code>.</p>
-<div id="cell-52" class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'adj_close'</span>].values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>array([153.83, 153.8 , 153.36, ..., 230.35, 230.05, 232.07])</code></pre>
+<div id="cell-54" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>].values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>array([184.69, 182.92, 182.89, ..., 248.07, 247.75, 249.92])</code></pre>
 </div>
 </div>
-<div id="cell-53" class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy[<span class="st">'adj_close'</span>].values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-55" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(df_spy[<span class="st">'close'</span>].values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
 <pre><code>numpy.ndarray</code></pre>
 </div>
 </div>
@@ -1157,35 +1314,35 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <section id="series-built-in-methods" class="level2" data-number="1.13">
 <h2 data-number="1.13" class="anchored" data-anchor-id="series-built-in-methods"><span class="header-section-number">1.13</span> <code>Series</code> Built-In Methods</h2>
 <p><code>Series</code> have a variety of built-in methods that provide convenient summarization and modification functionality. For example, you can <code>.sum()</code> all the elements of the <code>Series</code>.</p>
-<div id="cell-57" class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'adj_close'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>251297.16</code></pre>
+<div id="cell-59" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>].<span class="bu">sum</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>283892.12</code></pre>
 </div>
 </div>
 <p>Next, we calculate the standard deviation of all the elements of the <code>Series</code> using the <code>.std()</code> method.</p>
-<div id="cell-59" class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'adj_close'</span>].std()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<pre><code>33.16746781625381</code></pre>
+<div id="cell-61" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>].std()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="16">
+<pre><code>31.134513551265016</code></pre>
 </div>
 </div>
 <p>The <code>.shift()</code> built-in method will be useful for calculating returns in the next section - it has the effect of <em>pushing down</em> the values in a <code>Series</code>.</p>
-<div id="cell-61" class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'adj_close'</span>].shift()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-63" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'close'</span>].shift()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
 <pre><code>0          NaN
-1       153.83
-2       153.80
-3       153.36
-4       154.30
+1       184.69
+2       182.92
+3       182.89
+4       182.36
          ...  
-1253    223.51
-1254    217.60
-1255    228.59
-1256    230.35
-1257    230.05
-Name: adj_close, Length: 1258, dtype: float64</code></pre>
+1254    240.70
+1255    234.34
+1256    246.18
+1257    248.07
+1258    247.75
+Name: close, Length: 1259, dtype: float64</code></pre>
 </div>
 </div>
 </section>
@@ -1194,10 +1351,10 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <p>Our analysis analysis of the leverage effect will involve daily returns for all the days in <code>df_spy</code>. Let’s calculate those now.</p>
 <p>Recall that the end-of-day day <span class="math inline">\(t\)</span> return of a stock is defined as: <span class="math inline">\(r_{t} = \frac{S_{t}}{S_{t-1}} - 1\)</span>, where <span class="math inline">\(S_{t}\)</span> is the stock price at end-of-day <span class="math inline">\(t\)</span>.</p>
 <p>Here is a vectorized approach to calculating all the daily returns in a single line of code.</p>
-<div id="cell-65" class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'ret'</span>] <span class="op">=</span> df_spy[<span class="st">'adj_close'</span>] <span class="op">/</span> df_spy[<span class="st">'adj_close'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-67" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'ret'</span>] <span class="op">=</span> df_spy[<span class="st">'close'</span>] <span class="op">/</span> df_spy[<span class="st">'close'</span>].shift(<span class="dv">1</span>) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df_spy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
 <div>
 
 
@@ -1206,40 +1363,40 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">ret</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>2014-01-02</td>
-<td>153.83</td>
+<td>2013-12-31</td>
+<td>184.69</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>2014-01-03</td>
-<td>153.80</td>
-<td>-0.000195</td>
+<td>2014-01-02</td>
+<td>182.92</td>
+<td>-0.009584</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>2014-01-06</td>
-<td>153.36</td>
-<td>-0.002861</td>
+<td>2014-01-03</td>
+<td>182.89</td>
+<td>-0.000164</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>2014-01-07</td>
-<td>154.30</td>
-<td>0.006129</td>
+<td>2014-01-06</td>
+<td>182.36</td>
+<td>-0.002898</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>2014-01-08</td>
-<td>154.33</td>
-<td>0.000194</td>
+<td>2014-01-07</td>
+<td>183.48</td>
+<td>0.006142</td>
 </tr>
 </tbody>
 </table>
@@ -1253,30 +1410,8 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <h2 data-number="1.15" class="anchored" data-anchor-id="visualizing-adjusted-close-prices"><span class="header-section-number">1.15</span> Visualizing Adjusted Close Prices</h2>
 <p>Python has a variety of packages that can be used for visualization. In this chapter we will focus on built-in plotting capabilities of <strong>pandas</strong>. These capabilities are built on top of the <strong>matplotlib</strong> package, which is the foundation of much of Python’s visualization ecosystem.</p>
 <p><code>DataFrames</code> have a built-in <code>.plot()</code> method that makes creating simple line graphs quite easy.</p>
-<div id="cell-70" class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'adj_close'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="jumpstart_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>If we wanted to make this graph more presentable we could do something like:</p>
-<div id="cell-72" class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_spy.<span class="op">\</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'date'</span>,</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'adj_close'</span>,</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>            title <span class="op">=</span> <span class="st">'SPY: 2014-2018'</span>,</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>            grid <span class="op">=</span> <span class="va">True</span>,</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>            style <span class="op">=</span> <span class="st">'k'</span>,</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>            alpha <span class="op">=</span> <span class="fl">0.75</span>,</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>            figsize <span class="op">=</span> (<span class="dv">9</span>, <span class="dv">4</span>),</span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Trade Date'</span>)<span class="op">;</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Close Price'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-72" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span><span class="st">'close'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -1285,10 +1420,32 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 </div>
 </div>
 </div>
-<p>Notice that the <code>ax</code> variable created above is a <code>matplotlib</code> object.</p>
-<div id="cell-74" class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If we wanted to make this graph more presentable we could do something like:</p>
+<div id="cell-74" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> df_spy.<span class="op">\</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>        plot(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>            x <span class="op">=</span> <span class="st">'date'</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> <span class="st">'close'</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>            title <span class="op">=</span> <span class="st">'SPY: 2014-2018'</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>            grid <span class="op">=</span> <span class="va">True</span>,</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>            style <span class="op">=</span> <span class="st">'k'</span>,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>            alpha <span class="op">=</span> <span class="fl">0.75</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>            figsize <span class="op">=</span> (<span class="dv">9</span>, <span class="dv">4</span>),</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>        )<span class="op">;</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Trade Date'</span>)<span class="op">;</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Close Price'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="jumpstart_files/figure-html/cell-21-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice that the <code>ax</code> variable created above is a <code>matplotlib</code> object.</p>
+<div id="cell-76" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(ax)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
 <pre><code>matplotlib.axes._axes.Axes</code></pre>
 </div>
 </div>
@@ -1296,12 +1453,12 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <section id="visualizing-returns" class="level2" data-number="1.16">
 <h2 data-number="1.16" class="anchored" data-anchor-id="visualizing-returns"><span class="header-section-number">1.16</span> Visualizing Returns</h2>
 <p><strong>pandas</strong> also gives us the ability to simultaneously plot two different columns of a <code>DataFrame</code> in separate subplots of a single graph. Here is what that code looks like:</p>
-<div id="cell-78" class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'adj_close'</span>, <span class="st">'ret'</span>,], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">8</span>), grid<span class="op">=</span><span class="va">True</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-80" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'close'</span>, <span class="st">'ret'</span>,], subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">8</span>), grid<span class="op">=</span><span class="va">True</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="jumpstart_files/figure-html/cell-22-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="jumpstart_files/figure-html/cell-23-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -1313,28 +1470,28 @@ Name: adj_close, Length: 1258, dtype: float64</code></pre>
 <h2 data-number="1.17" class="anchored" data-anchor-id="calculating-realized-volatility"><span class="header-section-number">1.17</span> Calculating Realized Volatility</h2>
 <p>Realized volatility is defined as the standard deviation of the daily returns; it indicates how much variability in the stock price there has been. It is a matter of convention to annualize this quantity, so we multiply it by <span class="math inline">\(\sqrt{252}\)</span>.</p>
 <p>The following vectorized code calculates a rolling 2-month volatility for our SPY price data.</p>
-<div id="cell-82" class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'ret'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-84" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'ret'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
 <pre><code>0            NaN
 1            NaN
 2            NaN
 3            NaN
 4            NaN
           ...   
-1253    0.226735
-1254    0.252813
-1255    0.249195
-1256    0.246019
-1257    0.247027
-Name: ret, Length: 1258, dtype: float64</code></pre>
+1254    0.229796
+1255    0.255840
+1256    0.252218
+1257    0.249128
+1258    0.250166
+Name: ret, Length: 1259, dtype: float64</code></pre>
 </div>
 </div>
 <p>Let’s add these realized volatility calculations to<code>df_spy</code> this with the following code.</p>
-<div id="cell-84" class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'realized_vol'</span>] <span class="op">=</span> df_spy[<span class="st">'ret'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div id="cell-86" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df_spy[<span class="st">'realized_vol'</span>] <span class="op">=</span> df_spy[<span class="st">'ret'</span>].rolling(<span class="dv">42</span>).std() <span class="op">*</span> np.sqrt(<span class="dv">252</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>df_spy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div>
 
 
@@ -1343,7 +1500,7 @@ Name: ret, Length: 1258, dtype: float64</code></pre>
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">date</th>
-<th data-quarto-table-cell-role="th">adj_close</th>
+<th data-quarto-table-cell-role="th">close</th>
 <th data-quarto-table-cell-role="th">ret</th>
 <th data-quarto-table-cell-role="th">realized_vol</th>
 </tr>
@@ -1351,37 +1508,37 @@ Name: ret, Length: 1258, dtype: float64</code></pre>
 <tbody>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">0</td>
-<td>2014-01-02</td>
-<td>153.83</td>
+<td>2013-12-31</td>
+<td>184.69</td>
 <td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">1</td>
-<td>2014-01-03</td>
-<td>153.80</td>
-<td>-0.000195</td>
+<td>2014-01-02</td>
+<td>182.92</td>
+<td>-0.009584</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">2</td>
-<td>2014-01-06</td>
-<td>153.36</td>
-<td>-0.002861</td>
+<td>2014-01-03</td>
+<td>182.89</td>
+<td>-0.000164</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
 <td data-quarto-table-cell-role="th">3</td>
-<td>2014-01-07</td>
-<td>154.30</td>
-<td>0.006129</td>
+<td>2014-01-06</td>
+<td>182.36</td>
+<td>-0.002898</td>
 <td>NaN</td>
 </tr>
 <tr class="odd">
 <td data-quarto-table-cell-role="th">4</td>
-<td>2014-01-08</td>
-<td>154.33</td>
-<td>0.000194</td>
+<td>2014-01-07</td>
+<td>183.48</td>
+<td>0.006142</td>
 <td>NaN</td>
 </tr>
 <tr class="even">
@@ -1392,44 +1549,44 @@ Name: ret, Length: 1258, dtype: float64</code></pre>
 <td>...</td>
 </tr>
 <tr class="odd">
-<td data-quarto-table-cell-role="th">1253</td>
-<td>2018-12-24</td>
-<td>217.60</td>
-<td>-0.026442</td>
-<td>0.226735</td>
-</tr>
-<tr class="even">
 <td data-quarto-table-cell-role="th">1254</td>
-<td>2018-12-26</td>
-<td>228.59</td>
-<td>0.050506</td>
-<td>0.252813</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">1255</td>
-<td>2018-12-27</td>
-<td>230.35</td>
-<td>0.007699</td>
-<td>0.249195</td>
+<td>2018-12-24</td>
+<td>234.34</td>
+<td>-0.026423</td>
+<td>0.229796</td>
 </tr>
 <tr class="even">
-<td data-quarto-table-cell-role="th">1256</td>
-<td>2018-12-28</td>
-<td>230.05</td>
-<td>-0.001302</td>
-<td>0.246019</td>
+<td data-quarto-table-cell-role="th">1255</td>
+<td>2018-12-26</td>
+<td>246.18</td>
+<td>0.050525</td>
+<td>0.255840</td>
 </tr>
 <tr class="odd">
+<td data-quarto-table-cell-role="th">1256</td>
+<td>2018-12-27</td>
+<td>248.07</td>
+<td>0.007677</td>
+<td>0.252218</td>
+</tr>
+<tr class="even">
 <td data-quarto-table-cell-role="th">1257</td>
+<td>2018-12-28</td>
+<td>247.75</td>
+<td>-0.001290</td>
+<td>0.249128</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">1258</td>
 <td>2018-12-31</td>
-<td>232.07</td>
-<td>0.008781</td>
-<td>0.247027</td>
+<td>249.92</td>
+<td>0.008759</td>
+<td>0.250166</td>
 </tr>
 </tbody>
 </table>
 
-<p>1258 rows × 4 columns</p>
+<p>1259 rows × 4 columns</p>
 </div>
 </div>
 </div>
@@ -1437,16 +1594,16 @@ Name: ret, Length: 1258, dtype: float64</code></pre>
 <section id="visualizing-realized-volatility" class="level2" data-number="1.18">
 <h2 data-number="1.18" class="anchored" data-anchor-id="visualizing-realized-volatility"><span class="header-section-number">1.18</span> Visualizing Realized Volatility</h2>
 <p>We can easily add <code>realized_vol</code> to our graph with the following code.</p>
-<div id="cell-88" class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x <span class="op">=</span> <span class="st">'date'</span>, </span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> [<span class="st">'adj_close'</span>,<span class="st">'ret'</span>,<span class="st">'realized_vol'</span>,], </span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>            subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, </span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>            figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">12</span>), </span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>            grid<span class="op">=</span><span class="va">True</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-90" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>df_spy.plot(x <span class="op">=</span> <span class="st">'date'</span>, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>            y <span class="op">=</span> [<span class="st">'close'</span>,<span class="st">'ret'</span>,<span class="st">'realized_vol'</span>,], </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>            subplots<span class="op">=</span><span class="va">True</span>, style<span class="op">=</span><span class="st">'k'</span>, alpha<span class="op">=</span><span class="fl">0.75</span>, </span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>            figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">12</span>), </span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>            grid<span class="op">=</span><span class="va">True</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="jumpstart_files/figure-html/cell-25-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="jumpstart_files/figure-html/cell-26-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>

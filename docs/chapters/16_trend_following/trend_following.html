@@ -608,19 +608,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="importing-packages" class="level2" data-number="17.1">
 <h2 data-number="17.1" class="anchored" data-anchor-id="importing-packages"><span class="header-section-number">17.1</span> Importing Packages</h2>
 <p>Let’s begin by importing the packages that we will need.</p>
-<div id="b09f4759-15ca-450d-b508-2012fc55004d" class="cell">
+<div id="b09f4759-15ca-450d-b508-2012fc55004d" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>yf.pdr_override()</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pandas_datareader <span class="im">import</span> data <span class="im">as</span> pdr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yfinance <span class="im">as</span> yf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="setting-parameters" class="level2" data-number="17.2">
 <h2 data-number="17.2" class="anchored" data-anchor-id="setting-parameters"><span class="header-section-number">17.2</span> Setting Parameters</h2>
 <p>Next we set the parameters of our analysis. The parameter <code>sma_days</code> determines the number of days used in the trailing simple moving average.</p>
-<div id="5688c933-799f-403d-aa86-413f4f430b69" class="cell">
+<div id="5688c933-799f-403d-aa86-413f4f430b69" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ticker <span class="op">=</span> <span class="st">'^SP500TR'</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>start_date <span class="op">=</span> <span class="st">'1989-12-29'</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>end_date <span class="op">=</span> <span class="st">'2012-01-01'</span></span>
@@ -630,15 +628,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="reading-in-data" class="level2" data-number="17.3">
 <h2 data-number="17.3" class="anchored" data-anchor-id="reading-in-data"><span class="header-section-number">17.3</span> Reading-In Data</h2>
 <p>We now read-in our data from Yahoo Finance.</p>
-<div id="cb63fe82-6c44-4eaa-a1dd-0701a58349d5" class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> pdr.get_data_yahoo(ticker)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_asset.reset_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_asset.columns <span class="op">=</span> df_asset.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>,<span class="st">'_'</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> df_asset[[<span class="st">'date'</span>, <span class="st">'adj_close'</span>]].copy()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df_asset[<span class="st">'sma'</span>] <span class="op">=</span> df_asset[<span class="st">'adj_close'</span>].rolling(sma_days).mean()</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> df_asset.query(<span class="st">'date &gt;= @start_date and date &lt;= @end_date'</span>).copy()</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df_asset.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'adj_close'</span>, <span class="st">'sma'</span>], grid<span class="op">=</span><span class="va">True</span>, title<span class="op">=</span><span class="st">'Adjusted Close and Moving Average Through Time'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
+<div id="cb63fe82-6c44-4eaa-a1dd-0701a58349d5" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> yf.download(ticker, auto_adjust<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> df_asset.droplevel(level<span class="op">=</span><span class="dv">1</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df_asset.reset_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df_asset.columns <span class="op">=</span> df_asset.columns.<span class="bu">str</span>.lower().<span class="bu">str</span>.replace(<span class="st">' '</span>,<span class="st">'_'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> df_asset[[<span class="st">'date'</span>, <span class="st">'adj_close'</span>]].copy()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df_asset[<span class="st">'sma'</span>] <span class="op">=</span> df_asset[<span class="st">'adj_close'</span>].rolling(sma_days).mean()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df_asset <span class="op">=</span> df_asset.query(<span class="st">'date &gt;= @start_date and date &lt;= @end_date'</span>).copy()</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>df_asset.plot(x<span class="op">=</span><span class="st">'date'</span>, y<span class="op">=</span>[<span class="st">'adj_close'</span>, <span class="st">'sma'</span>], grid<span class="op">=</span><span class="va">True</span>, title<span class="op">=</span><span class="st">'Adjusted Close and Moving Average Through Time'</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
 <pre><code>[*********************100%***********************]  1 of 1 completed</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -653,7 +652,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="determining-position-based-on-trend" class="level2" data-number="17.4">
 <h2 data-number="17.4" class="anchored" data-anchor-id="determining-position-based-on-trend"><span class="header-section-number">17.4</span> Determining Position Based on Trend</h2>
 <p>Here we define the function that will help to determine our daily position in the asset.</p>
-<div id="adf64111-a801-4d0d-a6f4-81c39aeff164" class="cell">
+<div id="adf64111-a801-4d0d-a6f4-81c39aeff164" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calc_position(row):</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    adj_close <span class="op">=</span> row[<span class="st">'adj_close'</span>]</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    sma <span class="op">=</span> row[<span class="st">'sma'</span>]</span>
@@ -665,17 +664,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> position</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s now use the <code>DataFrame.apply()</code> method to calculate all the positions through time.</p>
-<div id="6bb6ac62-d5ad-45fb-a2a6-6aac87923877" class="cell">
+<div id="6bb6ac62-d5ad-45fb-a2a6-6aac87923877" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df_asset[<span class="st">'trend_position'</span>] <span class="op">=</span> df_asset.<span class="bu">apply</span>(calc_position, axis <span class="op">=</span> <span class="dv">1</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df_asset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
 
 <table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Price</th>
 <th data-quarto-table-cell-role="th">date</th>
 <th data-quarto-table-cell-role="th">adj_close</th>
 <th data-quarto-table-cell-role="th">sma</th>
@@ -771,7 +770,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="calculating-returns-equity-curves-and-drawdowns" class="level2" data-number="17.5">
 <h2 data-number="17.5" class="anchored" data-anchor-id="calculating-returns-equity-curves-and-drawdowns"><span class="header-section-number">17.5</span> Calculating Returns, Equity Curves, and Drawdowns</h2>
 <p>We now have all the data the we need to calculate daily returns, the equity curves, and drawdowns of the two strategies.</p>
-<div id="a800f77e-0daa-4402-8662-09118aabb09a" class="cell">
+<div id="a800f77e-0daa-4402-8662-09118aabb09a" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># returns</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>df_asset[<span class="st">'buy_hold_return'</span>] <span class="op">=</span> df_asset[<span class="st">'adj_close'</span>].pct_change()</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df_asset[<span class="st">'trend_return'</span>] <span class="op">=</span> df_asset[<span class="st">'buy_hold_return'</span>] <span class="op">*</span> df_asset[<span class="st">'trend_position'</span>].shift(<span class="dv">1</span>)</span>
@@ -807,7 +806,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="17.6" class="anchored" data-anchor-id="return-characteristics"><span class="header-section-number">17.6</span> Return Characteristics</h2>
 <p>Finally, we calculate some basic performance metrics.</p>
 <p><strong>Annualized Return</strong></p>
-<div id="779a3f46-b994-495e-b2c0-0012814a7dca" class="cell">
+<div id="779a3f46-b994-495e-b2c0-0012814a7dca" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'buy-hold return: '</span>, np.<span class="bu">round</span>(df_asset[<span class="st">'buy_hold_equity'</span>].iloc[<span class="op">-</span><span class="dv">1</span>] <span class="op">**</span> (<span class="dv">252</span> <span class="op">/</span> (<span class="bu">len</span>(df_asset) <span class="op">-</span> <span class="dv">1</span>)) <span class="op">-</span> <span class="dv">1</span>, <span class="dv">3</span>) <span class="op">*</span> <span class="dv">100</span>, <span class="st">'%'</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'trend return:    '</span>, np.<span class="bu">round</span>(df_asset[<span class="st">'trend_equity'</span>].iloc[<span class="op">-</span><span class="dv">1</span>] <span class="op">**</span> (<span class="dv">252</span> <span class="op">/</span> (<span class="bu">len</span>(df_asset) <span class="op">-</span> <span class="dv">1</span>)) <span class="op">-</span> <span class="dv">1</span>, <span class="dv">3</span>) <span class="op">*</span> <span class="dv">100</span>, <span class="st">'%'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -816,7 +815,7 @@ trend return:     7.199999999999999 %</code></pre>
 </div>
 </div>
 <p><strong>Sharpe-Ratio</strong></p>
-<div id="39d0bfdc-0013-49fe-8805-002ab7513ddb" class="cell">
+<div id="39d0bfdc-0013-49fe-8805-002ab7513ddb" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'buy-hold sharpe-ratio: '</span>, np.<span class="bu">round</span>((np.mean(df_asset[<span class="st">'buy_hold_return'</span>]) <span class="op">/</span> np.std(df_asset[<span class="st">'buy_hold_return'</span>])) <span class="op">*</span> np.sqrt(<span class="dv">252</span>), <span class="dv">2</span>))</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'trend sharpe-ratio:    '</span>, np.<span class="bu">round</span>((np.mean(df_asset[<span class="st">'trend_return'</span>]) <span class="op">/</span> np.std(df_asset[<span class="st">'trend_return'</span>])) <span class="op">*</span> np.sqrt(<span class="dv">252</span>), <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -825,7 +824,7 @@ trend sharpe-ratio:     0.66</code></pre>
 </div>
 </div>
 <p><strong>Maximum Drawdown</strong></p>
-<div id="4c74cb04-3d1c-4c82-9c9d-4a21d2f67ec7" class="cell">
+<div id="4c74cb04-3d1c-4c82-9c9d-4a21d2f67ec7" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'buy-hold max-drawdown: '</span>, np.<span class="bu">round</span>(np.<span class="bu">min</span>(df_asset[<span class="st">'buy_hold_drawdown'</span>]), <span class="dv">2</span>))</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'trend max-drawdown:    '</span>, np.<span class="bu">round</span>(np.<span class="bu">min</span>(df_asset[<span class="st">'trend_drawdown'</span>]), <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
